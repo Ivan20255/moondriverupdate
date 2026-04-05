@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1020, initial-scale=1.0">
+  <title>Moon Express Inc. — Driver Trip Sheet</title>
+  <style>
+    /* ── Reset ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #e8e8e8;
+      display: flex;
+      justify-content: center;
+      padding: 20px 8px;
+    }
+
+    /* ── Page (paper look) ─────────────────────────────── */
+    .page {
+      background: #fff;
+      width: 100%;
+      max-width: 1020px;
+      padding: 30px 36px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.12);
+    }
+
+    /* ── Header ────────────────────────────────────────── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+    .logo-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-left: -5px;
+    }
+    .logo-img {
+      height: 72px;
+      width: auto;
+    }
+    .contact {
+      text-align: right;
+      font-size: .82rem;
+      line-height: 1.6;
+      color: #111;
+    }
+    .contact .phone {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #000;
+    }
+    .contact a { color: #0b3d5e; }
+
+    /* ── Driver Info Bar ───────────────────────────────── */
+    .driver-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 0;
+      padding: 10px 0 6px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .driver-bar .df {
+      display: flex;
+      flex-direction: column;
+      padding: 0 8px;
+      flex-shrink: 0;
+    }
+    .driver-bar .df:first-child { padding-left: 0; }
+    .driver-bar .df label {
+      font-size: .76rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: #000;
+      letter-spacing: .5px;
+      margin-top: 1px;
+    }
+    .driver-bar .df input {
+      border: none;
+      border-bottom: 1.5px solid #000;
+      font-family: inherit;
+      font-size: .88rem;
+      padding: 1px 2px 2px;
+      background: transparent;
+      color: #000;
+      outline: none;
+      min-width: 40px;
+      order: -1; /* input appears above label */
+    }
+    .driver-bar .df input:focus {
+      border-bottom-color: #0b3d5e;
+      background: #eef5fb;
+    }
+    .driver-bar .df input.w-name { width: 180px; }
+    .driver-bar .df input.w-num { width: 100px; }
+    .driver-bar .df input.w-date { width: 68px; text-align: center; }
+    .driver-bar .df input.w-miles { width: 100px; }
+
+    .driver-bar .df-shared {
+      display: flex;
+      flex-direction: column;
+      padding: 0 8px;
+      flex-shrink: 0;
+      width: 170px; /* Keep the line shorter */
+    }
+    .driver-bar .df-shared .inputs-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1.5px solid #000;
+    }
+    .driver-bar .df-shared .inputs-row input {
+      border: none;
+      font-family: inherit;
+      font-size: .88rem;
+      padding: 1px 2px 2px;
+      background: transparent;
+      color: #000;
+      outline: none;
+      width: 68px;
+      text-align: center;
+    }
+    .driver-bar .df-shared .inputs-row input:focus {
+      background: #eef5fb;
+    }
+    .driver-bar .df-shared .labels-row {
+      display: flex;
+      justify-content: space-between;
+    }
+    .driver-bar .df-shared label {
+      font-size: .76rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: #000;
+      letter-spacing: .3px;
+      margin-top: 1px;
+    }
+
+    /* ── Trip Table ────────────────────────────────────── */
+    .trip-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+      border: 1.5px solid #000;
+      table-layout: fixed;
+    }
+    /* Column widths */
+    .trip-table col.col-num   { width: 30px; }
+    .trip-table col.col-date  { width: 72px; }
+    .trip-table col.col-city  { width: auto; }
+    .trip-table col.col-zip   { width: 60px; }
+    .trip-table col.col-miles { width: 110px; }
+    .trip-table thead th {
+      border: 1px solid #000;
+      font-size: .58rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      padding: 5px 4px;
+      text-align: center;
+      background: #fff;
+      color: #000;
+      letter-spacing: .5px;
+    }
+    .trip-table tbody td {
+      border: 1px solid #000;
+      padding: 0;
+      vertical-align: middle;
+    }
+    .trip-table tbody td.row-num {
+      width: 28px;
+      text-align: center;
+      font-size: .78rem;
+      font-weight: 700;
+      color: #000;
+      padding: 4px 2px;
+    }
+    .trip-table tbody td input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: .8rem;
+      padding: 5px 4px;
+      color: #000;
+      outline: none;
+    }
+    .trip-table tbody td input:focus {
+      background: #eef5fb;
+    }
+    .trip-table tbody td input::placeholder {
+      color: #bbb;
+      font-size: .72rem;
+    }
+    .trip-table tbody td input.miles-input {
+      text-align: right;
+      padding-right: 4px;
+      flex: 1;
+      width: 0; /* allows flex basis to work */
+    }
+    .trip-table tbody td .miles-cell {
+      display: flex;
+      align-items: center;
+    }
+    .trip-table tbody td select.miles-type {
+      border: 1px solid rgba(0,0,0,.15);
+      background: rgba(255,255,255,.55);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: .8rem;
+      font-weight: 600;
+      color: #444;
+      outline: none;
+      cursor: pointer;
+      padding: 2px 2px;
+      -webkit-appearance: auto;
+      appearance: auto;
+      min-width: 38px;
+      backdrop-filter: blur(2px);
+    }
+    .trip-table tbody td select.miles-type:focus {
+      border-color: rgba(0,0,0,.3);
+      background: rgba(255,255,255,.75);
+    }
+    .trip-table tbody tr:hover { background: #f5f8fc; }
+    .trip-table tbody tr.active-row { background: #e8f0f8; }
+
+    /* date inputs in table - compact text */
+    .trip-table tbody td input.date-input {
+      font-size: .78rem;
+      padding: 5px 3px;
+      text-align: center;
+      letter-spacing: .3px;
+      cursor: pointer;
+    }
+
+    /* ── Calendar Popup ────────────────────────────────── */
+    .cal-popup {
+      position: absolute;
+      z-index: 200;
+      background: #fff;
+      border: 1.5px solid #333;
+      border-radius: 6px;
+      box-shadow: 0 6px 24px rgba(0,0,0,.18);
+      padding: 8px;
+      width: 220px;
+      display: none;
+      user-select: none;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .cal-popup.visible { display: block; }
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .cal-header .cal-title {
+      font-size: .78rem;
+      font-weight: 800;
+      color: #0b3d5e;
+    }
+    .cal-header button {
+      background: none;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-size: .7rem;
+      font-weight: 900;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s;
+    }
+    .cal-header button:hover { background: #e8f0f8; }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+    }
+    .cal-grid .cal-dow {
+      font-size: .55rem;
+      font-weight: 700;
+      text-align: center;
+      color: #888;
+      padding: 2px 0;
+    }
+    .cal-grid .cal-day {
+      text-align: center;
+      font-size: .72rem;
+      padding: 4px 0;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background .1s;
+    }
+    .cal-grid .cal-day:hover { background: #e0ecf5; }
+    .cal-grid .cal-day.today { font-weight: 900; color: #0b3d5e; box-shadow: inset 0 0 0 1.5px #0b3d5e; }
+    .cal-grid .cal-day.selected { background: #0b3d5e; color: #fff; }
+    .cal-grid .cal-day.other-month { color: #ccc; }
+    .cal-grid .cal-day.empty { cursor: default; }
+
+    /* ── Autocomplete ──────────────────────────────────── */
+    .ac-wrap { position: relative; }
+    .ac-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid #999;
+      max-height: 160px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+    }
+    .ac-list.visible { display: block; }
+    .ac-item {
+      padding: 6px 8px;
+      font-size: .78rem;
+      cursor: pointer;
+    }
+    .ac-item:hover, .ac-item.hl { background: #e0ecf5; }
+    .ac-item .ct { font-weight: 700; }
+    .ac-item .st { color: #555; }
+    .ac-item .zp { float: right; color: #888; font-size: .72rem; }
+
+    /* ── Expenses ──────────────────────────────────────── */
+    .expenses-label {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #000;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .expenses-wrap {
+      display: flex;
+      border: 1.5px solid #000;
+      margin-bottom: 14px;
+    }
+    .exp-half {
+      flex: 1;
+    }
+    .exp-half:first-child {
+      border-right: 1.5px solid #000;
+    }
+    .exp-half table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .exp-half th {
+      border: 1px solid #000;
+      font-size: .54rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      padding: 5px 4px;
+      text-align: center;
+      color: #000;
+      background: #fff;
+    }
+    .exp-half th:first-child { text-align: left; padding-left: 6px; }
+    .exp-half td {
+      border: 1px solid #000;
+      padding: 0;
+      vertical-align: middle;
+    }
+    .exp-half td.exp-name {
+      font-size: .74rem;
+      font-weight: 600;
+      padding: 4px 6px;
+      white-space: nowrap;
+      text-transform: uppercase;
+      color: #000;
+    }
+    .exp-half td input[type="number"] {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: .8rem;
+      padding: 4px 4px;
+      text-align: right;
+      color: #000;
+      outline: none;
+    }
+    .exp-half td input[type="number"]:focus { background: #eef5fb; }
+    .exp-half td input[type="number"]::placeholder { color: #bbb; }
+    .exp-half td.cb-cell {
+      text-align: center;
+      padding: 3px;
+    }
+    .exp-half td.cb-cell input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+      accent-color: #0b3d5e;
+    }
+    .exp-half td.total-label {
+      font-size: .82rem;
+      font-weight: 900;
+      padding: 5px 6px;
+      text-transform: uppercase;
+    }
+    .exp-half td.total-val {
+      font-size: .85rem;
+      font-weight: 900;
+      padding: 5px 6px;
+      text-align: left;
+    }
+
+    /* ── Bottom Toolbar (hidden on print) ──────────────── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .toolbar .spacer { flex: 1; }
+    .saved-ind {
+      font-size: .7rem;
+      color: #777;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .saved-ind .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #2ecc71;
+    }
+    .saved-ind.unsaved .dot { background: #e67e22; }
+    .btn {
+      padding: 7px 18px;
+      border: 1px solid #999;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: .78rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: #fff;
+      color: #333;
+    }
+    .btn:hover { background: #f0f0f0; }
+    .btn-primary { background: #0b3d5e; color: #fff; border-color: #0b3d5e; }
+    .btn-primary:hover { background: #0d4a6f; }
+
+    /* ── Toast ─────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #333; color: #fff;
+      padding: 10px 20px; border-radius: 6px;
+      font-size: .8rem; font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0,0,0,.2);
+      transform: translateY(60px); opacity: 0;
+      transition: all .25s ease; z-index: 999;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ── Confirm Modal ─────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal {
+      background: #fff; padding: 24px; border-radius: 8px;
+      width: 90%; max-width: 320px; text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .modal h3 { margin-bottom: 12px; font-weight: 900; color: #092033; font-size: 1.2rem; }
+    .modal p { font-size: .85rem; color: #555; margin-bottom: 24px; line-height: 1.4; }
+    .modal-btns { display: flex; gap: 12px; justify-content: center; }
+
+    /* ── Print styles ──────────────────────────────────── */
+    @media print {
+      .page { box-shadow: none; padding: 20px; max-width: none; }
+      .toolbar { display: none; }
+      .toast { display: none; }
+      .modal-overlay { display: none !important; }
+      .ac-list { display: none !important; }
+      .trip-table tbody td input:focus,
+      .driver-bar .df input:focus,
+      .exp-half td input:focus { background: transparent; }
+    }
+
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ═══ HEADER ═══ -->
+  <div class="header">
+    <div class="logo-block">
+      <img class="logo-img" src="logo.jpeg" alt="Moon Express Inc.">
+    </div>
+    <div class="contact">
+      <div class="phone">980-335-2969</div>
+      <a href="mailto:Accounting@mxtrucking.com">Accounting@mxtrucking.com</a><br>
+      356 Crompton St,<br>
+      Charlotte NC 28273
+    </div>
+  </div>
+
+  <!-- ═══ DRIVER INFO BAR ═══ -->
+  <div class="driver-bar">
+    <div class="df">
+      <input type="text" id="driverName" class="w-name" autocomplete="name">
+      <label>Driver Name</label>
+    </div>
+    <div class="df">
+      <input type="text" id="tractorNum" class="w-num">
+      <label>Tractor#</label>
+    </div>
+    <div class="df">
+      <input type="text" id="trailerNum" class="w-num">
+      <label>Trailer#</label>
+    </div>
+    <div class="df-shared">
+      <div class="inputs-row">
+        <input type="text" id="startDay" class="w-date date-input" maxlength="8" inputmode="numeric" autocomplete="off" placeholder=" ">
+        <input type="text" id="endDay" class="w-date date-input" maxlength="8" inputmode="numeric" autocomplete="off" placeholder=" ">
+      </div>
+      <div class="labels-row">
+        <label>Start Day</label>
+        <label>End Day</label>
+      </div>
+    </div>
+    <div class="df">
+      <input type="text" id="totalMiles" class="w-miles" readonly tabindex="-1" style="font-weight:900; cursor:default;">
+      <label>Total Miles</label>
+    </div>
+  </div>
+
+  <!-- ═══ TRIP TABLE ═══ -->
+  <table class="trip-table" id="tripTable">
+    <colgroup>
+      <col class="col-num">
+      <col class="col-date">
+      <col class="col-city">
+      <col class="col-zip">
+      <col class="col-date">
+      <col class="col-city">
+      <col class="col-zip">
+      <col class="col-miles">
+    </colgroup>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Date</th>
+        <th>Pickup (City/State)</th>
+        <th>Zip Code</th>
+        <th>Date</th>
+        <th>Delivery (City/State)</th>
+        <th>Zip Code</th>
+        <th>Empty/Loaded Miles</th>
+      </tr>
+    </thead>
+    <tbody id="tripBody"></tbody>
+  </table>
+
+  <!-- ═══ EXPENSES ═══ -->
+  <div class="expenses-label">Expenses</div>
+  <div class="expenses-wrap">
+    <!-- Left half -->
+    <div class="exp-half">
+      <table>
+        <thead>
+          <tr>
+            <th>Type of Expenses</th>
+            <th style="width:70px;">Amount</th>
+            <th style="width:52px;">Paid by<br>Company</th>
+            <th style="width:52px;">Paid by<br>Driver</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-exp="lumper"><td class="exp-name">Lumper</td><td><input type="number" step="0.01" min="0" placeholder="" class="exp-amt"></td><td class="cb-cell"><input type="checkbox" class="cb-co"></td><td class="cb-cell"><input type="checkbox" class="cb-dr"></td></tr>
+          <tr data-exp="scale_tickets"><td class="exp-name">Scale Tickets</td><td><input type="number" step="0.01" min="0" class="exp-amt"></td><td class="cb-cell"><input type="checkbox" class="cb-co"></td><td class="cb-cell"><input type="checkbox" class="cb-dr"></td></tr>
+          <tr data-exp="tolls"><td class="exp-name">Tolls</td><td><input type="number" step="0.01" min="0" class="exp-amt"></td><td class="cb-cell"><input type="checkbox" class="cb-co"></td><td class="cb-cell"><input type="checkbox" class="cb-dr"></td></tr>
+          <tr data-exp="parking"><td class="exp-name">Parking</td><td><input type="number" step="0.01" min="0" class="exp-amt"></td><td class="cb-cell"><input type="checkbox" class="cb-co"></td><td class="cb-cell"><input type="checkbox" class="cb-dr"></td></tr>
+          <tr data-exp="cash_advance"><td class="exp-name">Cash Advance</td><td><input type="number" step="0.01" min="0" class="exp-amt"></td><td class="cb-cell"><input type="checkbox" class="cb-co"></td><td class="cb-cell"><input type="checkbox" class="cb-dr"></td></tr>
+          <tr data-exp="cash_expense"><td class="exp-name">Cash Expense</td><td><input type="number" step="0.01" min="0" class="exp-amt"></td><td class="cb-cell"><input type="checkbox" class="cb-co"></td><td class="cb-cell"><input type="checkbox" class="cb-dr"></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Right half -->
+    <div class="exp-half">
+      <table>
+        <thead>
+          <tr>
+            <th>Type of Expenses</th>
+            <th style="width:70px;">Amount</th>
+            <th style="width:52px;">Paid by<br>Company</th>
+            <th style="width:52px;">Paid by<br>Driver</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-exp="truck_wash"><td class="exp-name">Truck Wash</td><td><input type="number" step="0.01" min="0" class="exp-amt"></td><td class="cb-cell"><input type="checkbox" class="cb-co"></td><td class="cb-cell"><input type="checkbox" class="cb-dr"></td></tr>
+          <tr data-exp="trailer_wash"><td class="exp-name">Trailer Wash</td><td><input type="number" step="0.01" min="0" class="exp-amt"></td><td class="cb-cell"><input type="checkbox" class="cb-co"></td><td class="cb-cell"><input type="checkbox" class="cb-dr"></td></tr>
+          <tr data-exp="oil_change"><td class="exp-name">Oil Change</td><td><input type="number" step="0.01" min="0" class="exp-amt"></td><td class="cb-cell"><input type="checkbox" class="cb-co"></td><td class="cb-cell"><input type="checkbox" class="cb-dr"></td></tr>
+          <tr data-exp="accessorial"><td class="exp-name">Accessorial</td><td><input type="number" step="0.01" min="0" class="exp-amt"></td><td class="cb-cell"><input type="checkbox" class="cb-co"></td><td class="cb-cell"><input type="checkbox" class="cb-dr"></td></tr>
+          <tr data-exp="other"><td class="exp-name">Other</td><td><input type="number" step="0.01" min="0" class="exp-amt"></td><td class="cb-cell"><input type="checkbox" class="cb-co"></td><td class="cb-cell"><input type="checkbox" class="cb-dr"></td></tr>
+          <tr><td class="total-label">TOTAL</td><td class="total-val" id="expTotal" colspan="1">$</td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ TOOLBAR ═══ -->
+  <div class="toolbar">
+    <span class="saved-ind" id="savedInd"><span class="dot"></span><span class="stxt">All changes saved</span></span>
+    <span class="spacer"></span>
+    <button class="btn" onclick="clearForm()">Clear Form</button>
+    <button class="btn" onclick="window.print()">🖨️ Print</button>
+    <button class="btn btn-primary" id="btnSend" onclick="sendForm()">📩 Send Trip Report</button>
+  </div>
+</div>
+
+<!-- Calendar popup (single shared instance) -->
+<div class="cal-popup" id="calPopup">
+  <div class="cal-header">
+    <button id="calPrev">◀</button>
+    <span class="cal-title" id="calTitle"></span>
+    <button id="calNext">▶</button>
+  </div>
+  <div class="cal-grid" id="calGrid"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Confirm Clear Modal -->
+<div class="modal-overlay" id="clearModal">
+  <div class="modal">
+    <h3>Clear Form</h3>
+    <p>Are you sure you want to clear all fields? This cannot be undone.</p>
+    <div class="modal-btns">
+      <button class="btn" onclick="document.getElementById('clearModal').classList.remove('active')">Cancel</button>
+      <button class="btn btn-primary" style="background:#c0392b; border-color:#c0392b;" onclick="doClearForm()">Clear Data</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ ZIP → CITY DATABASE (comprehensive US zip prefixes) ═════════
+const CITIES = [
+  {city:"New York",state:"NY",zip:"10001"},{city:"New York",state:"NY",zip:"10002"},{city:"New York",state:"NY",zip:"10003"},
+  {city:"New York",state:"NY",zip:"10010"},{city:"New York",state:"NY",zip:"10016"},{city:"New York",state:"NY",zip:"10019"},
+  {city:"Brooklyn",state:"NY",zip:"11201"},{city:"Bronx",state:"NY",zip:"10451"},
+  {city:"Buffalo",state:"NY",zip:"14201"},{city:"Syracuse",state:"NY",zip:"13201"},{city:"Albany",state:"NY",zip:"12201"},
+  {city:"Rochester",state:"NY",zip:"14602"},{city:"Yonkers",state:"NY",zip:"10701"},
+  {city:"Newark",state:"NJ",zip:"07101"},{city:"Jersey City",state:"NJ",zip:"07301"},
+  {city:"Edison",state:"NJ",zip:"08817"},{city:"Trenton",state:"NJ",zip:"08601"},
+  {city:"Elizabeth",state:"NJ",zip:"07201"},{city:"Paterson",state:"NJ",zip:"07501"},
+  {city:"Philadelphia",state:"PA",zip:"19101"},{city:"Philadelphia",state:"PA",zip:"19102"},
+  {city:"Pittsburgh",state:"PA",zip:"15201"},{city:"Harrisburg",state:"PA",zip:"17101"},
+  {city:"Allentown",state:"PA",zip:"18101"},{city:"Scranton",state:"PA",zip:"18501"},
+  {city:"Wilmington",state:"DE",zip:"19801"},{city:"Dover",state:"DE",zip:"19901"},
+  {city:"Baltimore",state:"MD",zip:"21201"},{city:"Baltimore",state:"MD",zip:"21202"},
+  {city:"Hagerstown",state:"MD",zip:"21740"},{city:"Frederick",state:"MD",zip:"21701"},
+  {city:"Washington",state:"DC",zip:"20001"},{city:"Washington",state:"DC",zip:"20002"},
+  {city:"Arlington",state:"VA",zip:"22201"},{city:"Richmond",state:"VA",zip:"23218"},
+  {city:"Norfolk",state:"VA",zip:"23501"},{city:"Virginia Beach",state:"VA",zip:"23451"},
+  {city:"Roanoke",state:"VA",zip:"24011"},{city:"Lynchburg",state:"VA",zip:"24501"},
+  {city:"Charlotte",state:"NC",zip:"28202"},{city:"Charlotte",state:"NC",zip:"28273"},
+  {city:"Raleigh",state:"NC",zip:"27601"},{city:"Greensboro",state:"NC",zip:"27401"},
+  {city:"Durham",state:"NC",zip:"27701"},{city:"Winston-Salem",state:"NC",zip:"27101"},
+  {city:"Fayetteville",state:"NC",zip:"28301"},{city:"Wilmington",state:"NC",zip:"28401"},
+  {city:"Asheville",state:"NC",zip:"28801"},
+  {city:"Columbia",state:"SC",zip:"29201"},{city:"Charleston",state:"SC",zip:"29401"},
+  {city:"Greenville",state:"SC",zip:"29601"},{city:"Spartanburg",state:"SC",zip:"29301"},
+  {city:"Atlanta",state:"GA",zip:"30301"},{city:"Atlanta",state:"GA",zip:"30303"},
+  {city:"Savannah",state:"GA",zip:"31401"},{city:"Augusta",state:"GA",zip:"30901"},
+  {city:"Macon",state:"GA",zip:"31201"},{city:"Albany",state:"GA",zip:"31701"},
+  {city:"Jacksonville",state:"FL",zip:"32099"},{city:"Jacksonville",state:"FL",zip:"32201"},
+  {city:"Miami",state:"FL",zip:"33101"},{city:"Miami",state:"FL",zip:"33130"},
+  {city:"Tampa",state:"FL",zip:"33601"},{city:"Orlando",state:"FL",zip:"32801"},
+  {city:"Ft. Lauderdale",state:"FL",zip:"33301"},{city:"West Palm Beach",state:"FL",zip:"33401"},
+  {city:"Tallahassee",state:"FL",zip:"32301"},{city:"Pensacola",state:"FL",zip:"32501"},
+  {city:"Lakeland",state:"FL",zip:"33801"},{city:"St. Petersburg",state:"FL",zip:"33701"},
+  {city:"Birmingham",state:"AL",zip:"35201"},{city:"Montgomery",state:"AL",zip:"36101"},
+  {city:"Mobile",state:"AL",zip:"36601"},{city:"Huntsville",state:"AL",zip:"35801"},
+  {city:"Nashville",state:"TN",zip:"37201"},{city:"Memphis",state:"TN",zip:"38101"},
+  {city:"Knoxville",state:"TN",zip:"37901"},{city:"Chattanooga",state:"TN",zip:"37401"},
+  {city:"Jackson",state:"TN",zip:"38301"},
+  {city:"Louisville",state:"KY",zip:"40201"},{city:"Lexington",state:"KY",zip:"40502"},
+  {city:"Bowling Green",state:"KY",zip:"42101"},
+  {city:"Jackson",state:"MS",zip:"39201"},{city:"Gulfport",state:"MS",zip:"39501"},
+  {city:"New Orleans",state:"LA",zip:"70112"},{city:"Baton Rouge",state:"LA",zip:"70801"},
+  {city:"Shreveport",state:"LA",zip:"71101"},{city:"Lafayette",state:"LA",zip:"70501"},
+  {city:"Little Rock",state:"AR",zip:"72201"},{city:"Ft. Smith",state:"AR",zip:"72901"},
+  {city:"Dallas",state:"TX",zip:"75201"},{city:"Dallas",state:"TX",zip:"75202"},
+  {city:"Houston",state:"TX",zip:"77001"},{city:"Houston",state:"TX",zip:"77002"},
+  {city:"San Antonio",state:"TX",zip:"78201"},{city:"Austin",state:"TX",zip:"78701"},
+  {city:"Fort Worth",state:"TX",zip:"76101"},{city:"El Paso",state:"TX",zip:"79901"},
+  {city:"Laredo",state:"TX",zip:"78040"},{city:"Corpus Christi",state:"TX",zip:"78401"},
+  {city:"Lubbock",state:"TX",zip:"79401"},{city:"Amarillo",state:"TX",zip:"79101"},
+  {city:"Midland",state:"TX",zip:"79701"},{city:"McAllen",state:"TX",zip:"78501"},
+  {city:"Brownsville",state:"TX",zip:"78520"},{city:"Waco",state:"TX",zip:"76701"},
+  {city:"Tyler",state:"TX",zip:"75701"},{city:"Beaumont",state:"TX",zip:"77701"},
+  {city:"Abilene",state:"TX",zip:"79601"},{city:"Odessa",state:"TX",zip:"79761"},
+  {city:"Chicago",state:"IL",zip:"60601"},{city:"Chicago",state:"IL",zip:"60602"},
+  {city:"Chicago",state:"IL",zip:"60607"},{city:"Rockford",state:"IL",zip:"61101"},
+  {city:"Springfield",state:"IL",zip:"62701"},{city:"Peoria",state:"IL",zip:"61601"},
+  {city:"Indianapolis",state:"IN",zip:"46201"},{city:"Ft. Wayne",state:"IN",zip:"46801"},
+  {city:"Evansville",state:"IN",zip:"47701"},{city:"South Bend",state:"IN",zip:"46601"},
+  {city:"Columbus",state:"OH",zip:"43085"},{city:"Columbus",state:"OH",zip:"43201"},
+  {city:"Cleveland",state:"OH",zip:"44101"},{city:"Cincinnati",state:"OH",zip:"45201"},
+  {city:"Dayton",state:"OH",zip:"45401"},{city:"Toledo",state:"OH",zip:"43601"},
+  {city:"Akron",state:"OH",zip:"44301"},{city:"Youngstown",state:"OH",zip:"44501"},
+  {city:"Detroit",state:"MI",zip:"48201"},{city:"Grand Rapids",state:"MI",zip:"49501"},
+  {city:"Flint",state:"MI",zip:"48501"},{city:"Lansing",state:"MI",zip:"48901"},
+  {city:"Milwaukee",state:"WI",zip:"53201"},{city:"Madison",state:"WI",zip:"53701"},
+  {city:"Green Bay",state:"WI",zip:"54301"},
+  {city:"Minneapolis",state:"MN",zip:"55401"},{city:"St. Paul",state:"MN",zip:"55101"},
+  {city:"Duluth",state:"MN",zip:"55801"},
+  {city:"Des Moines",state:"IA",zip:"50301"},{city:"Cedar Rapids",state:"IA",zip:"52401"},
+  {city:"Davenport",state:"IA",zip:"52801"},
+  {city:"Kansas City",state:"MO",zip:"64101"},{city:"St. Louis",state:"MO",zip:"63101"},
+  {city:"Springfield",state:"MO",zip:"65801"},{city:"Columbia",state:"MO",zip:"65201"},
+  {city:"Omaha",state:"NE",zip:"68101"},{city:"Lincoln",state:"NE",zip:"68501"},
+  {city:"Wichita",state:"KS",zip:"67201"},{city:"Kansas City",state:"KS",zip:"66101"},
+  {city:"Topeka",state:"KS",zip:"66601"},
+  {city:"Oklahoma City",state:"OK",zip:"73101"},{city:"Tulsa",state:"OK",zip:"74101"},
+  {city:"Fargo",state:"ND",zip:"58102"},{city:"Sioux Falls",state:"SD",zip:"57101"},
+  {city:"Billings",state:"MT",zip:"59101"},
+  {city:"Denver",state:"CO",zip:"80201"},{city:"Denver",state:"CO",zip:"80202"},
+  {city:"Colorado Springs",state:"CO",zip:"80901"},{city:"Aurora",state:"CO",zip:"80010"},
+  {city:"Pueblo",state:"CO",zip:"81001"},
+  {city:"Albuquerque",state:"NM",zip:"87101"},{city:"Las Cruces",state:"NM",zip:"88001"},
+  {city:"Phoenix",state:"AZ",zip:"85001"},{city:"Tucson",state:"AZ",zip:"85701"},
+  {city:"Mesa",state:"AZ",zip:"85201"},{city:"Flagstaff",state:"AZ",zip:"86001"},
+  {city:"Salt Lake City",state:"UT",zip:"84101"},{city:"Provo",state:"UT",zip:"84601"},
+  {city:"Las Vegas",state:"NV",zip:"89101"},{city:"Reno",state:"NV",zip:"89501"},
+  {city:"Los Angeles",state:"CA",zip:"90001"},{city:"Los Angeles",state:"CA",zip:"90012"},
+  {city:"San Diego",state:"CA",zip:"92101"},{city:"San Francisco",state:"CA",zip:"94101"},
+  {city:"San Jose",state:"CA",zip:"95101"},{city:"Sacramento",state:"CA",zip:"95814"},
+  {city:"Fresno",state:"CA",zip:"93701"},{city:"Bakersfield",state:"CA",zip:"93301"},
+  {city:"Stockton",state:"CA",zip:"95201"},{city:"Riverside",state:"CA",zip:"92501"},
+  {city:"Ontario",state:"CA",zip:"91761"},{city:"San Bernardino",state:"CA",zip:"92401"},
+  {city:"Long Beach",state:"CA",zip:"90801"},{city:"Oakland",state:"CA",zip:"94601"},
+  {city:"Portland",state:"OR",zip:"97201"},{city:"Eugene",state:"OR",zip:"97401"},
+  {city:"Salem",state:"OR",zip:"97301"},
+  {city:"Seattle",state:"WA",zip:"98101"},{city:"Spokane",state:"WA",zip:"99201"},
+  {city:"Tacoma",state:"WA",zip:"98401"},
+  {city:"Boise",state:"ID",zip:"83701"},{city:"Idaho Falls",state:"ID",zip:"83401"},
+  {city:"Boston",state:"MA",zip:"02101"},{city:"Worcester",state:"MA",zip:"01601"},
+  {city:"Springfield",state:"MA",zip:"01101"},
+  {city:"Providence",state:"RI",zip:"02901"},
+  {city:"Hartford",state:"CT",zip:"06101"},{city:"New Haven",state:"CT",zip:"06510"},
+  {city:"Bridgeport",state:"CT",zip:"06601"},
+  {city:"Portland",state:"ME",zip:"04101"},{city:"Bangor",state:"ME",zip:"04401"},
+  {city:"Manchester",state:"NH",zip:"03101"},{city:"Burlington",state:"VT",zip:"05401"},
+  {city:"Charleston",state:"WV",zip:"25301"},{city:"Huntington",state:"WV",zip:"25701"},
+];
+
+// Build zip → city lookup (first match wins)
+const ZIP_MAP = {};
+CITIES.forEach(c => { if (!ZIP_MAP[c.zip]) ZIP_MAP[c.zip] = c; });
+
+// ═══ BUILD TRIP ROWS ═════════════════════════════════════════════
+const tripBody = document.getElementById('tripBody');
+const ROW_COUNT = 14;
+
+for (let i = 1; i <= ROW_COUNT; i++) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="row-num">${i}.</td>
+    <td><input type="text" class="p-date date-input" maxlength="8" inputmode="numeric" autocomplete="off"></td>
+    <td class="ac-wrap"><input type="text" class="p-city" placeholder="" autocomplete="off"><div class="ac-list"></div></td>
+    <td><input type="text" class="p-zip" maxlength="5" inputmode="numeric"></td>
+    <td><input type="text" class="d-date date-input" maxlength="8" inputmode="numeric" autocomplete="off"></td>
+    <td class="ac-wrap"><input type="text" class="d-city" placeholder="" autocomplete="off"><div class="ac-list"></div></td>
+    <td><input type="text" class="d-zip" maxlength="5" inputmode="numeric"></td>
+    <td>
+      <div class="miles-cell">
+        <input type="number" class="miles-input" min="0" step="1">
+        <select class="miles-type">
+          <option value=""></option>
+          <option value="L">L</option>
+          <option value="E">E</option>
+        </select>
+      </div>
+    </td>`;
+  tripBody.appendChild(tr);
+}
+
+// ═══ AUTOCOMPLETE (city → zip) ═══════════════════════════════════
+document.querySelectorAll('.ac-wrap').forEach(wrap => {
+  const inp = wrap.querySelector('input');
+  const list = wrap.querySelector('.ac-list');
+  let hlIdx = -1;
+
+  inp.addEventListener('input', () => {
+    const v = inp.value.trim().toLowerCase();
+    list.innerHTML = ''; hlIdx = -1;
+    if (v.length < 2) { list.classList.remove('visible'); return; }
+
+    const seen = new Set();
+    const matches = CITIES.filter(c => {
+      const key = c.city + c.state;
+      if (seen.has(key)) return false;
+      const hit = c.city.toLowerCase().startsWith(v) ||
+                  (c.city + ', ' + c.state).toLowerCase().startsWith(v);
+      if (hit) seen.add(key);
+      return hit;
+    }).slice(0, 8);
+
+    if (!matches.length) { list.classList.remove('visible'); return; }
+    matches.forEach(m => {
+      const d = document.createElement('div');
+      d.className = 'ac-item';
+      d.innerHTML = `<span class="ct">${m.city}</span><span class="st">, ${m.state}</span><span class="zp">${m.zip}</span>`;
+      d.addEventListener('mousedown', e => { e.preventDefault(); pickCity(inp, wrap, m); });
+      list.appendChild(d);
+    });
+    list.classList.add('visible');
+  });
+
+  inp.addEventListener('keydown', e => {
+    const items = list.querySelectorAll('.ac-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); hlIdx = Math.min(hlIdx+1, items.length-1); items.forEach((it,i) => it.classList.toggle('hl', i===hlIdx)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); hlIdx = Math.max(hlIdx-1, 0); items.forEach((it,i) => it.classList.toggle('hl', i===hlIdx)); }
+    else if (e.key === 'Enter' && hlIdx >= 0) {
+      e.preventDefault();
+      const seen2 = new Set();
+      const m2 = CITIES.filter(c => { const k=c.city+c.state; if(seen2.has(k)) return false; const h=c.city.toLowerCase().startsWith(inp.value.trim().toLowerCase())||(c.city+', '+c.state).toLowerCase().startsWith(inp.value.trim().toLowerCase()); if(h)seen2.add(k); return h; }).slice(0,8)[hlIdx];
+      if (m2) pickCity(inp, wrap, m2);
+    }
+    else if (e.key === 'Escape') list.classList.remove('visible');
+  });
+
+  inp.addEventListener('blur', () => { setTimeout(() => list.classList.remove('visible'), 120); });
+});
+
+function pickCity(inp, wrap, m) {
+  inp.value = m.city + ', ' + m.state;
+  wrap.querySelector('.ac-list').classList.remove('visible');
+  const td = wrap.closest('td');
+  const zipTd = td.nextElementSibling;
+  if (zipTd) {
+    const zipInp = zipTd.querySelector('input');
+    if (zipInp && !zipInp.value) zipInp.value = m.zip;
+  }
+  const row = inp.closest('tr');
+  if (row && inp.classList.contains('d-city')) cascadeToNextRow(row);
+  markDirty();
+}
+
+// ═══ CASCADE: delivery → next row's pickup ═══════════════════════
+function cascadeToNextRow(row) {
+  const nextRow = row.nextElementSibling;
+  if (!nextRow) return;
+  const dCity = row.querySelector('.d-city');
+  const dZip  = row.querySelector('.d-zip');
+  const nPCity = nextRow.querySelector('.p-city');
+  const nPZip  = nextRow.querySelector('.p-zip');
+  if (dCity && nPCity && dCity.value && !nPCity.value) {
+    nPCity.value = dCity.value;
+  }
+  if (dZip && nPZip && dZip.value && !nPZip.value) {
+    nPZip.value = dZip.value;
+  }
+  markDirty();
+}
+
+// ═══ ZIP → CITY AUTO-FILL (live API for ANY zip) ═════════════════
+const zipCache = {}; // cache API results
+
+async function lookupZip(zip) {
+  if (ZIP_MAP[zip]) return ZIP_MAP[zip];
+  if (zipCache[zip]) return zipCache[zip];
+  if (zipCache[zip] === null) return null;
+  try {
+    const res = await fetch('https://api.zippopotam.us/us/' + zip);
+    if (!res.ok) { zipCache[zip] = null; return null; }
+    const data = await res.json();
+    const place = data.places?.[0];
+    if (place) {
+      const result = { city: place['place name'], state: place['state abbreviation'], zip: zip };
+      zipCache[zip] = result;
+      return result;
+    }
+  } catch(e) {}
+  zipCache[zip] = null;
+  return null;
+}
+
+document.querySelectorAll('.p-zip, .d-zip').forEach(inp => {
+  inp.addEventListener('input', async () => {
+    inp.value = inp.value.replace(/\D/g, '').slice(0, 5);
+    if (inp.value.length === 5) {
+      const match = await lookupZip(inp.value);
+      if (match) {
+        const td = inp.closest('td');
+        const cityTd = td.previousElementSibling;
+        if (cityTd) {
+          const cityInp = cityTd.querySelector('input');
+          if (cityInp && !cityInp.value) {
+            cityInp.value = match.city + ', ' + match.state;
+            showToast('Auto-filled: ' + match.city + ', ' + match.state);
+          }
+        }
+      }
+      const row = inp.closest('tr');
+      if (row && inp.classList.contains('d-zip')) cascadeToNextRow(row);
+    }
+    markDirty();
+  });
+});
+
+// ═══ SMART DATE FORMATTING ═══════════════════════════════════════
+// Auto-insert slashes as user types digits: "3" → "3/", "320" → "3/20/", "32026" → "3/20/26"
+document.querySelectorAll('.date-input').forEach(inp => {
+  inp.addEventListener('input', e => {
+    let raw = inp.value.replace(/[^\d]/g, ''); // digits only
+    let formatted = '';
+    if (raw.length >= 1) {
+      // Month: 1 or 2 digits
+      let mEnd = (raw[0] === '0' || raw[0] === '1') ? 2 : 1;
+      if (raw.length === 1 && parseInt(raw[0]) > 1) mEnd = 1;
+      const month = raw.slice(0, mEnd);
+      formatted = month;
+      const rest = raw.slice(mEnd);
+      if (rest.length > 0) {
+        // Day: 1 or 2 digits
+        let dEnd = 2;
+        if (rest.length === 1 && parseInt(rest[0]) > 3) dEnd = 1;
+        const day = rest.slice(0, dEnd);
+        formatted += '/' + day;
+        const yearPart = rest.slice(dEnd);
+        if (yearPart.length > 0) {
+          formatted += '/' + yearPart.slice(0, 2);
+        }
+      }
+    }
+    inp.value = formatted;
+    markDirty();
+  });
+
+  // On blur — no carry-forward, just mark dirty
+  inp.addEventListener('blur', () => {
+    markDirty();
+  });
+});
+
+// ═══ CALENDAR POPUP ══════════════════════════════════════════════
+const calPopup = document.getElementById('calPopup');
+const calTitle = document.getElementById('calTitle');
+const calGrid  = document.getElementById('calGrid');
+let calYear, calMonth, calTarget = null;
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DOWS  = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+function openCalendar(inp) {
+  calTarget = inp;
+  // Parse existing value to set initial month
+  const today = new Date();
+  let initDate = today;
+  if (inp.value) {
+    const parts = inp.value.split('/');
+    if (parts.length === 3) {
+      let y = parseInt(parts[2]);
+      if (y < 100) y += 2000;
+      initDate = new Date(y, parseInt(parts[0])-1, parseInt(parts[1]));
+      if (isNaN(initDate.getTime())) initDate = today;
+    }
+  }
+  calYear = initDate.getFullYear();
+  calMonth = initDate.getMonth();
+  renderCalendar();
+
+  // Position next to the input, keeping popup fully within the viewport
+  const rect = inp.getBoundingClientRect();
+  const scrollX = window.scrollX;
+  const scrollY = window.scrollY;
+  const popW = 228;   // popup width + border
+  const popH = 254;   // approximate popup height
+
+  // Always to the right of the input — never clamp horizontally so
+  // we never slide back over the date box itself
+  let left = rect.right + scrollX + 4;
+  let top  = rect.top  + scrollY;
+
+  // Vertical: move up if it would overflow the bottom edge
+  if (top + popH > scrollY + window.innerHeight) {
+    top = scrollY + window.innerHeight - popH - 4;
+  }
+  // Clamp: never go above the top edge
+  top = Math.max(scrollY + 4, top);
+
+  calPopup.style.left = left + 'px';
+  calPopup.style.top  = top + 'px';
+
+  calPopup.classList.add('visible');
+}
+
+function renderCalendar() {
+  calTitle.textContent = MONTHS[calMonth] + ' ' + calYear;
+  calGrid.innerHTML = '';
+
+  // Day-of-week headers
+  DOWS.forEach(d => {
+    const span = document.createElement('span');
+    span.className = 'cal-dow';
+    span.textContent = d;
+    calGrid.appendChild(span);
+  });
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' + (today.getMonth()+1) + '-' + today.getDate();
+
+  // Parse selected date from input
+  let selStr = '';
+  if (calTarget && calTarget.value) {
+    const p = calTarget.value.split('/');
+    if (p.length === 3) {
+      let y = parseInt(p[2]); if (y < 100) y += 2000;
+      selStr = y + '-' + parseInt(p[0]) + '-' + parseInt(p[1]);
+    }
+  }
+
+  // Empty cells before first day
+  for (let i = 0; i < firstDay; i++) {
+    const span = document.createElement('span');
+    span.className = 'cal-day empty';
+    calGrid.appendChild(span);
+  }
+
+  // Day cells
+  for (let d = 1; d <= daysInMonth; d++) {
+    const span = document.createElement('span');
+    span.className = 'cal-day';
+    span.textContent = d;
+    const cellStr = calYear + '-' + (calMonth+1) + '-' + d;
+    if (cellStr === todayStr) span.classList.add('today');
+    if (cellStr === selStr) span.classList.add('selected');
+    span.addEventListener('mousedown', e => {
+      e.preventDefault();
+      pickDate(d);
+    });
+    calGrid.appendChild(span);
+  }
+}
+
+function pickDate(day) {
+  if (!calTarget) return;
+  const m = calMonth + 1;
+  const y = calYear % 100;
+  calTarget.value = m + '/' + day + '/' + (y < 10 ? '0'+y : y);
+  calPopup.classList.remove('visible');
+  markDirty();
+  calTarget = null;
+}
+
+document.getElementById('calPrev').addEventListener('mousedown', e => {
+  e.preventDefault();
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+});
+document.getElementById('calNext').addEventListener('mousedown', e => {
+  e.preventDefault();
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+});
+
+// Open on focus, close on outside click
+document.querySelectorAll('.date-input').forEach(inp => {
+  inp.addEventListener('focus', () => openCalendar(inp));
+});
+
+document.addEventListener('mousedown', e => {
+  if (!calPopup.contains(e.target) && !e.target.classList.contains('date-input')) {
+    calPopup.classList.remove('visible');
+    calTarget = null;
+  }
+});
+
+// ═══ MILES TOTAL ═════════════════════════════════════════════════
+function recalcMiles() {
+  let t = 0;
+  document.querySelectorAll('.miles-input').forEach(i => { const v = parseFloat(i.value); if (!isNaN(v)) t += v; });
+  document.getElementById('totalMiles').value = t > 0 ? t.toLocaleString() : '';
+}
+tripBody.addEventListener('input', e => { if (e.target.classList.contains('miles-input')) recalcMiles(); markDirty(); });
+
+// Cascade delivery city to next row on change (covers manual typing without autocomplete)
+document.querySelectorAll('.d-city').forEach(inp => {
+  inp.addEventListener('change', () => {
+    const row = inp.closest('tr');
+    if (row && inp.value) cascadeToNextRow(row);
+  });
+});
+
+// ═══ EXPENSE TOTAL ═══════════════════════════════════════════════
+function recalcExp() {
+  let t = 0;
+  document.querySelectorAll('.exp-amt').forEach(i => { const v = parseFloat(i.value); if (!isNaN(v)) t += v; });
+  document.getElementById('expTotal').textContent = '$' + t.toFixed(2);
+}
+document.querySelectorAll('.exp-amt').forEach(i => i.addEventListener('input', () => { recalcExp(); markDirty(); }));
+
+// ═══ MUTUALLY EXCLUSIVE CHECKBOXES ═══════════════════════════════
+document.querySelectorAll('[data-exp]').forEach(row => {
+  const co = row.querySelector('.cb-co'), dr = row.querySelector('.cb-dr');
+  if (co && dr) {
+    co.addEventListener('change', () => { if (co.checked) dr.checked = false; markDirty(); });
+    dr.addEventListener('change', () => { if (dr.checked) co.checked = false; markDirty(); });
+  }
+});
+
+// ═══ ACTIVE ROW HIGHLIGHT ════════════════════════════════════════
+tripBody.addEventListener('focusin', e => {
+  tripBody.querySelectorAll('tr').forEach(r => r.classList.remove('active-row'));
+  const row = e.target.closest('tr');
+  if (row) row.classList.add('active-row');
+});
+tripBody.addEventListener('focusout', () => {
+  setTimeout(() => { if (!tripBody.contains(document.activeElement)) tripBody.querySelectorAll('tr').forEach(r => r.classList.remove('active-row')); }, 50);
+});
+
+// ═══ ENTER → NEXT ROW SAME COLUMN ═══════════════════════════════
+tripBody.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    const td = e.target.closest('td');
+    const row = td.closest('tr');
+    const idx = Array.from(row.children).indexOf(td);
+    const next = row.nextElementSibling;
+    if (next) { const nInp = next.children[idx]?.querySelector('input'); if (nInp) nInp.focus(); }
+  }
+});
+
+// ═══ LOCAL STORAGE ═══════════════════════════════════════════════
+const SKEY = 'moonexpress_tripsheet';
+let saveTimer = null;
+
+function markDirty() {
+  const ind = document.getElementById('savedInd');
+  ind.classList.add('unsaved');
+  ind.querySelector('.stxt').textContent = 'Unsaved';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(doSave, 600);
+}
+
+function doSave() {
+  localStorage.setItem(SKEY, JSON.stringify(gather()));
+  const ind = document.getElementById('savedInd');
+  ind.classList.remove('unsaved');
+  ind.querySelector('.stxt').textContent = 'All changes saved';
+}
+
+function gather() {
+  const d = {
+    driverName: document.getElementById('driverName').value,
+    tractorNum: document.getElementById('tractorNum').value,
+    trailerNum: document.getElementById('trailerNum').value,
+    startDay: document.getElementById('startDay').value,
+    endDay: document.getElementById('endDay').value,
+    trips: [], expenses: {}
+  };
+  tripBody.querySelectorAll('tr').forEach(r => {
+    d.trips.push({
+      pd: r.querySelector('.p-date')?.value||'', pc: r.querySelector('.p-city')?.value||'',
+      pz: r.querySelector('.p-zip')?.value||'', dd: r.querySelector('.d-date')?.value||'',
+      dc: r.querySelector('.d-city')?.value||'', dz: r.querySelector('.d-zip')?.value||'',
+      mi: r.querySelector('.miles-input')?.value||'',
+      mt: r.querySelector('.miles-type')?.value||''
+    });
+  });
+  document.querySelectorAll('[data-exp]').forEach(r => {
+    d.expenses[r.dataset.exp] = {
+      a: r.querySelector('.exp-amt')?.value||'',
+      co: r.querySelector('.cb-co')?.checked||false,
+      dr: r.querySelector('.cb-dr')?.checked||false
+    };
+  });
+  return d;
+}
+
+function loadSaved() {
+  const raw = localStorage.getItem(SKEY);
+  if (!raw) return;
+  try {
+    const d = JSON.parse(raw);
+    document.getElementById('driverName').value = d.driverName||'';
+    document.getElementById('tractorNum').value = d.tractorNum||'';
+    document.getElementById('trailerNum').value = d.trailerNum||'';
+    document.getElementById('startDay').value = d.startDay||'';
+    document.getElementById('endDay').value = d.endDay||'';
+    const rows = tripBody.querySelectorAll('tr');
+    (d.trips||[]).forEach((t,i) => {
+      if (!rows[i]) return;
+      const r = rows[i];
+      if(t.pd) r.querySelector('.p-date').value=t.pd;
+      if(t.pc) r.querySelector('.p-city').value=t.pc;
+      if(t.pz) r.querySelector('.p-zip').value=t.pz;
+      if(t.dd) r.querySelector('.d-date').value=t.dd;
+      if(t.dc) r.querySelector('.d-city').value=t.dc;
+      if(t.dz) r.querySelector('.d-zip').value=t.dz;
+      if(t.mi) r.querySelector('.miles-input').value=t.mi;
+      if(t.mt) r.querySelector('.miles-type').value=t.mt;
+    });
+    Object.entries(d.expenses||{}).forEach(([k,v]) => {
+      const r = document.querySelector(`[data-exp="${k}"]`);
+      if(!r) return;
+      if(v.a) r.querySelector('.exp-amt').value=v.a;
+      if(v.co) r.querySelector('.cb-co').checked=true;
+      if(v.dr) r.querySelector('.cb-dr').checked=true;
+    });
+    recalcMiles(); recalcExp();
+  } catch(e) {}
+}
+
+// ═══ CLEAR FORM ══════════════════════════════════════════════════
+function clearForm() {
+  document.getElementById('clearModal').classList.add('active');
+}
+
+function doClearForm() {
+  document.getElementById('clearModal').classList.remove('active');
+  document.querySelectorAll('input').forEach(i => { if(i.type==='checkbox') i.checked=false; else i.value=''; });
+  document.querySelectorAll('select').forEach(s => s.value='');
+  document.getElementById('totalMiles').value = '';
+  document.getElementById('expTotal').textContent = '$';
+  localStorage.removeItem(SKEY);
+  showToast('Form cleared');
+}
+
+// ═══ DOWNLOAD JSON ═══════════════════════════════════════════════
+function downloadJSON() {
+  const d = gather();
+  const slug = (d.driverName||'driver').replace(/\s+/g,'_').toLowerCase();
+  const dt = d.startDay || new Date().toISOString().slice(0,10);
+  const fn = `trip_sheet_${slug}_${dt}.json`;
+  const blob = new Blob([JSON.stringify(d,null,2)], {type:'application/json'});
+  const u = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=u; a.download=fn;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(u);
+  showToast('Saved: ' + fn);
+}
+
+// ═══ SEND IMAGE VIA EMAIL (Web Share API) ══════════════════════════
+async function sendForm() {
+  const btn = document.getElementById('btnSend');
+  const ogText = btn.textContent;
+  btn.textContent = '⏳ Rendering...';
+  btn.disabled = true;
+
+  try {
+    // Hide UI elements we don't want in the image picture
+    const toolbar = document.querySelector('.toolbar');
+    toolbar.style.display = 'none';
+
+    // Ensure inputs have their values reflected in DOM attributes for html2canvas
+    document.querySelectorAll('input').forEach(el => {
+      if (el.type === 'checkbox') {
+        if(el.checked) el.setAttribute('checked', 'checked');
+        else el.removeAttribute('checked');
+      } else el.setAttribute('value', el.value);
+    });
+    document.querySelectorAll('select').forEach(el => {
+      Array.from(el.options).forEach(opt => {
+        if (opt.value === el.value) opt.setAttribute('selected', 'selected');
+        else opt.removeAttribute('selected');
+      });
+    });
+
+    const page = document.querySelector('.page');
+    
+    // Swap text/number inputs & selects to generic divs temporarily 
+    // This perfectly fixes html2canvas's notorious clipping/faint rendering of form fields
+    const swapNodes = [];
+    document.querySelectorAll('input:not([type="checkbox"]), select').forEach(el => {
+      const div = document.createElement('div');
+      const cs = window.getComputedStyle(el);
+      
+      div.style.fontFamily = cs.fontFamily;
+      div.style.fontSize = cs.fontSize;
+      div.style.fontWeight = cs.fontWeight;
+      div.style.color = cs.color;
+      div.style.textAlign = cs.textAlign;
+      div.style.padding = cs.padding;
+      div.style.lineHeight = cs.lineHeight === 'normal' ? '1.2' : cs.lineHeight;
+      div.style.boxSizing = 'border-box';
+      div.style.width = cs.width;
+      div.style.height = cs.height;
+      div.style.display = 'inline-block';
+      div.style.overflow = 'hidden';
+      div.style.borderBottom = cs.borderBottomStyle !== 'none' ? cs.borderBottom : 'none';
+      if (el.classList.contains('miles-type')) {
+        div.style.border = '1px solid rgba(0,0,0,.15)';
+        div.style.borderRadius = '4px';
+        div.style.background = 'rgba(255,255,255,.55)';
+        div.style.color = '#444';
+        div.style.padding = '2px 2px';
+        div.style.textAlign = 'center';
+        div.style.minWidth = '38px';
+      }
+      
+      div.textContent = el.value || '';
+      
+      el.style.display = 'none';
+      el.parentNode.insertBefore(div, el.nextSibling);
+      swapNodes.push({el, div});
+    });
+
+    // Render at full desktop width regardless of mobile viewport scaling
+    const canvas = await html2canvas(page, {
+      scale: 3,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      windowWidth: 1020,
+      windowHeight: page.scrollHeight,
+      width: page.scrollWidth,
+      height: page.scrollHeight,
+      scrollX: 0,
+      scrollY: 0,
+      x: 0,
+      y: 0
+    });
+
+    swapNodes.forEach(({el, div}) => {
+      el.style.display = '';
+      div.remove();
+    });
+
+    toolbar.style.display = '';
+
+    canvas.toBlob(async (blob) => {
+      const d = gather();
+      const slug = (d.driverName||'driver').replace(/\s+/g,'_').toLowerCase();
+      const dt = d.startDay || new Date().toISOString().slice(0,10);
+      const filename = `trip_sheet_${slug}_${dt}.png`;
+      const file = new File([blob], filename, { type: 'image/png' });
+
+      // Use Native Web Share API if supported (works beautifully on iOS/Android to open Mail)
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            title: 'Trip Sheet - ' + (d.driverName||'Driver'),
+            text: 'Attached is the trip sheet.',
+            files: [file]
+          });
+          showToast('Share dialog opened!');
+        } catch (err) {
+          console.log('Share canceled/failed', err);
+        }
+      } else {
+        // Fallback for browsers that don't support file sharing
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast('Image saved! Open your email app to attach it.');
+        setTimeout(() => {
+          window.location.href = `mailto:Accounting@mxtrucking.com?subject=Trip Sheet - ${d.driverName||'Driver'}&body=Please find the attached trip sheet image.`;
+        }, 1200);
+      }
+      
+      btn.textContent = ogText;
+      btn.disabled = false;
+    }, 'image/png');
+
+  } catch(err) {
+    console.error(err);
+    document.querySelector('.toolbar').style.display = '';
+    btn.textContent = ogText;
+    btn.disabled = false;
+    showToast('Error rendering image.');
+  }
+}
+
+// ═══ TOAST ═══════════════════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ═══ GENERAL INPUT LISTENERS FOR SAVE ════════════════════════════
+document.querySelectorAll('.driver-bar input, .miles-type').forEach(i => {
+  i.addEventListener('input', markDirty);
+  i.addEventListener('change', markDirty);
+});
+
+// ═══ INIT ════════════════════════════════════════════════════════
+loadSaved();
+</script>
+</body>
+</html>

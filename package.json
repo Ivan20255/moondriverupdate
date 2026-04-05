@@ -1,0 +1,16 @@
+{
+  "name": "moondriver",
+  "version": "1.0.0",
+  "description": "Moon Express Inc. Driver Trip Sheet",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve . --listen tcp://0.0.0.0:5000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@replit/connectors-sdk": "^0.3.0",
+    "serve": "^14.2.6"
+  }
+}

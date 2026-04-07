@@ -4,7 +4,7 @@
   "description": "Moon Express Inc. Driver Trip Sheet",
   "main": "index.html",
   "scripts": {
-    "start": "npx serve . --listen tcp://0.0.0.0:5000"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",

@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1020, initial-scale=1.0">
   <title>Moon Express Inc. — Driver Trip Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     /* ── Reset ─────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -96,9 +99,31 @@
       border-bottom-color: #0b3d5e;
       background: #eef5fb;
     }
-    .driver-bar .df input.w-name { width: 180px; }
-    .driver-bar .df input.w-num { width: 100px; }
-    .driver-bar .df input.w-date { width: 68px; text-align: center; }
+    .driver-bar input.w-name { width: 180px; }
+    .driver-bar input.w-num  { width: 100px; text-transform: uppercase; }
+    
+    .driver-bar .df .ce-input {
+      border: none;
+      border-bottom: 1.5px solid #000;
+      font-family: inherit;
+      font-size: .88rem;
+      padding: 1px 2px 2px;
+      background: transparent;
+      color: #000;
+      outline: none;
+      width: 100px;
+      order: -1;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      text-transform: uppercase;
+      text-align: center;
+      min-height: 20px;
+      line-height: 1.1;
+    }
+    .driver-bar .df .ce-input:focus {
+      border-bottom-color: #0b3d5e;
+    }
+    .df input.w-date { width: 68px; text-align: center; }
     .driver-bar .df input.w-miles { width: 100px; }
 
     .driver-bar .df-shared {
@@ -154,7 +179,8 @@
     .trip-table col.col-date  { width: 72px; }
     .trip-table col.col-city  { width: auto; }
     .trip-table col.col-zip   { width: 60px; }
-    .trip-table col.col-miles { width: 110px; }
+    .trip-table col.col-miles { width: 55px; }
+    .trip-table col.col-loc   { width: 70px; }
     .trip-table thead th {
       border: 1px solid #000;
       font-size: .58rem;
@@ -200,8 +226,15 @@
       text-align: right;
       padding-right: 4px;
       flex: 1;
-      width: 0; /* allows flex basis to work */
+      width: 0;
     }
+    .trip-table tbody td input.miles-input::-webkit-inner-spin-button,
+    .trip-table tbody td input.miles-input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+      margin: 0;
+    }
+    .trip-table tbody td input.miles-input { -moz-appearance: textfield; }
     .trip-table tbody td .miles-cell {
       display: flex;
       align-items: center;
@@ -209,28 +242,105 @@
     .trip-table tbody td select.miles-type {
       border: 1px solid rgba(0,0,0,.15);
       background: rgba(255,255,255,.55);
-      border-radius: 4px;
       font-family: inherit;
       font-size: .8rem;
-      font-weight: 600;
-      color: #444;
+      font-weight: 700;
+      color: #0b3d5e;
       outline: none;
       cursor: pointer;
-      padding: 2px 2px;
-      -webkit-appearance: auto;
-      appearance: auto;
-      min-width: 38px;
-      backdrop-filter: blur(2px);
+      padding: 5px 2px;
+      border-radius: 4px;
+      text-align: center;
+      margin-left: 2px;
+      /* Remove default arrow for sleek look */
+      -webkit-appearance: none;
+      appearance: none;
     }
-    .trip-table tbody td select.miles-type:focus {
-      border-color: rgba(0,0,0,.3);
-      background: rgba(255,255,255,.75);
+    .trip-table tbody td select.loc-type {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: .8rem;
+      color: inherit;
+      outline: none;
+      cursor: pointer;
+      padding: 2px 0;
+      text-align: center;
+      text-align-last: center;
+      -webkit-appearance: none;
+      appearance: none;
     }
     .trip-table tbody tr:hover { background: #f5f8fc; }
     .trip-table tbody tr.active-row { background: #e8f0f8; }
 
     /* date inputs in table - compact text */
     .trip-table tbody td input.date-input {
+      font-size: .78rem;
+      padding: 5px 3px;
+      text-align: center;
+      letter-spacing: .3px;
+      cursor: pointer;
+    }
+
+    /* ── Layovers Table ────────────────────────────────── */
+    .layover-label {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #000;
+      margin-bottom: 6px;
+      margin-top: 10px;
+      text-transform: uppercase;
+    }
+    .layover-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+      border: 1.5px solid #000;
+      table-layout: fixed;
+    }
+    .layover-table col.col-num   { width: 30px; }
+    .layover-table col.col-date  { width: 72px; }
+    .layover-table col.col-city  { width: 300px; }
+    .layover-table col.col-notes { width: auto; }
+    .layover-table thead th {
+      border: 1px solid #000;
+      font-size: .58rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      padding: 5px 4px;
+      text-align: center;
+      background: #fff;
+      color: #000;
+      letter-spacing: .5px;
+    }
+    .layover-table tbody td {
+      border: 1px solid #000;
+      padding: 0;
+      vertical-align: middle;
+    }
+    .layover-table tbody td.row-num {
+      width: 28px;
+      text-align: center;
+      font-size: .78rem;
+      font-weight: 700;
+      color: #000;
+      padding: 4px 2px;
+    }
+    .layover-table tbody td input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: .8rem;
+      padding: 5px 4px;
+      color: #000;
+      outline: none;
+    }
+    .layover-table tbody td input:focus {
+      background: #eef5fb;
+    }
+    .layover-table tbody td input.date-input {
       font-size: .78rem;
       padding: 5px 3px;
       text-align: center;
@@ -304,33 +414,49 @@
     .cal-grid .cal-day.today { font-weight: 900; color: #0b3d5e; box-shadow: inset 0 0 0 1.5px #0b3d5e; }
     .cal-grid .cal-day.selected { background: #0b3d5e; color: #fff; }
     .cal-grid .cal-day.other-month { color: #ccc; }
-    .cal-grid .cal-day.empty { cursor: default; }
-
-    /* ── Autocomplete ──────────────────────────────────── */
+    /* ── Add Row Box (Attached to table bottom-left) ── */
+    .add-row-box {
+      width: 30px; /* perfectly matches the width of .col-num */
+      text-align: center;
+      font-weight: 900;
+      font-size: 1.2rem;
+      margin-top: -18px; /* Offset the table's 18px margin-bottom */
+      margin-bottom: 18px;
+      cursor: pointer;
+      line-height: 1.2;
+      padding-bottom: 2px;
+      color: #000;
+      transition: color 0.1s;
+    }
+    .add-row-box:hover { color: #666; }
+    
     .ac-wrap { position: relative; }
     .ac-list {
-      position: absolute;
-      top: 100%;
+      position: fixed;
+      bottom: 0;
       left: 0;
-      right: 0;
+      width: 100%;
       background: #fff;
-      border: 1px solid #999;
-      max-height: 160px;
+      border-top: 2px solid #0b3d5e;
+      max-height: 40vh;
       overflow-y: auto;
-      z-index: 100;
+      z-index: 9999;
       display: none;
-      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+      box-shadow: 0 -4px 20px rgba(0,0,0,.2);
+      animation: slideUp 0.15s ease-out;
     }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     .ac-list.visible { display: block; }
     .ac-item {
-      padding: 6px 8px;
-      font-size: .78rem;
+      padding: 16px 20px;
+      font-size: 1rem;
+      border-bottom: 1px solid #e0e0e0;
       cursor: pointer;
     }
-    .ac-item:hover, .ac-item.hl { background: #e0ecf5; }
-    .ac-item .ct { font-weight: 700; }
+    .ac-item:hover, .ac-item.hl { background: #eef5fb; }
+    .ac-item .ct { font-weight: 800; color: #111; }
     .ac-item .st { color: #555; }
-    .ac-item .zp { float: right; color: #888; font-size: .72rem; }
+    .ac-item .zp { float: right; color: #888; font-size: .85rem; font-weight: 600; margin-top: 2px; }
 
     /* ── Expenses ──────────────────────────────────────── */
     .expenses-label {
@@ -392,6 +518,13 @@
     }
     .exp-half td input[type="number"]:focus { background: #eef5fb; }
     .exp-half td input[type="number"]::placeholder { color: #bbb; }
+    .exp-half td input[type="number"]::-webkit-inner-spin-button,
+    .exp-half td input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+      margin: 0;
+    }
+    .exp-half td input[type="number"] { -moz-appearance: textfield; }
     .exp-half td.cb-cell {
       text-align: center;
       padding: 3px;
@@ -494,11 +627,770 @@
       .exp-half td input:focus { background: transparent; }
     }
 
+    /* ── Split Layout Wrap ────────────────────────────────── */
+    .split-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+    /* Stacked mode: paystub on top, trip report below */
+    .split-wrap .ps-overlay { order: -1; }
+    .split-wrap .page { order: 0; }
+
+    /* Side-by-side mode */
+    .split-wrap.side-by-side {
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 20px;
+    }
+    .split-wrap.side-by-side .page {
+      margin: 0; order: 0;
+    }
+    .split-wrap.side-by-side .ps-overlay {
+      margin: 0; padding: 0; border: none; width: auto; order: 0;
+    }
+    .split-wrap.side-by-side .ps-page {
+      margin-top: 0;
+    }
+
+    /* Eye toggle button */
+    .eye-toggle {
+      position: fixed; top: 20px; right: 20px; z-index: 9999;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: #0b3d5e;
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+      cursor: pointer;
+      font-size: 22px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .eye-toggle:hover {
+      background: #0d4a6f;
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+    .eye-toggle.active-side {
+      background: #2ecc71;
+    }
+    .eye-toggle.active-side:hover {
+      background: #27ae60;
+    }
+
+    /* ── Receipt Upload Section ──────────────────────────────── */
+    .receipt-section {
+      margin: 16px 0 6px;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+    .receipt-section .receipt-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .receipt-section .receipt-header h4 {
+      margin: 0; font-size: .85rem; font-weight: 700; color: #1e293b;
+    }
+    .receipt-upload-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 14px; font-size: .78rem; font-weight: 600;
+      background: #0b3d5e; color: #fff; border: none; border-radius: 6px;
+      cursor: pointer; transition: background .15s;
+    }
+    .receipt-upload-btn:hover { background: #0d4a6f; }
+    .receipt-grid {
+      display: flex; flex-wrap: wrap; gap: 10px;
+    }
+    .receipt-thumb {
+      position: relative; width: 90px; height: 90px;
+      border-radius: 6px; overflow: hidden;
+      border: 1px solid #cbd5e1; cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .receipt-thumb:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+    .receipt-thumb img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .receipt-thumb .receipt-remove {
+      position: absolute; top: 2px; right: 2px;
+      background: rgba(0,0,0,0.6); color: #fff; border: none;
+      width: 20px; height: 20px; border-radius: 50%;
+      font-size: 11px; cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .15s;
+    }
+    .receipt-thumb:hover .receipt-remove { opacity: 1; }
+    .receipt-empty {
+      color: #94a3b8; font-size: .78rem; font-style: italic; padding: 8px 0;
+    }
+    .receipt-preview-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); z-index: 20000;
+      justify-content: center; align-items: center;
+      cursor: pointer;
+    }
+    .receipt-preview-overlay.active { display: flex; }
+    .receipt-preview-overlay img {
+      max-width: 90%; max-height: 90%; border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    @media print { .receipt-section { break-inside: avoid; } }
+
+    /* ── Paystub Overlay (Now Inline) ──────────────────────────────── */
+    .ps-overlay {
+      display: none;
+      width: 100%; 
+      background: transparent;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 0 60px;
+      position: relative;
+    }
+    .ps-overlay.active { display: flex; }
+    .ps-page {
+      background: #fff;
+      width: 100%; max-width: 820px;
+      height: auto;
+      padding: 20px 28px 24px;
+      box-shadow: 0 2px 20px rgba(0,0,0,.18);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: .82rem;
+      margin-top: 0;
+    }
+
+    /* ── Paystub grid table ──────────────────────────── */
+    .ps-grid {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #222;
+    }
+    .ps-grid td {
+      padding: 0;
+      font-size: .82rem;
+      border: 1px solid #d0d0d0;
+      line-height: 1.35;
+    }
+    /* Blue header bars — light steel blue matching reference */
+    .ps-blue {
+      background: #BDD7EE;
+      border: 1px solid #9BC2E6 !important;
+      color: #000;
+    }
+    .ps-center { text-align: center; }
+
+    /* Bordered cells */
+    .ps-bd { border: 1px solid #bbb !important; }
+    .ps-bd-heavy { border: 1px solid #222 !important; }
+
+    /* Trip header row */
+    .ps-trip-hdr td {
+      border-bottom: 1px solid #222 !important;
+      font-weight: bold;
+    }
+
+    /* Section label */
+    .ps-section-label {
+      font-weight: bold;
+      font-size: .85rem;
+      padding: 6px 8px 2px !important;
+      border-top: 1px solid #d0d0d0 !important;
+      background: transparent;
+    }
+
+    /* Total rows */
+    .ps-total-label {
+      font-weight: bold;
+      border: 1px solid #999 !important;
+      padding: 4px 8px !important;
+      background: transparent;
+    }
+    .ps-total-val {
+      border: 1px solid #999 !important;
+      padding: 4px 8px !important;
+      text-align: right;
+      background: transparent;
+    }
+
+    /* Net summary bar — no background, just plain text */
+    .ps-net-bar {
+      background: transparent;
+    }
+    .ps-net-bar td {
+      padding: 5px 8px !important;
+    }
+
+    .ps-input {
+      border: none;
+      font-family: inherit;
+      font-size: .82rem;
+      background: transparent;
+      outline: none;
+      padding: 1px 3px;
+      width: 52px;
+      text-align: right;
+    }
+    .ps-toolbar {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-width: 820px;
+      background: linear-gradient(to top, #f8fafc, #fff);
+      border-top: 2px solid #94a3b8;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      z-index: 8001;
+      box-shadow: 0 -4px 16px rgba(0,0,0,.08);
+    }
+    .ps-toolbar .btn {
+      padding: 8px 14px; font-size: 12px; font-weight: 600;
+      border-radius: 6px; transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .ps-toolbar .btn:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+
+    /* ── Admin Overlay & Modal ───────────────────────── */
+    .admin-login-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: rgba(255, 255, 255, 0.8);
+      color: #999;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      z-index: 5000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .admin-login-btn:hover { color: #333; background: #fff; }
+    /* ═══ ADMIN LOGIN ═══ */
+    .admin-login-logo { width: 72px; height: auto; margin-bottom: 20px; border-radius: 10px; filter: brightness(1.15); }
+    .admin-login-title { font-size: 22px; font-weight: 800; color: #f0f0f5; margin: 0 0 6px 0; letter-spacing: -0.5px; }
+    .admin-login-sub { font-size: 11px; color: #6b7280; margin: 0 0 24px 0; font-weight: 500; text-transform: uppercase; letter-spacing: 2px; }
+    .admin-overlay {
+      display: none;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    }
+    .admin-overlay.active { display: flex; }
+    .admin-overlay.app-page {
+      background: #09090b;
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+    }
+    .admin-card {
+      background: #18181b; padding: 30px; border-radius: 16px;
+      width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 25px 60px rgba(0,0,0,0.5);
+      position: relative; color: #e4e4e7;
+    }
+    .admin-card.small {
+      max-width: 380px; text-align: center; padding: 44px 40px;
+      border-radius: 20px; background: #18181b;
+      border: 1px solid rgba(255,255,255,0.06);
+      animation: adminCardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .admin-card.small input[type="password"] {
+      background: #09090b; border: 1px solid rgba(255,255,255,0.1);
+      color: #f4f4f5; text-align: center; font-size: 15px; padding: 12px 16px;
+      border-radius: 10px;
+    }
+    .admin-card.small input[type="password"]:focus {
+      border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+    .admin-card.small input[type="password"]::placeholder { color: #52525b; }
+    .admin-card.small .admin-btn {
+      width: 100%; padding: 13px; font-size: 14px; margin-top: 8px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 10px;
+      font-weight: 700; letter-spacing: 0.3px;
+    }
+    .admin-card.small .admin-btn:hover {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      box-shadow: 0 0 20px rgba(59,130,246,0.3);
+    }
+    @keyframes adminCardIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* ═══ ADMIN DASHBOARD — DARK MODE ═══ */
+    .admin-card.dashboard {
+      max-width: 100vw; width: 100vw; height: 100vh; max-height: 100vh;
+      border-radius: 0; padding: 0; box-shadow: none;
+      display: flex; flex-direction: column;
+      background: #09090b;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #e4e4e7;
+    }
+
+    /* ── Header ── */
+    .dashboard-header-bar {
+      background: #09090b;
+      color: #fff; padding: 0 32px; display: flex; flex-direction: column;
+      border-bottom: 1px solid #27272a;
+      z-index: 5; position: relative;
+    }
+    .dash-header-logo {
+      height: 26px; width: auto; border-radius: 4px; margin-right: 12px;
+      filter: brightness(1.3) contrast(1.1);
+    }
+    .dash-header-top {
+      display: flex; justify-content: space-between; align-items: center;
+      margin: 0 auto; padding: 16px 0 0;
+      max-width: 1060px; width: 100%;
+    }
+    .dash-header-left { display: flex; align-items: center; }
+    .dash-header-top h2 {
+      margin: 0 !important; color: #fafafa !important; border: none !important;
+      padding: 0 !important; font-size: 16px !important; font-weight: 600 !important;
+      letter-spacing: -0.3px; font-family: 'Inter', sans-serif !important;
+    }
+    .dash-header-top h2 span {
+      font-weight: 400; opacity: 0.35; font-size: 11px; margin-left: 10px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+    }
+
+    /* ── Tabs ── */
+    .admin-tabs { 
+      display: flex; gap: 0; 
+      max-width: 1060px; margin: 0 auto; width: 100%;
+      padding-top: 12px;
+    }
+    .nav-tab {
+      background: transparent; color: #71717a;
+      border: none; padding: 10px 16px 12px; font-size: 13px; font-weight: 500;
+      cursor: pointer; border-radius: 0; transition: color 0.15s;
+      outline: none; position: relative;
+      font-family: 'Inter', sans-serif;
+      border-bottom: 2px solid transparent;
+    }
+    .nav-tab:hover { color: #a1a1aa; }
+    .nav-tab.active {
+      color: #fafafa; font-weight: 600;
+      border-bottom: 2px solid #3b82f6;
+    }
+    .nav-tab .tab-badge {
+      background: #ef4444; color: #fff; font-size: 9px; font-weight: 800;
+      padding: 1px 6px; border-radius: 8px; margin-left: 6px; min-width: 14px;
+      display: inline-block; text-align: center; line-height: 1.4;
+      animation: badgePulse 2s ease-in-out infinite;
+    }
+    @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+    /* ── Tab Content ── */
+    .tab-content { display: none; width: 100%; max-width: 1060px; margin: 0 auto; animation: fadeTab 0.2s ease; }
+    .tab-content.active { display: block; }
+    @keyframes fadeTab { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── Content Area ── */
+    .dashboard-content-wrap {
+      flex: 1; padding: 24px 32px; overflow-y: auto;
+      display: flex; justify-content: center; align-items: flex-start;
+      scrollbar-width: thin; scrollbar-color: #27272a #09090b;
+    }
+    .dashboard-content-wrap::-webkit-scrollbar { width: 6px; }
+    .dashboard-content-wrap::-webkit-scrollbar-track { background: #09090b; }
+    .dashboard-content-wrap::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+    .dashboard-inner { width: 100%; display: flex; flex-direction: column; gap: 20px; }
+
+    /* ── Cards ── */
+    .dash-card {
+      background: #141418; border-radius: 12px; padding: 0;
+      border: 1px solid #27272a;
+      transition: border-color 0.2s;
+      overflow: hidden;
+    }
+    .dash-card:hover { border-color: #3f3f46; }
+    .dash-card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 22px 14px; margin-bottom: 0;
+      border-bottom: 1px solid #27272a;
+    }
+    .dash-card-header h3 {
+      margin: 0; font-size: 13px; font-weight: 600; color: #fafafa;
+      letter-spacing: 0.3px; text-transform: uppercase;
+    }
+    .dash-card-header .subtitle {
+      font-size: 12px; color: #52525b; font-weight: 400; margin-top: 3px;
+      text-transform: none; letter-spacing: 0;
+    }
+    .dash-card-body { padding: 12px 22px 18px; }
+
+    /* ── Forms ── */
+    .admin-card h2 { margin-top: 0; color: #fafafa; border-bottom: 1px solid #27272a; padding-bottom: 10px; margin-bottom: 20px; font-size: 20px; }
+    .admin-card h3 { margin-bottom: 15px; margin-top: 0; color: #e4e4e7; font-size: 14px; font-weight: 600; }
+    .admin-card .form-group { margin-bottom: 15px; }
+    .admin-card label { display: block; font-size: 11px; font-weight: 600; color: #71717a; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.8px; }
+    .admin-card input[type="text"],
+    .admin-card input[type="number"],
+    .admin-card input[type="email"],
+    .admin-card input[type="password"],
+    .admin-card select {
+      width: 100%; padding: 10px 14px; border: 1px solid #27272a; border-radius: 8px;
+      font-family: 'Inter', sans-serif; font-size: 14px; box-sizing: border-box;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      background: #09090b; color: #e4e4e7;
+    }
+    .admin-card input::placeholder, .admin-card select::placeholder { color: #52525b; }
+    .admin-card input:focus, .admin-card select:focus {
+      border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); outline: none;
+    }
+
+    /* ── Tables ── */
+    .admin-tbl { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }
+    .admin-tbl th, .admin-tbl td { border: none; border-bottom: 1px solid #27272a; padding: 10px 14px; text-align: left; font-size: 13px; vertical-align: middle; }
+    .admin-tbl th { color: #71717a; font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid #3f3f46; }
+    .admin-tbl td { color: #d4d4d8; }
+    .admin-tbl tr:hover td { background: rgba(255,255,255,0.02); }
+    .inline-cpm { width: 72px !important; padding: 6px 8px !important; font-size: 13px !important; text-align: right; }
+
+    /* ── Buttons ── */
+    .admin-btn {
+      background: #fafafa; color: #09090b; border: none; padding: 9px 18px;
+      border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px;
+      transition: all 0.12s ease; letter-spacing: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    .admin-btn:hover { background: #e4e4e7; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .admin-btn:active { transform: translateY(0); }
+    .admin-btn.danger { background: #dc2626; color: #fff; padding: 6px 14px; font-size: 12px; }
+    .admin-btn.danger:hover { background: #b91c1c; }
+    .admin-btn.success { background: #10b981; color: #fff; }
+    .admin-btn.success:hover { background: #059669; }
+    .admin-btn.ghost { background: transparent; color: #a1a1aa; border: 1px solid #27272a; }
+    .admin-btn.ghost:hover { background: #18181b; border-color: #3f3f46; color: #e4e4e7; }
+    .admin-btn.sm { padding: 5px 12px; font-size: 11px; }
+
+    /* ── Exit ── */
+    .close-top-btn {
+      background: transparent; border: 1px solid #27272a;
+      color: #71717a; padding: 6px 14px; border-radius: 6px; cursor: pointer;
+      font-weight: 500; font-size: 12px; transition: all 0.15s; font-family: 'Inter', sans-serif;
+    }
+    .close-top-btn:hover { color: #fca5a5; border-color: #7f1d1d; background: rgba(220,38,38,0.08); }
+    .close-admin { position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 28px; cursor: pointer; color: #52525b; }
+    .close-admin:hover { color: #e4e4e7; }
+
+    /* ── Report Rows ── */
+    .report-row {
+      display: flex; align-items: center;
+      padding: 12px 16px; border-radius: 8px; margin-bottom: 2px;
+      border: none; background: transparent;
+      min-height: 48px; transition: background 0.1s; gap: 14px;
+    }
+    .report-row:hover { background: rgba(255,255,255,0.03); }
+    .report-row.bg-pending  { border-left: 3px solid #f59e0b; }
+    .report-row.bg-approved { border-left: 3px solid #10b981; }
+    .report-row.bg-paid     { border-left: 3px solid #3b82f6; }
+    .report-row + .report-row { border-top: 1px solid #1e1e22; }
+    .report-row .rr-info {
+      flex: 1; display: flex; align-items: center; gap: 12px; min-width: 0;
+    }
+    .report-row .rr-avatar {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: #fff; font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .report-row .rr-name  { font-size: 13px; font-weight: 600; color: #fafafa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; flex-shrink: 0; }
+    .report-row .rr-date  { font-size: 11px; color: #52525b; font-weight: 400; white-space: nowrap; }
+    .report-row .rr-badges {
+      display: flex; align-items: center; gap: 6px; min-width: 100px; justify-content: flex-end;
+    }
+    .rr-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 3px 8px; border-radius: 6px;
+      font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap;
+    }
+    .rr-badge.st-pending  { background: rgba(245,158,11,0.12); color: #fbbf24; }
+    .rr-badge.st-approved { background: rgba(16,185,129,0.12); color: #34d399; }
+    .rr-badge.st-paid     { background: rgba(59,130,246,0.12); color: #60a5fa; }
+    .report-row .rr-actions {
+      display: flex; align-items: center; gap: 4px; margin-left: auto; flex-shrink: 0;
+    }
+    .rr-actions .act-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: 600;
+      cursor: pointer; border: 1px solid #27272a; background: transparent; color: #a1a1aa;
+      transition: all 0.12s ease; white-space: nowrap; font-family: 'Inter', sans-serif;
+    }
+    .rr-actions .act-btn:hover { background: #18181b; border-color: #3f3f46; color: #fafafa; }
+    .rr-actions .act-btn.act-review  { background: #3b82f6; color: #fff; border-color: transparent; }
+    .rr-actions .act-btn.act-review:hover { background: #2563eb; box-shadow: 0 0 12px rgba(59,130,246,0.3); }
+    .rr-actions .act-btn.act-pay     { background: #10b981; color: #fff; border-color: transparent; }
+    .rr-actions .act-btn.act-pay:hover { background: #059669; box-shadow: 0 0 12px rgba(16,185,129,0.3); }
+    .rr-actions .act-btn.act-delete  { background: transparent; color: #3f3f46; border-color: transparent; padding: 5px 6px; font-size: 14px; }
+    .rr-actions .act-btn.act-delete:hover { color: #ef4444; background: rgba(220,38,38,0.08); }
+    .rr-actions .act-btn.act-undo    { background: transparent; color: #fbbf24; border-color: rgba(245,158,11,0.2); font-size: 11px; margin-right: 4px; }
+    .rr-actions .act-btn.act-undo:hover { background: rgba(245,158,11,0.08); }
+
+    /* ── Driver Card ── */
+    .driver-card {
+      background: #141418; border: 1px solid #27272a; border-radius: 10px;
+      margin-bottom: 6px; overflow: hidden; transition: border-color 0.15s;
+    }
+    .driver-card:hover { border-color: #3f3f46; }
+    .driver-card summary {
+      padding: 14px 18px; font-size: 13px; font-weight: 600; color: #e4e4e7;
+      cursor: pointer; outline: none; list-style: none; display: flex;
+      justify-content: space-between; align-items: center;
+      transition: background 0.1s;
+    }
+    .driver-card summary:hover { background: rgba(255,255,255,0.02); }
+    .driver-card summary::-webkit-details-marker { display: none; }
+    .driver-card summary::after {
+      content: '\25BC'; font-size: 9px; color: #52525b; transition: transform 0.2s ease;
+    }
+    .driver-card[open] summary::after { transform: rotate(180deg); }
+    .driver-card[open] summary { background: rgba(255,255,255,0.02); border-bottom: 1px solid #27272a; }
+    .driver-card .card-body { padding: 0 18px 18px; }
+    .driver-card .card-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 0; gap: 12px;
+    }
+    .driver-card .field-group { display: flex; align-items: center; gap: 6px; }
+    .driver-card .field-group label { margin: 0; font-size: 11px; text-transform: uppercase; white-space: nowrap; color: #71717a; font-weight: 600; letter-spacing: 0.5px; }
+    .driver-card .field-group input {
+      padding: 6px 10px; font-size: 13px; border: 1px solid #27272a; border-radius: 6px;
+      font-family: 'Inter', sans-serif; background: #09090b; color: #e4e4e7;
+      transition: border-color 0.15s;
+    }
+    .driver-card .field-group input:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 2px rgba(59,130,246,0.12); }
+
+    /* ── Charges ── */
+    .charge-item {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #09090b; padding: 8px 12px; border: 1px solid #27272a;
+      border-radius: 6px; margin-bottom: 4px; font-size: 13px; color: #d4d4d8;
+    }
+    .charge-item .del-btn {
+      background: none; border: none; color: #3f3f46; cursor: pointer;
+      font-size: 16px; font-weight: 700; padding: 0 4px; line-height: 1;
+      transition: all 0.15s;
+    }
+    .charge-item .del-btn:hover { color: #ef4444; transform: scale(1.2); }
+
+    /* ── Quick-add ── */
+    .quick-add-bar {
+      display: flex; gap: 10px; align-items: flex-end;
+      background: #09090b; padding: 16px;
+      border-radius: 10px; border: 1px solid #27272a; margin-bottom: 16px;
+    }
+
+    /* ── Empty State ── */
+    .empty-state {
+      text-align: center; padding: 48px 20px; color: #52525b;
+      font-size: 13px; font-weight: 500;
+    }
+    .empty-state .icon { font-size: 28px; margin-bottom: 8px; display: block; opacity: 0.4; }
+
+    /* ═══ MOBILE ═══ */
+    @media (max-width: 768px) {
+      .admin-overlay.app-page { padding: 0; }
+      .admin-card.dashboard { height: 100vh; max-height: 100vh; border-radius: 0; padding: 0; }
+      .dashboard-header-bar { padding: 0 16px; }
+      .dash-header-top { padding: 12px 0 0; }
+      .dash-header-top h2 { font-size: 14px !important; }
+      .dash-header-top h2 span { font-size: 9px; margin-left: 6px; }
+      .dash-header-logo { height: 22px; margin-right: 10px; }
+      .close-top-btn { padding: 5px 12px; font-size: 11px; }
+      .admin-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+      .admin-tabs::-webkit-scrollbar { display: none; }
+      .nav-tab { padding: 10px 14px; font-size: 12px; white-space: nowrap; }
+      .dashboard-content-wrap { padding: 16px 12px; }
+      .dash-card-header { padding: 14px 16px 10px; }
+      .dash-card-body { padding: 10px 16px 14px; }
+      .dash-card-header h3 { font-size: 12px; }
+      .report-row { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 16px; }
+      .report-row .rr-info { flex-direction: row; gap: 10px; align-items: center; }
+      .report-row .rr-avatar { width: 30px; height: 30px; font-size: 11px; }
+      .report-row .rr-name { max-width: none; }
+      .report-row .rr-badges { justify-content: flex-start; min-width: auto; }
+      .report-row .rr-actions { width: 100%; gap: 6px; }
+      .rr-actions .act-btn { flex: 1; text-align: center; justify-content: center; padding: 10px 8px; font-size: 12px; }
+      .settings-grid { grid-template-columns: 1fr; }
+      .admin-tbl { display: block; overflow-x: auto; white-space: nowrap; font-size: 12px; }
+      .quick-add-bar { flex-direction: column; align-items: stretch; gap: 8px; padding: 12px; }
+      .driver-card summary { padding: 12px 14px; }
+      .driver-card .card-body { padding: 0 14px 14px; }
+      .driver-card .card-row { flex-direction: column; gap: 8px; }
+      .driver-card .field-group { flex-direction: column; align-items: stretch; gap: 2px; width: 100%; }
+      .driver-card .field-group input { width: 100%; box-sizing: border-box; }
+      .admin-btn { padding: 10px 16px; font-size: 13px; }
+      .admin-btn.sm { padding: 8px 12px; font-size: 12px; }
+      .admin-card.small { padding: 30px 24px; width: 94%; }
+      .admin-login-logo { width: 56px; }
+      .admin-login-title { font-size: 18px; }
+      .ps-toolbar { flex-wrap: wrap; padding: 10px 8px; gap: 6px; justify-content: center; }
+      .ps-toolbar .btn { flex: 1 1 auto; min-width: 80px; text-align: center; justify-content: center; padding: 10px 10px; font-size: 11px; }
+      .ps-toolbar .spacer { display: none; }
+      .admin-scroll { padding-bottom: 20px; }
+    }
+
+    @media print {
+      .ps-overlay { position: static; padding: 0; background: #fff; }
+      .ps-overlay .ps-toolbar { display: none; }
+      .ps-page { box-shadow: none; max-width: none; padding: 15px; }
+      .admin-login-btn { display: none !important; }
+    }
+
+    /* PC*Miler Toggle Switch */
+    .pcm-toggle {
+      position: relative; display: inline-block; width: 36px; height: 20px; cursor: pointer;
+    }
+    .pcm-toggle input { opacity: 0; width: 0; height: 0; }
+    .pcm-slider {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: #cbd5e1; border-radius: 20px; transition: 0.25s;
+    }
+    .pcm-slider::before {
+      content: ''; position: absolute; height: 16px; width: 16px;
+      left: 2px; bottom: 2px; background: #fff; border-radius: 50%;
+      transition: 0.25s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .pcm-toggle input:checked + .pcm-slider { background: #0b3d5e; }
+    .pcm-toggle input:checked + .pcm-slider::before { transform: translateX(16px); }
+    .pcm-suggest {
+      display: block; font-size: 10px; color: #0b3d5e; background: #e0f2fe;
+      border: 1px solid #7dd3fc; border-radius: 4px; padding: 2px 6px;
+      cursor: pointer; margin-top: 2px; text-align: center;
+      white-space: nowrap; transition: all 0.15s;
+    }
+    .pcm-suggest:hover { background: #0b3d5e; color: #fff; }
+
+    /* Pending autofill hint on pickup fields */
+    input.has-pending {
+      border: 1.5px dashed #3b82f6 !important;
+      background: #eff6ff !important;
+      animation: pendingPulse 1.5s ease-in-out infinite;
+    }
+    input.has-pending::placeholder { color: #3b82f6; font-size: 10px; }
+    @keyframes pendingPulse {
+      0%, 100% { border-color: #3b82f6; }
+      50% { border-color: #93c5fd; }
+    }
+
+    /* ── Theme Toggle Button ── */
+    .theme-toggle-btn {
+      background: transparent; border: 1px solid #27272a;
+      color: #fafafa; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+      font-size: 14px; transition: all 0.15s;
+    }
+    .theme-toggle-btn:hover { background: #18181b; border-color: #3f3f46; }
+
+    /* ═══ LIGHT THEME OVERRIDES ═══ */
+    .admin-overlay.app-page.light-theme { background: #f0f2f5; color: #1e293b; }
+    .light-theme .dashboard-header-bar { background: #ffffff; border-bottom: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+    .light-theme .dash-header-top h2 { color: #0f172a !important; }
+    .light-theme .dash-header-top h2 span { color: #64748b !important; }
+    .light-theme .dash-header-logo { filter: none; }
+    .light-theme .nav-tab { color: #64748b; border-bottom: 2px solid transparent; }
+    .light-theme .nav-tab:hover { color: #0f172a; }
+    .light-theme .nav-tab.active { color: #0f172a; border-bottom: 2px solid #3b82f6; }
+    .light-theme .theme-toggle-btn { color: #64748b; border-color: #cbd5e1; }
+    .light-theme .theme-toggle-btn:hover { background: #f1f5f9; border-color: #94a3b8; color: #0f172a; }
+    .light-theme .close-top-btn { border-color: #cbd5e1; color: #475569; }
+    .light-theme .close-top-btn:hover { background: #fee2e2; color: #ef4444; border-color: transparent; }
+    
+    .light-theme .dash-card { background: #fff; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); }
+    .light-theme .dash-card-header { border-bottom: 1px solid #f1f5f9; background: #fafbfc; }
+    .light-theme .dash-card-header h3 { color: #0f172a; }
+    .light-theme .dash-card-header .subtitle { color: #64748b; }
+    .light-theme .admin-card h2 { color: #0f172a; border-bottom-color: #e2e8f0; }
+    .light-theme .admin-card h3 { color: #1e293b; }
+    .light-theme .admin-card label { color: #64748b; }
+    .light-theme .admin-card input, .light-theme .admin-card select { background: #fff; border-color: #cbd5e1; color: #0f172a; }
+    .light-theme .admin-card input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+    
+    .light-theme .admin-tbl th { color: #64748b; border-bottom-color: #e2e8f0; }
+    .light-theme .admin-tbl td { color: #334155; border-bottom-color: #f1f5f9; }
+    .light-theme .admin-tbl tr:hover td { background: #f8fafc; }
+    
+    .light-theme .report-row:hover { background: #f8fafc; }
+    .light-theme .report-row + .report-row { border-top-color: #f1f5f9; }
+    .light-theme .report-row.bg-pending { background: #fffdf7; border-left-color: #f59e0b; }
+    .light-theme .report-row.bg-pending:hover { background: #fefce8; }
+    .light-theme .report-row.bg-approved { background: #f7fdf9; border-left-color: #10b981; }
+    .light-theme .report-row.bg-approved:hover { background: #ecfdf5; }
+    .light-theme .report-row.bg-paid { background: #f0fdf8; border-left-color: #3b82f6; }
+    .light-theme .report-row.bg-paid:hover { background: #ecfdf5; }
+    
+    .light-theme .report-row .rr-name { color: #0f172a; }
+    .light-theme .report-row .rr-date { color: #64748b; }
+    .light-theme .rr-badge.st-pending { background: #fef3c7; color: #92400e; }
+    .light-theme .rr-badge.st-approved { background: #dcfce7; color: #166534; }
+    .light-theme .rr-badge.st-paid { background: #dbeafe; color: #1e40af; }
+    
+    .light-theme .rr-actions .act-btn { background: #fff; border-color: #cbd5e1; color: #475569; }
+    .light-theme .rr-actions .act-btn:hover { background: #f1f5f9; color: #0f172a; }
+    .light-theme .rr-actions .act-btn.act-review { background: #3b82f6; color: #fff; border-color: transparent; }
+    .light-theme .rr-actions .act-btn.act-pay { background: #10b981; color: #fff; border-color: transparent; }
+    .light-theme .rr-actions .act-btn.act-delete { background: transparent; border-color: transparent; }
+    .light-theme .rr-actions .act-btn.act-delete:hover { background: #fee2e2; }
+    
+    .light-theme .driver-card { background: #fff; border-color: #e2e8f0; }
+    .light-theme .driver-card:hover { border-color: #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .light-theme .driver-card summary { color: #0f172a; }
+    .light-theme .driver-card summary:hover { background: #f8fafc; }
+    .light-theme .driver-card[open] summary { background: #f1f5f9; border-bottom-color: #e2e8f0; }
+    .light-theme .driver-card .field-group input { background: #fff; border-color: #cbd5e1; color: #0f172a; }
+    
+    .light-theme .charge-item { background: #f8fafc; border-color: #e2e8f0; color: #334155; }
+    .light-theme .quick-add-bar { background: #f8fafc; border-color: #e2e8f0; }
+    
+    .light-theme .admin-btn { background: #0f172a; color: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .light-theme .admin-btn:hover { background: #1e293b; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .light-theme .admin-btn.danger { background: #ef4444; }
+    .light-theme .admin-btn.success { background: #10b981; }
+
   </style>
+  
+  <!-- Firebase SDK Setup (Optional: Populate config to enable Firebase syncing automatically) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <script>
+    const firebaseConfig = {
+      // Fill these in with your Firebase project details to enable Cloud Storage & DB
+      // apiKey: "YOUR_API_KEY",
+      // authDomain: "YOUR_PROJECT.firebaseapp.com",
+      // projectId: "YOUR_PROJECT",
+      // storageBucket: "YOUR_PROJECT.appspot.com",
+    };
+    if (firebaseConfig.apiKey) {
+      firebase.initializeApp(firebaseConfig);
+      window.db = firebase.firestore();
+      window.storage = firebase.storage();
+      console.log("🔥 Firebase initialized. Cloud Sync active.");
+    } else {
+      console.log("💻 Running on Local Server Mode. Firebase inactive.");
+    }
+  </script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
+<div id="splitViewWrap" class="split-wrap">
 <div class="page">
 
   <!-- ═══ HEADER ═══ -->
@@ -517,15 +1409,15 @@
   <!-- ═══ DRIVER INFO BAR ═══ -->
   <div class="driver-bar">
     <div class="df">
-      <input type="text" id="driverName" class="w-name" autocomplete="name">
+      <input type="text" id="driverName" class="w-name" name="driverName" autocomplete="name">
       <label>Driver Name</label>
     </div>
     <div class="df">
-      <input type="text" id="tractorNum" class="w-num">
+      <input type="text" id="tractorNum" class="w-num" name="tractorNum" autocomplete="on">
       <label>Tractor#</label>
     </div>
     <div class="df">
-      <input type="text" id="trailerNum" class="w-num">
+      <div contenteditable="true" id="trailerNum" class="ce-input" autocomplete="off" autocorrect="off"></div>
       <label>Trailer#</label>
     </div>
     <div class="df-shared">
@@ -539,8 +1431,19 @@
       </div>
     </div>
     <div class="df">
+      <input type="number" id="extraStops" class="w-num" min="0" max="99" step="1" placeholder="0">
+      <label>Extra Stops</label>
+    </div>
+    <div class="df">
       <input type="text" id="totalMiles" class="w-miles" readonly tabindex="-1" style="font-weight:900; cursor:default;">
       <label>Total Miles</label>
+    </div>
+    <div class="df" style="align-items:center; gap:6px; margin-left:6px;">
+      <label class="pcm-toggle" title="Auto-calculate miles with PC*Miler">
+        <input type="checkbox" id="pcMilerToggle" onchange="togglePcMiler()">
+        <span class="pcm-slider"></span>
+      </label>
+      <span style="font-size:10px; color:#6b7280; white-space:nowrap;" id="pcMilerToggleLabel">PC*Miler</span>
     </div>
   </div>
 
@@ -555,6 +1458,7 @@
       <col class="col-city">
       <col class="col-zip">
       <col class="col-miles">
+      <col class="col-loc">
     </colgroup>
     <thead>
       <tr>
@@ -565,11 +1469,34 @@
         <th>Date</th>
         <th>Delivery (City/State)</th>
         <th>Zip Code</th>
-        <th>Empty/Loaded Miles</th>
+        <th>Miles</th>
+        <th>Facility</th>
       </tr>
     </thead>
     <tbody id="tripBody"></tbody>
   </table>
+  <div class="add-row-box" onclick="addTripRow()" title="Add Trip Row">+</div>
+
+  <!-- ═══ LAYOVERS ═══ -->
+  <div class="layover-label">Layovers</div>
+  <table class="layover-table" id="layoverTable">
+    <colgroup>
+      <col class="col-num">
+      <col class="col-date">
+      <col class="col-city">
+      <col class="col-notes">
+    </colgroup>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Date</th>
+        <th>Layover City/State</th>
+        <th>Notes / Reason</th>
+      </tr>
+    </thead>
+    <tbody id="layoverBody"></tbody>
+  </table>
+  <div class="add-row-box" onclick="addLayoverRow()" title="Add Layover Row">+</div>
 
   <!-- ═══ EXPENSES ═══ -->
   <div class="expenses-label">Expenses</div>
@@ -618,13 +1545,38 @@
     </div>
   </div>
 
+  <!-- ═══ RECEIPTS ═══ -->
+  <div class="receipt-section" id="receiptSection">
+    <div class="receipt-header">
+      <h4>📎 Receipts & Attachments</h4>
+      <label class="receipt-upload-btn">
+        📷 Add Receipt
+        <input type="file" id="receiptFileInput" accept="image/*" multiple style="display:none;" onchange="handleReceiptUpload(this)">
+      </label>
+    </div>
+    <div class="receipt-grid" id="receiptGrid">
+      <div class="receipt-empty" id="receiptEmpty">No receipts attached</div>
+    </div>
+  </div>
+
+  <!-- Receipt full-screen preview -->
+  <div class="receipt-preview-overlay" id="receiptPreviewOverlay" onclick="this.classList.remove('active')">
+    <img id="receiptPreviewImg" src="" alt="Receipt preview">
+  </div>
+
   <!-- ═══ TOOLBAR ═══ -->
   <div class="toolbar">
     <span class="saved-ind" id="savedInd"><span class="dot"></span><span class="stxt">All changes saved</span></span>
+    
+    <button id="adminLayoutToggleWrap" class="eye-toggle" onclick="toggleLayoutView()" title="Toggle Side-by-Side / Stacked View">
+      👁️
+    </button>
+
     <span class="spacer"></span>
     <button class="btn" onclick="clearForm()">Clear Form</button>
     <button class="btn" onclick="window.print()">🖨️ Print</button>
-    <button class="btn btn-primary" id="btnSend" onclick="sendForm()">📩 Send Trip Report</button>
+    <button class="btn btn-primary" id="btnSubmitReport" onclick="driverSubmitReport()" style="background:#0b3d5e;border-color:#0b3d5e;">📩 Submit Trip Report</button>
+    <button class="btn btn-primary" id="btnAdminPaystub" style="background:#d9534f;border-color:#d9534f;display:none;" onclick="adminViewPaystub()">📄 Generate Paystub</button>
   </div>
 </div>
 
@@ -652,7 +1604,360 @@
   </div>
 </div>
 
+<!-- ═══ PAYSTUB OVERLAY ═══ -->
+<div class="ps-overlay" id="psOverlay">
+  <div class="ps-page" id="psPage">
+
+    <!--
+      7-column grid layout matching reference exactly:
+      c1:130px  c2:70px  c3:60px  c4:auto  c5:auto  c6:95px  c7:105px
+    -->
+    <table class="ps-grid" id="psGrid">
+      <colgroup>
+        <col style="width:130px">
+        <col style="width:70px">
+        <col style="width:70px">
+        <col>
+        <col>
+        <col style="width:80px">
+        <col style="width:100px">
+      </colgroup>
+
+      <!-- MOON EXPRESS INC -->
+      <tr><td colspan="7" class="ps-blue ps-center" style="font-size:1rem;font-weight:bold;padding:7px 8px;">MOON EXPRESS INC</td></tr>
+
+      <!-- SETTLEMENT -->
+      <tr><td colspan="7" class="ps-blue ps-center" style="font-weight:bold;padding:4px 8px;font-size:.84rem;">SETTLEMENT</td></tr>
+
+      <!-- Pay to / Statement date -->
+      <tr>
+        <td colspan="4" class="ps-bd" style="padding:5px 10px;">Pay to: <span id="psPayTo"></span></td>
+        <td colspan="2" class="ps-bd" style="padding:5px 10px;text-align:right;">Statement date</td>
+        <td class="ps-bd" style="padding:5px 10px;text-align:right;" id="psDate"></td>
+      </tr>
+
+      <!-- spacer -->
+      <tr><td colspan="7" style="height:5px;"></td></tr>
+
+      <!-- CHECK SUMMARY -->
+      <tr><td colspan="7" class="ps-blue ps-center" style="font-weight:bold;padding:4px 8px;font-size:.84rem;">CHECK SUMMARY</td></tr>
+
+      <!-- Contractor's Pay -->
+      <tr>
+        <td style="padding:4px 8px;">Contractor's Pay</td>
+        <td style="padding:4px 4px;"><input type="text" class="ps-input" id="psRate" value="0.70"></td>
+        <td style="padding:4px 4px;">c/m</td>
+        <td></td>
+        <td></td>
+        <td class="ps-bd" style="padding:4px 8px;">Gross:</td>
+        <td class="ps-bd" style="padding:4px 8px;text-align:right;" id="psGross"></td>
+      </tr>
+
+      <!-- Total miles -->
+      <tr>
+        <td style="padding:4px 8px;">Total miles</td>
+        <td style="padding:4px 8px;text-align:right;" id="psTotalMilesTop"></td>
+        <td style="padding:4px 4px;">miles</td>
+        <td></td>
+        <td></td>
+        <td class="ps-bd" style="padding:4px 8px;">Net:</td>
+        <td class="ps-bd" style="padding:4px 8px;text-align:right;font-weight:bold;" id="psNet"></td>
+      </tr>
+
+      <!-- spacer -->
+      <tr><td colspan="7" style="height:6px;"></td></tr>
+
+      <!-- Trip header -->
+      <tr class="ps-trip-hdr">
+        <td style="padding:5px 8px;text-align:center;">Trip</td>
+        <td></td>
+        <td colspan="2" style="padding:5px 8px;">From</td>
+        <td colspan="2" style="padding:5px 8px;">To</td>
+        <td style="padding:5px 8px;text-align:right;">Miles</td>
+      </tr>
+
+      <!-- Trip data rows (JS) -->
+      <tbody id="psTripBody"></tbody>
+
+      <!-- Total Miles -->
+      <tr>
+        <td colspan="2" style="padding:5px 8px;font-weight:bold;">Total Miles</td>
+        <td colspan="4"></td>
+        <td class="ps-bd" style="padding:5px 8px;text-align:right;font-weight:bold;" id="psTotalMiles"></td>
+      </tr>
+
+      <!-- thick separator -->
+      <tr><td colspan="7" style="height:3px;border-top:2px solid #222;border-bottom:2px solid #222;"></td></tr>
+
+      <!-- Formula label -->
+      <tr>
+        <td colspan="2"></td>
+        <td colspan="4" style="padding:5px 0;text-align:center;font-size:.79rem;font-weight:bold;">(Miles*Rate Per Mile)+Add - Substract = Net</td>
+        <td></td>
+      </tr>
+
+      <!-- Formula values -->
+      <tr class="ps-net-bar">
+        <td colspan="2"></td>
+        <td style="text-align:center;" id="psMilesXRate"></td>
+        <td style="text-align:center;" id="psAdd"></td>
+        <td style="text-align:center;" id="psSubVal"></td>
+        <td colspan="2" style="text-align:center;" id="psNetVal"></td>
+      </tr>
+
+      <!-- spacer -->
+      <tr><td colspan="7" style="height:4px;"></td></tr>
+
+      <!-- CREDIT -->
+      <tr><td colspan="7" class="ps-section-label">Credit</td></tr>
+      <tbody id="psCreditTbl"></tbody>
+      <tr>
+        <td class="ps-total-label">Total Credit</td>
+        <td class="ps-total-val" id="psTotalCredit">$0.00</td>
+        <td colspan="5"></td>
+      </tr>
+
+      <!-- REIMBURSEMENT -->
+      <tr><td colspan="7" class="ps-section-label">Reimbursement</td></tr>
+      <tbody id="psReimbTbl"></tbody>
+      <tr>
+        <td class="ps-total-label" style="font-style:italic;">Total Reimbursed</td>
+        <td class="ps-total-val" id="psTotalReimb">$0.00</td>
+        <td colspan="5"></td>
+      </tr>
+
+      <!-- SUBSTRACT -->
+      <tr><td colspan="7" class="ps-section-label">Substract</td></tr>
+      <tbody id="psSubTbl"></tbody>
+      <tr>
+        <td class="ps-total-label">Total Substract</td>
+        <td class="ps-total-val" id="psTotalSub">$0.00</td>
+        <td colspan="5"></td>
+      </tr>
+
+      <!-- spacer -->
+      <tr><td colspan="7" style="height:6px;border-top:1px solid #ddd;"></td></tr>
+
+      <!-- Summary net rows -->
+      <tr>
+        <td style="padding:4px 8px;">Total paid</td>
+        <td style="padding:4px 8px;text-align:right;font-weight:bold;" id="psTotalPaid"></td>
+        <td colspan="5" style="padding:4px 8px;color:#666;font-size:.79rem;">( Net income )</td>
+      </tr>
+      <tr>
+        <td style="padding:4px 8px;">Total earned</td>
+        <td style="padding:4px 8px;text-align:right;font-weight:bold;" id="psTotalEarned"></td>
+        <td colspan="5" style="padding:4px 8px;color:#666;font-size:.79rem;">( Net income − reimbursement + advances )</td>
+      </tr>
+
+    </table>
+  </div>
+
+  <!-- Paystub toolbar -->
+  <div class="ps-toolbar">
+    <button class="btn" onclick="closePaystub()">Hide Paystub ↑</button>
+    <span class="spacer"></span>
+    <button class="btn" onclick="printPaystub()">🖨️ Print</button>
+    <span id="overlayActions"></span>
+  </div>
+</div>
+</div> <!-- End split-wrap -->
+
+<!-- Admin Login Button -->
+<button class="admin-login-btn" onclick="openAdmin()">Admin Access</button>
+
+<!-- Admin Login Overlay -->
+<div id="adminLoginOverlay" class="admin-overlay">
+  <div class="admin-card small">
+    <button class="close-admin" onclick="closeAdminLogin()" style="top:12px;right:14px;font-size:24px;color:#94a3b8;z-index:2;">×</button>
+    <img src="logo.jpeg" alt="Moon Express" class="admin-login-logo">
+    <p class="admin-login-title">Moon Express</p>
+    <p class="admin-login-sub">Admin Console</p>
+    <div class="form-group" style="margin-bottom:20px;">
+      <input type="password" id="adminPwd" placeholder="Enter admin password" 
+             onkeydown="if(event.key==='Enter') testAdminPwd()"
+             style="text-align:center; padding:12px 16px; font-size:15px; border-radius:10px; border:2px solid #e2e8f0; background:#f8fafc;">
+    </div>
+    <button class="admin-btn" onclick="testAdminPwd()" 
+            style="width:100%; padding:13px 20px; font-size:15px; border-radius:10px; background:linear-gradient(135deg,#0b3d5e,#0e5a8a); letter-spacing:0.5px; box-shadow:0 4px 14px rgba(11,61,94,0.3);">Sign In</button>
+    <p style="margin-top:16px; font-size:11px; color:#94a3b8;">Authorized personnel only</p>
+  </div>
+</div>
+
+<!-- Admin Dashboard Overlay -->
+<div id="adminDashOverlay" class="admin-overlay app-page">
+  <div class="admin-card dashboard">
+
+    <!-- ═══ HEADER BAR ═══ -->
+    <div class="dashboard-header-bar">
+      <div class="dash-header-top">
+        <div class="dash-header-left">
+          <img src="logo.jpeg" alt="Moon Express" class="dash-header-logo">
+          <h2>Moon Express <span>Admin Console</span></h2>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Light/Dark Mode">☀️</button>
+          <button class="close-top-btn" onclick="closeAdminDash()">✕ Exit</button>
+        </div>
+      </div>
+      <div class="admin-tabs">
+        <button class="nav-tab active" id="btnTabApprovals" onclick="switchTab('tabApprovals')">
+          Inbox <span id="inboxBadge" class="tab-badge" style="display:none;">0</span>
+        </button>
+        <button class="nav-tab" id="btnTabDrivers" onclick="switchTab('tabDrivers')">Drivers</button>
+        <button class="nav-tab" id="btnTabSettings" onclick="switchTab('tabSettings')">Settings</button>
+      </div>
+    </div>
+
+    <!-- ═══ CONTENT AREA ═══ -->
+    <div class="dashboard-content-wrap">
+      <div class="dashboard-inner">
+
+        <!-- TAB 1: INBOX -->
+        <div id="tabApprovals" class="tab-content active">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div>
+                <h3>Pending Reviews</h3>
+                <div class="subtitle">Trip reports awaiting your approval</div>
+              </div>
+            </div>
+            <div class="dash-card-body">
+              <div id="masterInboxPending"></div>
+            </div>
+          </div>
+          <div class="dash-card" style="margin-top:20px;">
+            <div class="dash-card-header">
+              <div>
+                <h3>Approved History</h3>
+                <div class="subtitle">Previously finalized settlements</div>
+              </div>
+            </div>
+            <div class="dash-card-body">
+              <div id="masterInboxHistory"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: DRIVERS -->
+        <div id="tabDrivers" class="tab-content">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div>
+                <h3>Driver Roster</h3>
+                <div class="subtitle">Manage drivers, pay rates, and individual charges</div>
+              </div>
+            </div>
+            <div class="dash-card-body">
+              <div class="quick-add-bar">
+                <div style="flex:1.5">
+                  <label>Full Name</label>
+                  <input type="text" id="newDriverName" placeholder="e.g. John Doe">
+                </div>
+                <div style="flex:2">
+                  <label>Email</label>
+                  <input type="email" id="newDriverEmail" placeholder="driver@email.com">
+                </div>
+                <div style="flex:0.8">
+                  <label>CPM ($)</label>
+                  <input type="number" id="newDriverCpm" step="0.01" min="0" placeholder="0.55">
+                </div>
+                <div style="display:flex; align-items:flex-end;">
+                  <button class="admin-btn" onclick="addDriver()">+ Add Driver</button>
+                </div>
+              </div>
+              <div id="adminDriverList"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: SETTINGS -->
+        <div id="tabSettings" class="tab-content">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div>
+                <h3>Base Deductions</h3>
+                <div class="subtitle">Mandatory charges applied to every paystub</div>
+              </div>
+            </div>
+            <div class="dash-card-body">
+              <div class="form-group" style="display:flex; gap:16px; max-width:640px; align-items:flex-end;">
+                <div style="flex:1">
+                  <label>Workers Comp ($)</label>
+                  <input type="number" id="adminWc" step="0.01" min="0">
+                </div>
+                <div style="flex:1">
+                  <label>Safety Service ($)</label>
+                  <input type="number" id="adminSafety" step="0.01" min="0">
+                </div>
+                <div>
+                  <button class="admin-btn" onclick="saveGlobalSettings()">Save</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div>
+                <h3>Base Pay Rates</h3>
+                <div class="subtitle">Standardized pay amounts globally applied to all paystubs</div>
+              </div>
+            </div>
+            <div class="dash-card-body">
+              <div class="form-group" style="display:flex; gap:16px; max-width:640px; align-items:flex-end;">
+                <div style="flex:1">
+                  <label>Extra Stop Pay ($)</label>
+                  <input type="number" id="adminExtraStopPay" step="0.01" min="0" placeholder="e.g. 50.00">
+                </div>
+                <div style="flex:1"></div>
+                <div>
+                  <button class="admin-btn" onclick="saveGlobalSettings()">Save</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div>
+                <h3>PC*Miler Integration</h3>
+                <div class="subtitle">Connect your Trimble Maps API key for accurate truck-specific mileage calculations</div>
+              </div>
+            </div>
+            <div class="dash-card-body">
+              <div class="form-group" style="display:flex; gap:16px; max-width:640px; align-items:flex-end;">
+                <div style="flex:1">
+                  <label>API Key</label>
+                  <input type="text" id="adminPcMilerKey" placeholder="Enter your PC*Miler API key" style="font-family:monospace; letter-spacing:0.5px;">
+                </div>
+                <div>
+                  <button class="admin-btn" onclick="testPcMilerKey()">Test</button>
+                </div>
+                <div>
+                  <button class="admin-btn" onclick="saveGlobalSettings()">Save</button>
+                </div>
+              </div>
+              <div id="pcMilerStatus" style="font-size:12px; color:#64748b; margin-top:8px;"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Driver Custom Deductions Modal -->
+
+
 <script>
+function toggleTheme() {
+  const dash = document.getElementById('adminDashOverlay');
+  dash.classList.toggle('light-theme');
+  const btn = document.querySelector('.theme-toggle-btn');
+  btn.textContent = dash.classList.contains('light-theme') ? '🌙' : '☀️';
+}
 // ═══ ZIP → CITY DATABASE (comprehensive US zip prefixes) ═════════
 const CITIES = [
   {city:"New York",state:"NY",zip:"10001"},{city:"New York",state:"NY",zip:"10002"},{city:"New York",state:"NY",zip:"10003"},
@@ -765,39 +2070,78 @@ const CITIES = [
   {city:"Charleston",state:"WV",zip:"25301"},{city:"Huntington",state:"WV",zip:"25701"},
 ];
 
+// ═══ CUSTOM CITIES MEMORY ════════════════════════════════════════
+function loadRecentCities() {
+  try {
+    const recent = JSON.parse(localStorage.getItem('moonexpress_recent_cities') || '[]');
+    recent.reverse().forEach(rc => {
+      if (!CITIES.some(c => c.city.toLowerCase() === rc.city.toLowerCase() && c.state.toLowerCase() === rc.state.toLowerCase())) {
+        CITIES.unshift(rc);
+      }
+    });
+  } catch(e) {}
+}
+loadRecentCities();
+
 // Build zip → city lookup (first match wins)
 const ZIP_MAP = {};
 CITIES.forEach(c => { if (!ZIP_MAP[c.zip]) ZIP_MAP[c.zip] = c; });
 
 // ═══ BUILD TRIP ROWS ═════════════════════════════════════════════
 const tripBody = document.getElementById('tripBody');
-const ROW_COUNT = 14;
+let tripRowCount = 0;
 
-for (let i = 1; i <= ROW_COUNT; i++) {
+function addTripRow() {
+  tripRowCount++;
   const tr = document.createElement('tr');
   tr.innerHTML = `
-    <td class="row-num">${i}.</td>
+    <td class="row-num">${tripRowCount}.</td>
     <td><input type="text" class="p-date date-input" maxlength="8" inputmode="numeric" autocomplete="off"></td>
     <td class="ac-wrap"><input type="text" class="p-city" placeholder="" autocomplete="off"><div class="ac-list"></div></td>
-    <td><input type="text" class="p-zip" maxlength="5" inputmode="numeric"></td>
+    <td><input type="text" class="p-zip" maxlength="5" inputmode="numeric" name="p-zip-${tripRowCount}" autocomplete="on"></td>
     <td><input type="text" class="d-date date-input" maxlength="8" inputmode="numeric" autocomplete="off"></td>
     <td class="ac-wrap"><input type="text" class="d-city" placeholder="" autocomplete="off"><div class="ac-list"></div></td>
-    <td><input type="text" class="d-zip" maxlength="5" inputmode="numeric"></td>
+    <td><input type="text" class="d-zip" maxlength="5" inputmode="numeric" name="d-zip-${tripRowCount}" autocomplete="on"></td>
     <td>
       <div class="miles-cell">
-        <input type="number" class="miles-input" min="0" step="1">
+        <input type="number" class="miles-input" min="0" max="99999" step="1" maxlength="5" oninput="if(this.value.length>5) this.value=this.value.slice(0,5)">
         <select class="miles-type">
           <option value=""></option>
           <option value="L">L</option>
           <option value="E">E</option>
         </select>
       </div>
+    </td>
+    <td>
+      <select class="loc-type">
+        <option value=""></option>
+        <option value="Crossdock">Crossdock</option>
+        <option value="PU/Del">PU/Del</option>
+        <option value="Yard">Yard</option>
+      </select>
     </td>`;
   tripBody.appendChild(tr);
+  tr.querySelectorAll('.ac-wrap').forEach(w => bindAutoComplete(w));
+}
+
+// ═══ BUILD LAYOVER ROWS ══════════════════════════════════════════
+const layoverBody = document.getElementById('layoverBody');
+let layoverRowCount = 0;
+
+function addLayoverRow() {
+  layoverRowCount++;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="row-num">${layoverRowCount}.</td>
+    <td><input type="text" class="l-date date-input" maxlength="8" inputmode="numeric" autocomplete="off"></td>
+    <td class="ac-wrap"><input type="text" class="l-city" placeholder="" autocomplete="off"><div class="ac-list"></div></td>
+    <td><input type="text" class="l-notes" name="l-notes-${layoverRowCount}" autocomplete="on"></td>`;
+  layoverBody.appendChild(tr);
+  tr.querySelectorAll('.ac-wrap').forEach(w => bindAutoComplete(w));
 }
 
 // ═══ AUTOCOMPLETE (city → zip) ═══════════════════════════════════
-document.querySelectorAll('.ac-wrap').forEach(wrap => {
+function bindAutoComplete(wrap) {
   const inp = wrap.querySelector('input');
   const list = wrap.querySelector('.ac-list');
   let hlIdx = -1;
@@ -823,6 +2167,7 @@ document.querySelectorAll('.ac-wrap').forEach(wrap => {
       d.className = 'ac-item';
       d.innerHTML = `<span class="ct">${m.city}</span><span class="st">, ${m.state}</span><span class="zp">${m.zip}</span>`;
       d.addEventListener('mousedown', e => { e.preventDefault(); pickCity(inp, wrap, m); });
+      d.addEventListener('touchstart', e => { e.preventDefault(); pickCity(inp, wrap, m); });
       list.appendChild(d);
     });
     list.classList.add('visible');
@@ -843,7 +2188,11 @@ document.querySelectorAll('.ac-wrap').forEach(wrap => {
   });
 
   inp.addEventListener('blur', () => { setTimeout(() => list.classList.remove('visible'), 120); });
-});
+}
+
+// Initial Population
+for (let i = 0; i < 14; i++) addTripRow();
+for (let i = 0; i < 3; i++) addLayoverRow();
 
 function pickCity(inp, wrap, m) {
   inp.value = m.city + ', ' + m.state;
@@ -855,47 +2204,285 @@ function pickCity(inp, wrap, m) {
     if (zipInp && !zipInp.value) zipInp.value = m.zip;
   }
   const row = inp.closest('tr');
-  if (row && inp.classList.contains('d-city')) cascadeToNextRow(row);
+  if (row && inp.classList.contains('d-city')) markNextRowReady(row);
   markDirty();
 }
 
-// ═══ CASCADE: delivery → next row's pickup ═══════════════════════
-function cascadeToNextRow(row) {
+// ═══ CASCADE: delivery → next row's pickup (on-tap only) ═════════
+// Instead of auto-filling, we store the pending values and hint the user.
+function markNextRowReady(row) {
   const nextRow = row.nextElementSibling;
   if (!nextRow) return;
   const dCity = row.querySelector('.d-city');
   const dZip  = row.querySelector('.d-zip');
   const nPCity = nextRow.querySelector('.p-city');
   const nPZip  = nextRow.querySelector('.p-zip');
-  if (dCity && nPCity && dCity.value && !nPCity.value) {
-    nPCity.value = dCity.value;
+  if (dCity && dCity.value && nPCity && !nPCity.value) {
+    nPCity.dataset.pendingFill = dCity.value;
+    nPCity.placeholder = '⬅ Tap to fill: ' + dCity.value;
+    nPCity.classList.add('has-pending');
   }
-  if (dZip && nPZip && dZip.value && !nPZip.value) {
-    nPZip.value = dZip.value;
+  if (dZip && dZip.value && nPZip && !nPZip.value) {
+    nPZip.dataset.pendingFill = dZip.value;
+    nPZip.placeholder = '⬅ Tap to fill';
+    nPZip.classList.add('has-pending');
   }
-  markDirty();
 }
 
+// Fill on focus/tap
+function applyPendingFill(inp) {
+  if (inp.dataset.pendingFill && !inp.value) {
+    inp.value = inp.dataset.pendingFill;
+    showToast('Auto-filled from previous row');
+  }
+  delete inp.dataset.pendingFill;
+  inp.placeholder = '';
+  inp.classList.remove('has-pending');
+}
+
+// Attach focus listeners to all pickup fields
+document.querySelectorAll('.p-city, .p-zip').forEach(inp => {
+  inp.addEventListener('focus', () => applyPendingFill(inp));
+  inp.addEventListener('click', () => applyPendingFill(inp));
+});
+
 // ═══ ZIP → CITY AUTO-FILL (live API for ANY zip) ═════════════════
-const zipCache = {}; // cache API results
+const zipCache = {}; // cache API results: { city, state, zip, lat, lon }
 
 async function lookupZip(zip) {
-  if (ZIP_MAP[zip]) return ZIP_MAP[zip];
   if (zipCache[zip]) return zipCache[zip];
   if (zipCache[zip] === null) return null;
+  // Check local database first (no coords though)
+  if (ZIP_MAP[zip]) {
+    // Local DB hit — but we need coords; fetch from API for coords
+    const local = ZIP_MAP[zip];
+    try {
+      const res = await fetch('https://api.zippopotam.us/us/' + zip);
+      if (res.ok) {
+        const data = await res.json();
+        const place = data.places?.[0];
+        if (place) {
+          const result = {
+            city: local.city, state: local.state, zip: zip,
+            lat: parseFloat(place.latitude), lon: parseFloat(place.longitude)
+          };
+          zipCache[zip] = result;
+          return result;
+        }
+      }
+    } catch(e) {}
+    // Fallback to local without coords
+    zipCache[zip] = { ...local, lat: null, lon: null };
+    return zipCache[zip];
+  }
+  // Not in local DB — fetch entirely from API
   try {
     const res = await fetch('https://api.zippopotam.us/us/' + zip);
     if (!res.ok) { zipCache[zip] = null; return null; }
     const data = await res.json();
     const place = data.places?.[0];
     if (place) {
-      const result = { city: place['place name'], state: place['state abbreviation'], zip: zip };
+      const result = {
+        city: place['place name'], state: place['state abbreviation'], zip: zip,
+        lat: parseFloat(place.latitude), lon: parseFloat(place.longitude)
+      };
       zipCache[zip] = result;
       return result;
     }
   } catch(e) {}
   zipCache[zip] = null;
   return null;
+}
+
+// ═══ DRIVING MILES CALCULATOR ═════════════════════════════════════
+// 4-tier cascade for truck mileage:
+//   0. PC*Miler (Trimble Maps) — industry-standard commercial truck miles
+//   1. Valhalla (truck profile) — actual truck road miles with vehicle restrictions
+//   2. OSRM (driving profile) — general driving distance
+//   3. Haversine × 1.3 — mathematical estimate (always works offline)
+
+// ── PC*Miler (Trimble Maps) ─────────────────────────────────
+// ── Hardcoded mileage overrides (always take priority over API) ──
+const MILEAGE_OVERRIDES = {
+  '28216-91730': 2424,
+  '91730-28216': 2424,
+};
+
+async function pcMilerRoute(pickupZip, deliveryZip) {
+  // Check hardcoded overrides first
+  const overrideKey = `${pickupZip}-${deliveryZip}`;
+  if (MILEAGE_OVERRIDES[overrideKey] !== undefined) {
+    return MILEAGE_OVERRIDES[overrideKey];
+  }
+
+  const apiKey = adminConfig?.pcMilerApiKey;
+  if (!apiKey) throw new Error('No PC*Miler API key configured');
+
+  const postData = {
+    ReportRoutes: [{
+      RouteId: "mileage",
+      Stops: [
+        { Address: { Zip: pickupZip }, Label: "Origin" },
+        { Address: { Zip: deliveryZip }, Label: "Destination" }
+      ],
+      ReportTypes: [{ "__type": "MileageReportType:http://pcmiler.alk.com/APIs/v1.0", THoursWithSeconds: false }]
+    }]
+  };
+
+  const res = await fetchWithTimeout('/pcmiler/api', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-PCMiler-Auth': apiKey
+    },
+    body: JSON.stringify(postData)
+  }, 12000);
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    throw new Error(`PC*Miler HTTP ${res.status}: ${errText.slice(0, 200)}`);
+  }
+  const data = await res.json();
+
+  // Parse mileage from the report response
+  // The response is an array of reports; each report has ReportLines (one per stop).
+  // The LAST report line has the cumulative total mileage.
+  if (Array.isArray(data) && data.length > 0) {
+    const report = data[0];
+    if (report?.ReportLines && report.ReportLines.length > 0) {
+      // Get the LAST line — it has the cumulative total
+      const lastLine = report.ReportLines[report.ReportLines.length - 1];
+      if (lastLine.TMiles != null) {
+        const m = parseFloat(lastLine.TMiles);
+        if (m > 0) return Math.round(m);
+      }
+    }
+  }
+  throw new Error('Could not parse PC*Miler mileage response');
+}
+
+async function testPcMilerKey() {
+  const statusEl = document.getElementById('pcMilerStatus');
+  const key = document.getElementById('adminPcMilerKey').value.trim();
+  if (!key) {
+    statusEl.innerHTML = '<span style="color:#dc2626;">⚠ Please enter an API key first</span>';
+    return;
+  }
+  statusEl.innerHTML = '<span style="color:#6366f1;">⏳ Testing connection...</span>';
+  const origKey = adminConfig.pcMilerApiKey;
+  adminConfig.pcMilerApiKey = key;
+  try {
+    const miles = await pcMilerRoute('10001', '90001');
+    statusEl.innerHTML = `<span style="color:#16a34a;">✓ Connected! Test route NY→LA = ${miles} mi (Practical Truck)</span>`;
+  } catch (e) {
+    statusEl.innerHTML = `<span style="color:#dc2626;">✗ Failed: ${e.message}</span>`;
+  }
+  adminConfig.pcMilerApiKey = origKey;
+}
+
+// Fetch with timeout + AbortController
+function fetchWithTimeout(url, opts = {}, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timeoutId));
+}
+
+// ── Mileage Calculator: PC*Miler Only ───────────────────────────
+async function calcDrivingMiles(pickupZip, deliveryZip) {
+  if (!pickupZip || !deliveryZip || pickupZip.length !== 5 || deliveryZip.length !== 5) return null;
+  if (pickupZip === deliveryZip) return { miles: 0, source: 'exact' };
+  if (!adminConfig?.pcMilerApiKey) return null;
+
+  try {
+    const miles = await pcMilerRoute(pickupZip, deliveryZip);
+    if (miles > 0) return { miles, source: 'pcmiler' };
+  } catch(e) {
+    console.warn('PC*Miler unavailable:', e.message);
+  }
+  return null;
+}
+
+// PC*Miler Toggle
+function togglePcMiler() {
+  const on = document.getElementById('pcMilerToggle').checked;
+  localStorage.setItem('moonexpress_pcmiler_auto', on ? 'on' : 'off');
+  const label = document.getElementById('pcMilerToggleLabel');
+  if (label) label.style.color = on ? '#0b3d5e' : '#6b7280';
+  showToast(on ? '🚛 PC*Miler auto-calc ON' : 'PC*Miler auto-calc OFF');
+  
+  if (on) {
+    // Recalculate all existing trip rows
+    document.querySelectorAll('#tripBody tr').forEach(row => tryAutoMiles(row));
+  } else {
+    // Remove all suggestion badges
+    document.querySelectorAll('.pcm-suggest').forEach(b => b.remove());
+  }
+}
+// Restore toggle state on load
+(function() {
+  const saved = localStorage.getItem('moonexpress_pcmiler_auto');
+  const toggle = document.getElementById('pcMilerToggle');
+  if (toggle && saved === 'on') {
+    toggle.checked = true;
+    const label = document.getElementById('pcMilerToggleLabel');
+    if (label) label.style.color = '#0b3d5e';
+  }
+})();
+
+// Try to auto-fill miles when both zips are present in a trip row
+async function tryAutoMiles(row) {
+  const pZip = row.querySelector('.p-zip')?.value?.trim();
+  const dZip = row.querySelector('.d-zip')?.value?.trim();
+  const milesInput = row.querySelector('.miles-input');
+  if (!pZip || !dZip || !milesInput) return;
+  if (pZip.length !== 5 || dZip.length !== 5) return;
+  // Check if PC*Miler toggle is OFF
+  if (!document.getElementById('pcMilerToggle')?.checked) return;
+
+  // Remove any existing suggestion badge
+  const oldBadge = row.querySelector('.pcm-suggest');
+  if (oldBadge) oldBadge.remove();
+
+  const hasExistingMiles = milesInput.value && parseFloat(milesInput.value) > 0;
+
+  // Add loading indicator
+  if (!hasExistingMiles) {
+    milesInput.style.opacity = '0.5';
+    milesInput.placeholder = '...';
+  }
+
+  const result = await calcDrivingMiles(pZip, dZip);
+  milesInput.style.opacity = '1';
+  milesInput.placeholder = '';
+
+  if (result && result.miles > 0) {
+    if (!hasExistingMiles) {
+      // No existing miles — auto-fill directly
+      milesInput.value = result.miles;
+      recalcMiles();
+      markDirty();
+      showToast(`🚛 ${result.miles} mi (PC*Miler truck route)`);
+    } else {
+      const current = parseFloat(milesInput.value);
+      if (Math.abs(current - result.miles) < 1) return; // Already matches, skip
+      const diff = result.miles - current;
+      const diffLabel = diff > 0 ? `+${diff.toFixed(0)}` : diff.toFixed(0);
+      // Has existing miles — show clickable comparison badge
+      const badge = document.createElement('span');
+      badge.className = 'pcm-suggest';
+      badge.title = 'Click to replace with PC*Miler miles';
+      badge.innerHTML = `<span style="text-decoration:line-through;opacity:0.6;">${current}</span> → <strong>${result.miles}</strong> mi <span style="font-size:9px;opacity:0.7;">(${diffLabel})</span>`;
+      badge.onclick = function() {
+        milesInput.value = result.miles;
+        recalcMiles();
+        markDirty();
+        badge.remove();
+        showToast(`✅ Replaced ${current} → ${result.miles} mi (PC*Miler)`);
+      };
+      // Place badge after the miles input
+      milesInput.parentElement.style.position = 'relative';
+      milesInput.parentElement.appendChild(badge);
+    }
+  }
 }
 
 document.querySelectorAll('.p-zip, .d-zip').forEach(inp => {
@@ -915,27 +2502,40 @@ document.querySelectorAll('.p-zip, .d-zip').forEach(inp => {
         }
       }
       const row = inp.closest('tr');
-      if (row && inp.classList.contains('d-zip')) cascadeToNextRow(row);
+      if (row && inp.classList.contains('d-zip')) markNextRowReady(row);
+      // Try auto-calculating miles when either zip changes
+      if (row) tryAutoMiles(row);
     }
     markDirty();
   });
 });
 
+document.querySelectorAll('.l-city').forEach(inp => {
+  inp.addEventListener('input', async () => {
+    const val = inp.value.trim();
+    if (/^\d{5}$/.test(val)) {
+      const match = await lookupZip(val);
+      if (match) {
+        inp.value = match.city + ', ' + match.state;
+        showToast('Auto-filled: ' + match.city + ', ' + match.state);
+        markDirty();
+      }
+    }
+  });
+});
+
 // ═══ SMART DATE FORMATTING ═══════════════════════════════════════
-// Auto-insert slashes as user types digits: "3" → "3/", "320" → "3/20/", "32026" → "3/20/26"
 document.querySelectorAll('.date-input').forEach(inp => {
   inp.addEventListener('input', e => {
     let raw = inp.value.replace(/[^\d]/g, ''); // digits only
     let formatted = '';
     if (raw.length >= 1) {
-      // Month: 1 or 2 digits
       let mEnd = (raw[0] === '0' || raw[0] === '1') ? 2 : 1;
       if (raw.length === 1 && parseInt(raw[0]) > 1) mEnd = 1;
       const month = raw.slice(0, mEnd);
       formatted = month;
       const rest = raw.slice(mEnd);
       if (rest.length > 0) {
-        // Day: 1 or 2 digits
         let dEnd = 2;
         if (rest.length === 1 && parseInt(rest[0]) > 3) dEnd = 1;
         const day = rest.slice(0, dEnd);
@@ -950,7 +2550,6 @@ document.querySelectorAll('.date-input').forEach(inp => {
     markDirty();
   });
 
-  // On blur — no carry-forward, just mark dirty
   inp.addEventListener('blur', () => {
     markDirty();
   });
@@ -966,7 +2565,6 @@ const DOWS  = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 
 function openCalendar(inp) {
   calTarget = inp;
-  // Parse existing value to set initial month
   const today = new Date();
   let initDate = today;
   if (inp.value) {
@@ -982,23 +2580,18 @@ function openCalendar(inp) {
   calMonth = initDate.getMonth();
   renderCalendar();
 
-  // Position next to the input, keeping popup fully within the viewport
   const rect = inp.getBoundingClientRect();
   const scrollX = window.scrollX;
   const scrollY = window.scrollY;
-  const popW = 228;   // popup width + border
-  const popH = 254;   // approximate popup height
+  const popW = 228;
+  const popH = 254;
 
-  // Always to the right of the input — never clamp horizontally so
-  // we never slide back over the date box itself
   let left = rect.right + scrollX + 4;
   let top  = rect.top  + scrollY;
 
-  // Vertical: move up if it would overflow the bottom edge
   if (top + popH > scrollY + window.innerHeight) {
     top = scrollY + window.innerHeight - popH - 4;
   }
-  // Clamp: never go above the top edge
   top = Math.max(scrollY + 4, top);
 
   calPopup.style.left = left + 'px';
@@ -1011,7 +2604,6 @@ function renderCalendar() {
   calTitle.textContent = MONTHS[calMonth] + ' ' + calYear;
   calGrid.innerHTML = '';
 
-  // Day-of-week headers
   DOWS.forEach(d => {
     const span = document.createElement('span');
     span.className = 'cal-dow';
@@ -1024,7 +2616,6 @@ function renderCalendar() {
   const today = new Date();
   const todayStr = today.getFullYear() + '-' + (today.getMonth()+1) + '-' + today.getDate();
 
-  // Parse selected date from input
   let selStr = '';
   if (calTarget && calTarget.value) {
     const p = calTarget.value.split('/');
@@ -1034,14 +2625,12 @@ function renderCalendar() {
     }
   }
 
-  // Empty cells before first day
   for (let i = 0; i < firstDay; i++) {
     const span = document.createElement('span');
     span.className = 'cal-day empty';
     calGrid.appendChild(span);
   }
 
-  // Day cells
   for (let d = 1; d <= daysInMonth; d++) {
     const span = document.createElement('span');
     span.className = 'cal-day';
@@ -1080,7 +2669,6 @@ document.getElementById('calNext').addEventListener('mousedown', e => {
   renderCalendar();
 });
 
-// Open on focus, close on outside click
 document.querySelectorAll('.date-input').forEach(inp => {
   inp.addEventListener('focus', () => openCalendar(inp));
 });
@@ -1099,12 +2687,17 @@ function recalcMiles() {
   document.getElementById('totalMiles').value = t > 0 ? t.toLocaleString() : '';
 }
 tripBody.addEventListener('input', e => { if (e.target.classList.contains('miles-input')) recalcMiles(); markDirty(); });
+tripBody.addEventListener('change', e => {
+  if (e.target.classList.contains('loc-type')) {
+    e.target.classList.toggle('has-value', e.target.value !== '');
+    markDirty();
+  }
+});
 
-// Cascade delivery city to next row on change (covers manual typing without autocomplete)
 document.querySelectorAll('.d-city').forEach(inp => {
   inp.addEventListener('change', () => {
     const row = inp.closest('tr');
-    if (row && inp.value) cascadeToNextRow(row);
+    if (row && inp.value) markNextRowReady(row);
   });
 });
 
@@ -1126,25 +2719,29 @@ document.querySelectorAll('[data-exp]').forEach(row => {
 });
 
 // ═══ ACTIVE ROW HIGHLIGHT ════════════════════════════════════════
-tripBody.addEventListener('focusin', e => {
-  tripBody.querySelectorAll('tr').forEach(r => r.classList.remove('active-row'));
-  const row = e.target.closest('tr');
-  if (row) row.classList.add('active-row');
-});
-tripBody.addEventListener('focusout', () => {
-  setTimeout(() => { if (!tripBody.contains(document.activeElement)) tripBody.querySelectorAll('tr').forEach(r => r.classList.remove('active-row')); }, 50);
+[tripBody, layoverBody].forEach(tbody => {
+  tbody.addEventListener('focusin', e => {
+    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('active-row'));
+    const row = e.target.closest('tr');
+    if (row) row.classList.add('active-row');
+  });
+  tbody.addEventListener('focusout', () => {
+    setTimeout(() => { if (!tbody.contains(document.activeElement)) tbody.querySelectorAll('tr').forEach(r => r.classList.remove('active-row')); }, 50);
+  });
 });
 
 // ═══ ENTER → NEXT ROW SAME COLUMN ═══════════════════════════════
-tripBody.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    const td = e.target.closest('td');
-    const row = td.closest('tr');
-    const idx = Array.from(row.children).indexOf(td);
-    const next = row.nextElementSibling;
-    if (next) { const nInp = next.children[idx]?.querySelector('input'); if (nInp) nInp.focus(); }
-  }
+[tripBody, layoverBody].forEach(tbody => {
+  tbody.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const td = e.target.closest('td');
+      const row = td.closest('tr');
+      const idx = Array.from(row.children).indexOf(td);
+      const next = row.nextElementSibling;
+      if (next) { const nInp = next.children[idx]?.querySelector('input') || next.children[idx]?.querySelector('select'); if (nInp) nInp.focus(); }
+    }
+  });
 });
 
 // ═══ LOCAL STORAGE ═══════════════════════════════════════════════
@@ -1160,7 +2757,33 @@ function markDirty() {
 }
 
 function doSave() {
-  localStorage.setItem(SKEY, JSON.stringify(gather()));
+  const d = gather();
+  localStorage.setItem(SKEY, JSON.stringify(d));
+  
+  try {
+    const recent = JSON.parse(localStorage.getItem('moonexpress_recent_cities') || '[]');
+    let added = false;
+    const addCity = (val, zipStr) => {
+      if(!val || typeof val !== 'string') return;
+      if(val.includes(',')) {
+        const parts = val.split(',');
+        const city = parts[0].trim();
+        const state = parts[1].trim();
+        if(city && state && !CITIES.some(c => c.city.toLowerCase() === city.toLowerCase() && c.state.toLowerCase() === state.toLowerCase())) {
+          const obj = { city, state, zip: zipStr || '' };
+          CITIES.unshift(obj);
+          recent.unshift(obj);
+          added = true;
+        }
+      }
+    };
+    d.trips.forEach(t => { addCity(t.pc, t.pz); addCity(t.dc, t.dz); });
+    d.layovers.forEach(l => { addCity(l.lc, ''); });
+    if(added) {
+      localStorage.setItem('moonexpress_recent_cities', JSON.stringify(recent.slice(0, 100)));
+    }
+  } catch(e) {}
+
   const ind = document.getElementById('savedInd');
   ind.classList.remove('unsaved');
   ind.querySelector('.stxt').textContent = 'All changes saved';
@@ -1168,12 +2791,14 @@ function doSave() {
 
 function gather() {
   const d = {
-    driverName: document.getElementById('driverName').value,
-    tractorNum: document.getElementById('tractorNum').value,
-    trailerNum: document.getElementById('trailerNum').value,
+    driver: document.getElementById('driverName').value,
+    tractor: document.getElementById('tractorNum').value,
+    trailer: document.getElementById('trailerNum').innerText.trim(),
     startDay: document.getElementById('startDay').value,
     endDay: document.getElementById('endDay').value,
-    trips: [], expenses: {}
+    extraStops: parseInt(document.getElementById('extraStops').value) || 0,
+    trips: [], layovers: [], expenses: {},
+    receipts: getReceiptData()
   };
   tripBody.querySelectorAll('tr').forEach(r => {
     d.trips.push({
@@ -1181,7 +2806,14 @@ function gather() {
       pz: r.querySelector('.p-zip')?.value||'', dd: r.querySelector('.d-date')?.value||'',
       dc: r.querySelector('.d-city')?.value||'', dz: r.querySelector('.d-zip')?.value||'',
       mi: r.querySelector('.miles-input')?.value||'',
-      mt: r.querySelector('.miles-type')?.value||''
+      mt: r.querySelector('.miles-type')?.value||'',
+      lt: r.querySelector('.loc-type')?.value||''
+    });
+  });
+  layoverBody.querySelectorAll('tr').forEach(r => {
+    d.layovers.push({
+      ld: r.querySelector('.l-date')?.value||'', lc: r.querySelector('.l-city')?.value||'',
+      ln: r.querySelector('.l-notes')?.value||''
     });
   });
   document.querySelectorAll('[data-exp]').forEach(r => {
@@ -1194,16 +2826,71 @@ function gather() {
   return d;
 }
 
+function populate(d) {
+  if (!d) return;
+  document.getElementById('driverName').value = d.driver || '';
+  document.getElementById('tractorNum').value = d.tractor || '';
+  document.getElementById('trailerNum').innerText = d.trailer || '';
+  document.getElementById('startDay').value = d.startDay || '';
+  document.getElementById('endDay').value = d.endDay || '';
+  document.getElementById('extraStops').value = d.extraStops || '';
+  
+  while (tripBody.querySelectorAll('tr').length < (d.trips?.length || 0)) addTripRow();
+  while (layoverBody.querySelectorAll('tr').length < (d.layovers?.length || 0)) addLayoverRow();
+  
+  const tRows = tripBody.querySelectorAll('tr');
+  tRows.forEach((r, idx) => {
+    const t = (d.trips && d.trips[idx]) ? d.trips[idx] : {};
+    if(r.querySelector('.p-date')) r.querySelector('.p-date').value = t.pd||'';
+    if(r.querySelector('.p-city')) r.querySelector('.p-city').value = t.pc||'';
+    if(r.querySelector('.p-zip')) r.querySelector('.p-zip').value = t.pz||'';
+    if(r.querySelector('.d-date')) r.querySelector('.d-date').value = t.dd||'';
+    if(r.querySelector('.d-city')) r.querySelector('.d-city').value = t.dc||'';
+    if(r.querySelector('.d-zip')) r.querySelector('.d-zip').value = t.dz||'';
+    if(r.querySelector('.miles-input')) r.querySelector('.miles-input').value = t.mi||'';
+    if(r.querySelector('.miles-type')) r.querySelector('.miles-type').value = t.mt||'';
+    if(r.querySelector('.loc-type')) r.querySelector('.loc-type').value = t.lt||'';
+  });
+  
+  const lRows = layoverBody.querySelectorAll('tr');
+  lRows.forEach((r, idx) => {
+    const l = (d.layovers && d.layovers[idx]) ? d.layovers[idx] : {};
+    if(r.querySelector('.l-date')) r.querySelector('.l-date').value = l.ld||'';
+    if(r.querySelector('.l-city')) r.querySelector('.l-city').value = l.lc||'';
+    if(r.querySelector('.l-notes')) r.querySelector('.l-notes').value = l.ln||'';
+  });
+  
+  // Restore receipts
+  if (d.receipts && d.receipts.length > 0) {
+    restoreReceipts(d.receipts);
+  }
+  
+  if (d.expenses) {
+    document.querySelectorAll('[data-exp]').forEach(r => {
+      const exp = d.expenses[r.dataset.exp] || {};
+      if(r.querySelector('.exp-amt')) r.querySelector('.exp-amt').value = exp.a || '';
+      if(r.querySelector('.cb-co')) r.querySelector('.cb-co').checked = exp.co || false;
+      if(r.querySelector('.cb-dr')) r.querySelector('.cb-dr').checked = exp.dr || false;
+    });
+  }
+  recalcExp();
+}
+
 function loadSaved() {
   const raw = localStorage.getItem(SKEY);
   if (!raw) return;
   try {
     const d = JSON.parse(raw);
-    document.getElementById('driverName').value = d.driverName||'';
-    document.getElementById('tractorNum').value = d.tractorNum||'';
-    document.getElementById('trailerNum').value = d.trailerNum||'';
-    document.getElementById('startDay').value = d.startDay||'';
+    if(d.driver) document.getElementById('driverName').value = d.driver;
+    if(d.tractor) document.getElementById('tractorNum').value = d.tractor;
+    if(d.startDay) document.getElementById('startDay').value = d.startDay;
+    if(d.trailer) document.getElementById('trailerNum').innerText = d.trailer;
     document.getElementById('endDay').value = d.endDay||'';
+    document.getElementById('extraStops').value = d.extraStops || '';
+    
+    while (tripBody.querySelectorAll('tr').length < (d.trips?.length || 0)) addTripRow();
+    while (layoverBody.querySelectorAll('tr').length < (d.layovers?.length || 0)) addLayoverRow();
+
     const rows = tripBody.querySelectorAll('tr');
     (d.trips||[]).forEach((t,i) => {
       if (!rows[i]) return;
@@ -1216,6 +2903,15 @@ function loadSaved() {
       if(t.dz) r.querySelector('.d-zip').value=t.dz;
       if(t.mi) r.querySelector('.miles-input').value=t.mi;
       if(t.mt) r.querySelector('.miles-type').value=t.mt;
+      if(t.lt) { const lt = r.querySelector('.loc-type'); lt.value=t.lt; lt.classList.toggle('has-value', t.lt !== ''); }
+    });
+    const lRows = layoverBody.querySelectorAll('tr');
+    (d.layovers||[]).forEach((t,i) => {
+      if (!lRows[i]) return;
+      const r = lRows[i];
+      if(t.ld) r.querySelector('.l-date').value=t.ld;
+      if(t.lc) r.querySelector('.l-city').value=t.lc;
+      if(t.ln) r.querySelector('.l-notes').value=t.ln;
     });
     Object.entries(d.expenses||{}).forEach(([k,v]) => {
       const r = document.querySelector(`[data-exp="${k}"]`);
@@ -1225,6 +2921,10 @@ function loadSaved() {
       if(v.dr) r.querySelector('.cb-dr').checked=true;
     });
     recalcMiles(); recalcExp();
+    // Restore receipts from saved data
+    if (d.receipts && d.receipts.length > 0) {
+      restoreReceipts(d.receipts);
+    }
   } catch(e) {}
 }
 
@@ -1235,26 +2935,126 @@ function clearForm() {
 
 function doClearForm() {
   document.getElementById('clearModal').classList.remove('active');
-  document.querySelectorAll('input').forEach(i => { if(i.type==='checkbox') i.checked=false; else i.value=''; });
-  document.querySelectorAll('select').forEach(s => s.value='');
-  document.getElementById('totalMiles').value = '';
-  document.getElementById('expTotal').textContent = '$';
-  localStorage.removeItem(SKEY);
+  _silentClearForm();
   showToast('Form cleared');
 }
 
-// ═══ DOWNLOAD JSON ═══════════════════════════════════════════════
-function downloadJSON() {
-  const d = gather();
-  const slug = (d.driverName||'driver').replace(/\s+/g,'_').toLowerCase();
-  const dt = d.startDay || new Date().toISOString().slice(0,10);
-  const fn = `trip_sheet_${slug}_${dt}.json`;
-  const blob = new Blob([JSON.stringify(d,null,2)], {type:'application/json'});
-  const u = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=u; a.download=fn;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(u);
-  showToast('Saved: ' + fn);
+function _silentClearForm() {
+  document.querySelectorAll('input').forEach(i => { if(i.type==='checkbox') i.checked=false; else if(i.type !== 'file') i.value=''; });
+  document.querySelectorAll('select').forEach(s => s.value='');
+  document.getElementById('totalMiles').value = '';
+  document.getElementById('expTotal').textContent = '$';
+  document.getElementById('trailerNum').innerText = '';
+  clearAllReceipts();
+  localStorage.removeItem(SKEY);
+}
+
+// ═══ RECEIPT UPLOAD & MANAGEMENT ════════════════════════════════
+let receiptDataStore = []; // Array of { name, dataUrl }
+
+function handleReceiptUpload(input) {
+  const files = input.files;
+  if (!files || files.length === 0) return;
+  
+  Array.from(files).forEach(file => {
+    if (!file.type.startsWith('image/')) {
+      showToast('Only image files are accepted');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('File too large (max 10MB)');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      const entry = { name: file.name, dataUrl };
+      receiptDataStore.push(entry);
+      addReceiptThumb(entry, receiptDataStore.length - 1);
+      markDirty();
+      showToast('📎 Receipt added: ' + file.name);
+    };
+    reader.readAsDataURL(file);
+  });
+  
+  // Reset input so same file can be re-selected
+  input.value = '';
+}
+
+function addReceiptThumb(entry, index) {
+  const grid = document.getElementById('receiptGrid');
+  const empty = document.getElementById('receiptEmpty');
+  if (empty) empty.style.display = 'none';
+  
+  const thumb = document.createElement('div');
+  thumb.className = 'receipt-thumb';
+  thumb.dataset.index = index;
+  thumb.innerHTML = `
+    <img src="${entry.dataUrl}" alt="${entry.name}" onclick="previewReceipt(${index})">
+    <button class="receipt-remove" onclick="event.stopPropagation(); removeReceipt(${index})" title="Remove">✕</button>
+  `;
+  grid.appendChild(thumb);
+}
+
+function removeReceipt(index) {
+  receiptDataStore.splice(index, 1);
+  refreshReceiptGrid();
+  markDirty();
+  showToast('Receipt removed');
+}
+
+function refreshReceiptGrid() {
+  const grid = document.getElementById('receiptGrid');
+  const empty = document.getElementById('receiptEmpty');
+  // Remove all thumbs
+  grid.querySelectorAll('.receipt-thumb').forEach(t => t.remove());
+  
+  if (receiptDataStore.length === 0) {
+    if (empty) empty.style.display = '';
+  } else {
+    if (empty) empty.style.display = 'none';
+    receiptDataStore.forEach((entry, i) => addReceiptThumb(entry, i));
+  }
+}
+
+function previewReceipt(index) {
+  const entry = receiptDataStore[index];
+  if (!entry) return;
+  const overlay = document.getElementById('receiptPreviewOverlay');
+  const img = document.getElementById('receiptPreviewImg');
+  img.src = entry.dataUrl;
+  overlay.classList.add('active');
+}
+
+function getReceiptData() {
+  return receiptDataStore.map(r => ({ name: r.name, dataUrl: r.dataUrl }));
+}
+
+function restoreReceipts(receipts) {
+  receiptDataStore = receipts.map(r => ({ name: r.name, dataUrl: r.dataUrl }));
+  refreshReceiptGrid();
+}
+
+function clearAllReceipts() {
+  receiptDataStore = [];
+  refreshReceiptGrid();
+}
+
+async function getReceiptFiles(slug, dt) {
+  const files = [];
+  for (let i = 0; i < receiptDataStore.length; i++) {
+    const entry = receiptDataStore[i];
+    try {
+      const res = await fetch(entry.dataUrl);
+      const blob = await res.blob();
+      const ext = entry.name.split('.').pop() || 'jpg';
+      const fname = 'receipt_' + slug + '_' + dt + '_' + (i + 1) + '.' + ext;
+      files.push(new File([blob], fname, { type: blob.type }));
+    } catch (e) {
+      console.warn('Could not convert receipt to file:', e);
+    }
+  }
+  return files;
 }
 
 // ═══ SEND IMAGE VIA EMAIL (Web Share API) ══════════════════════════
@@ -1265,11 +3065,10 @@ async function sendForm() {
   btn.disabled = true;
 
   try {
-    // Hide UI elements we don't want in the image picture
+    document.querySelectorAll('.t-tag-del').forEach(el => el.style.display = 'none');
     const toolbar = document.querySelector('.toolbar');
     toolbar.style.display = 'none';
 
-    // Ensure inputs have their values reflected in DOM attributes for html2canvas
     document.querySelectorAll('input').forEach(el => {
       if (el.type === 'checkbox') {
         if(el.checked) el.setAttribute('checked', 'checked');
@@ -1284,108 +3083,59 @@ async function sendForm() {
     });
 
     const page = document.querySelector('.page');
-    
-    // Swap text/number inputs & selects to generic divs temporarily 
-    // This perfectly fixes html2canvas's notorious clipping/faint rendering of form fields
     const swapNodes = [];
     document.querySelectorAll('input:not([type="checkbox"]), select').forEach(el => {
       const div = document.createElement('div');
       const cs = window.getComputedStyle(el);
-      
-      div.style.fontFamily = cs.fontFamily;
-      div.style.fontSize = cs.fontSize;
-      div.style.fontWeight = cs.fontWeight;
-      div.style.color = cs.color;
-      div.style.textAlign = cs.textAlign;
-      div.style.padding = cs.padding;
+      div.style.fontFamily = cs.fontFamily; div.style.fontSize = cs.fontSize; div.style.fontWeight = cs.fontWeight;
+      div.style.color = cs.color; div.style.textAlign = cs.textAlign; div.style.padding = cs.padding;
       div.style.lineHeight = cs.lineHeight === 'normal' ? '1.2' : cs.lineHeight;
-      div.style.boxSizing = 'border-box';
-      div.style.width = cs.width;
-      div.style.height = cs.height;
-      div.style.display = 'inline-block';
-      div.style.overflow = 'hidden';
+      div.style.boxSizing = 'border-box'; div.style.width = cs.width; div.style.height = cs.height;
+      div.style.display = 'inline-block'; div.style.overflow = 'hidden';
       div.style.borderBottom = cs.borderBottomStyle !== 'none' ? cs.borderBottom : 'none';
       if (el.classList.contains('miles-type')) {
-        div.style.border = '1px solid rgba(0,0,0,.15)';
-        div.style.borderRadius = '4px';
-        div.style.background = 'rgba(255,255,255,.55)';
-        div.style.color = '#444';
-        div.style.padding = '2px 2px';
-        div.style.textAlign = 'center';
-        div.style.minWidth = '38px';
+        div.style.border = '1px solid rgba(0,0,0,.15)'; div.style.borderRadius = '4px';
+        div.style.background = 'rgba(255,255,255,.55)'; div.style.color = '#444';
+        div.style.padding = '2px 2px'; div.style.textAlign = 'center';
       }
-      
       div.textContent = el.value || '';
-      
       el.style.display = 'none';
       el.parentNode.insertBefore(div, el.nextSibling);
       swapNodes.push({el, div});
     });
 
-    // Render at full desktop width regardless of mobile viewport scaling
     const canvas = await html2canvas(page, {
-      scale: 3,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      windowWidth: 1020,
-      windowHeight: page.scrollHeight,
-      width: page.scrollWidth,
-      height: page.scrollHeight,
-      scrollX: 0,
-      scrollY: 0,
-      x: 0,
-      y: 0
+      scale: 3, useCORS: true, backgroundColor: '#ffffff',
+      windowWidth: 1020, windowHeight: page.scrollHeight,
+      width: page.scrollWidth, height: page.scrollHeight
     });
 
-    swapNodes.forEach(({el, div}) => {
-      el.style.display = '';
-      div.remove();
-    });
-
+    swapNodes.forEach(({el, div}) => { el.style.display = ''; div.remove(); });
     toolbar.style.display = '';
 
     canvas.toBlob(async (blob) => {
       const d = gather();
-      const slug = (d.driverName||'driver').replace(/\s+/g,'_').toLowerCase();
+      const slug = (d.driver||'driver').replace(/\s+/g,'_').toLowerCase();
       const dt = d.startDay || new Date().toISOString().slice(0,10);
       const filename = `trip_sheet_${slug}_${dt}.png`;
       const file = new File([blob], filename, { type: 'image/png' });
 
-      // Use Native Web Share API if supported (works beautifully on iOS/Android to open Mail)
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            title: 'Trip Sheet - ' + (d.driverName||'Driver'),
-            text: 'Attached is the trip sheet.',
-            files: [file]
-          });
-          showToast('Share dialog opened!');
-        } catch (err) {
-          console.log('Share canceled/failed', err);
-        }
+        await navigator.share({ title: 'Trip Sheet', files: [file] });
       } else {
-        // Fallback for browsers that don't support file sharing
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = filename;
+        const a = document.createElement('a'); a.href = url; a.download = filename;
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        
-        showToast('Image saved! Open your email app to attach it.');
-        setTimeout(() => {
-          window.location.href = `mailto:Accounting@mxtrucking.com?subject=Trip Sheet - ${d.driverName||'Driver'}&body=Please find the attached trip sheet image.`;
-        }, 1200);
+        window.location.href = `mailto:Accounting@mxtrucking.com?subject=Trip Sheet - ${d.driver||'Driver'}&body=Please find the attached trip sheet image.`;
       }
-      
-      btn.textContent = ogText;
-      btn.disabled = false;
+      btn.textContent = ogText; btn.disabled = false;
     }, 'image/png');
 
   } catch(err) {
     console.error(err);
     document.querySelector('.toolbar').style.display = '';
-    btn.textContent = ogText;
-    btn.disabled = false;
+    btn.textContent = ogText; btn.disabled = false;
     showToast('Error rendering image.');
   }
 }
@@ -1398,13 +3148,1359 @@ function showToast(msg) {
 }
 
 // ═══ GENERAL INPUT LISTENERS FOR SAVE ════════════════════════════
-document.querySelectorAll('.driver-bar input, .miles-type').forEach(i => {
+document.querySelectorAll('.driver-bar input, .driver-bar .ce-input, .miles-type, .loc-type').forEach(i => {
   i.addEventListener('input', markDirty);
   i.addEventListener('change', markDirty);
 });
 
-// ═══ INIT ════════════════════════════════════════════════════════
-loadSaved();
+// Prevent enter from making weird spans in contenteditable
+document.getElementById('trailerNum').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+    const range = selection.getRangeAt(0);
+    const br = document.createElement('br');
+    range.deleteContents();
+    range.insertNode(br);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+});
+
+// ═══ ADMIN CONFIG & AUTH ═════════════════════════════════════════
+
+const ADMIN_PWD = 'moonadmin';
+let adminConfig = { drivers: [], workersComp: 50.00, safetyService: 0.00, extraStopPay: 50.00, globalDeductions: [], reports: [], layoutPref: 'stacked' };
+let currentDriverIdx = -1;
+
+async function loadAdminConfig() {
+  try {
+    let saved = null;
+    if (window.db) {
+      // Firebase Mode
+      const doc = await window.db.collection('settings').doc('adminConfig').get();
+      if (doc.exists) saved = doc.data();
+    } else {
+      // Local Server Mode
+      const res = await fetch('/api/db');
+      if (res.ok) saved = await res.json();
+      else saved = JSON.parse(localStorage.getItem('moonexpress_admin_config'));
+    }
+    
+    if (saved) {
+      adminConfig = Object.assign(adminConfig, saved);
+      if (!adminConfig.admins) adminConfig.admins = [];
+      if (!adminConfig.globalDeductions) adminConfig.globalDeductions = [];
+      if (!adminConfig.reports) adminConfig.reports = [];
+      adminConfig.drivers.forEach(d => {
+        if (!d.customDeductions) d.customDeductions = [];
+        if (!d.email) d.email = '';
+        if (!d.escrow) d.escrow = { target: 0, perTrip: 0, balance: 0 };
+      });
+    }
+    applyLayoutPref();
+  } catch(e) {
+    try {
+      const fb = JSON.parse(localStorage.getItem('moonexpress_admin_config'));
+      if (fb) adminConfig = Object.assign(adminConfig, fb);
+    } catch(err){}
+  }
+}
+loadAdminConfig(); // Init async, won't block UI but prepares data
+
+function saveAdminConfig() {
+  localStorage.setItem('moonexpress_admin_config', JSON.stringify(adminConfig));
+  renderDriverRoster();
+  renderMasterInbox();
+  
+  if (window.db) {
+    // Firebase Mode
+    window.db.collection('settings').doc('adminConfig').set(adminConfig)
+      .catch(e => console.error('Failed to sync to Firebase', e));
+  } else {
+    // Local Server Mode
+    fetch('/api/db', {
+      method: 'POST',
+      body: JSON.stringify(adminConfig),
+      headers: { 'Content-Type': 'application/json' }
+    }).catch(e => console.error('Failed to sync to backend', e));
+  }
+}
+
+function openAdmin() {
+  if (sessionStorage.getItem('moonexpress_admin_auth') === 'true') {
+    renderAdminDash();
+    document.getElementById('adminDashOverlay').classList.add('active');
+    switchTab('tabApprovals'); // Default focus to the action queue
+  } else {
+    document.getElementById('adminPwd').value = '';
+    document.getElementById('adminLoginOverlay').classList.add('active');
+  }
+}
+
+function closeAdminLogin() { document.getElementById('adminLoginOverlay').classList.remove('active'); }
+function closeAdminDash() {
+  document.getElementById('adminDashOverlay').classList.remove('active');
+  // Always clear review state so the driver form is blank on exit
+  window.currentReviewReportId = null;
+  document.getElementById('psOverlay').classList.remove('active');
+  const acts = document.getElementById('overlayActions');
+  if (acts) acts.innerHTML = '';
+  _silentClearForm(); // Silent clear — no modal, no toast
+  // Reset admin-mode UI controls
+  const btnSubmit = document.getElementById('btnSubmitReport');
+  const btnPaystub = document.getElementById('btnAdminPaystub');
+  const btnLayout = document.getElementById('adminLayoutToggleWrap');
+  if (btnSubmit) btnSubmit.style.display = 'inline-block';
+  if (btnPaystub) btnPaystub.style.display = 'none';
+  if (btnLayout) btnLayout.style.display = 'none';
+}
+
+
+function testAdminPwd() {
+  const pwd = document.getElementById('adminPwd').value;
+  if (pwd === ADMIN_PWD) {
+    sessionStorage.setItem('moonexpress_admin_auth', 'true');
+    closeAdminLogin();
+    openAdmin();
+  } else {
+    showToast('Invalid admin password');
+  }
+}
+
+function renderAdminDash() {
+  document.getElementById('adminWc').value = adminConfig.workersComp || 0;
+  document.getElementById('adminSafety').value = adminConfig.safetyService || 0;
+  document.getElementById('adminExtraStopPay').value = adminConfig.extraStopPay || 0;
+  document.getElementById('adminPcMilerKey').value = adminConfig.pcMilerApiKey || '';
+  renderDriverRoster();
+  renderMasterInbox();
+}
+
+function saveGlobalSettings() {
+  adminConfig.workersComp = parseFloat(document.getElementById('adminWc').value) || 0;
+  adminConfig.safetyService = parseFloat(document.getElementById('adminSafety').value) || 0;
+  adminConfig.extraStopPay = parseFloat(document.getElementById('adminExtraStopPay').value) || 0;
+  adminConfig.pcMilerApiKey = document.getElementById('adminPcMilerKey').value.trim();
+  saveAdminConfig();
+  showToast('Global settings saved');
+}
+
+
+// Driver Management
+function addDriver() {
+  const name = document.getElementById('newDriverName').value.trim();
+  const email = document.getElementById('newDriverEmail').value.trim();
+  const cpm = parseFloat(document.getElementById('newDriverCpm').value) || 0;
+  if (!name) return showToast('Error: Driver name required');
+  
+  const idx = adminConfig.drivers.findIndex(d => d.name.toLowerCase() === name.toLowerCase());
+  if (idx >= 0) {
+    adminConfig.drivers[idx].cpm = cpm;
+    if (email) adminConfig.drivers[idx].email = email;
+    showToast('Driver updated');
+  } else {
+    adminConfig.drivers.push({ name, email, cpm, customDeductions: [], escrow: { target: 0, perTrip: 0, balance: 0 } });
+    showToast('Driver added');
+  }
+  saveAdminConfig();
+  document.getElementById('newDriverName').value = '';
+  document.getElementById('newDriverEmail').value = '';
+  document.getElementById('newDriverCpm').value = '';
+}
+
+function removeDriver(idx) {
+  if (confirm('Delete this driver?')) {
+    adminConfig.drivers.splice(idx, 1);
+    saveAdminConfig();
+  }
+}
+
+function updateDriverField(idx, field, val) {
+  if (field === 'cpm') {
+    const cpm = parseFloat(val);
+    if (!isNaN(cpm) && cpm >= 0) adminConfig.drivers[idx].cpm = cpm;
+  } else if (field === 'email') {
+    adminConfig.drivers[idx].email = val.trim();
+  }
+  saveAdminConfig();
+}
+
+function saveDriverEscrow(idx) {
+  const target = parseFloat(document.getElementById(`esc_target_${idx}`).value) || 0;
+  const perTrip = parseFloat(document.getElementById(`esc_perTrip_${idx}`).value) || 0;
+  const balance = parseFloat(document.getElementById(`esc_balance_${idx}`).value) || 0;
+  
+  if (!adminConfig.drivers[idx].escrow) adminConfig.drivers[idx].escrow = { target: 0, perTrip: 0, balance: 0 };
+  adminConfig.drivers[idx].escrow.target = target;
+  adminConfig.drivers[idx].escrow.perTrip = perTrip;
+  adminConfig.drivers[idx].escrow.balance = balance;
+  adminConfig.drivers[idx].escrow.locked = true;
+  
+  saveAdminConfig();
+  renderDriverRoster();
+  showToast('Escrow locked and saved!');
+}
+
+function unlockDriverEscrow(idx) {
+  if (!adminConfig.drivers[idx].escrow) return;
+  adminConfig.drivers[idx].escrow.locked = false;
+  saveAdminConfig();
+  renderDriverRoster();
+}
+
+function renderMasterInbox() {
+  const pendingContainer = document.getElementById('masterInboxPending');
+  const historyContainer = document.getElementById('masterInboxHistory');
+  if (!pendingContainer || !historyContainer) return;
+
+  const reports = adminConfig.reports || [];
+  const pending = reports.filter(r => r.status !== 'approved').reverse();
+  const approved = reports.filter(r => r.status === 'approved').reverse();
+
+  // Update badge count
+  const badge = document.getElementById('inboxBadge');
+  if (badge) {
+    if (pending.length > 0) {
+      badge.textContent = pending.length;
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  const renderRow = (r, isHistory) => {
+    const isApp = r.status === 'approved';
+    const isPaid = !!r.paid;
+    const bgCls = isPaid ? 'bg-paid' : (isApp ? 'bg-approved' : 'bg-pending');
+
+    // Status badge
+    let statusBadge = '';
+    if (isPaid) {
+      statusBadge = '<span class="rr-badge st-paid">✓ Paid</span>';
+    } else if (isApp) {
+      statusBadge = '<span class="rr-badge st-approved">Approved</span>';
+    } else {
+      statusBadge = '<span class="rr-badge st-pending">Pending</span>';
+    }
+
+    // Action buttons
+    let payBtn = '';
+    if (isHistory && isApp && !isPaid) {
+      payBtn = `<button class="act-btn act-pay" onclick="markAsPaid('${r.id}')">$ Paid</button>`;
+    }
+    const undoBtn = isPaid ? `<button class="act-btn act-undo" onclick="undoPaid('${r.id}')" title="Undo payment">↩ Undo</button>` : '';
+    const viewBtn = `<button class="act-btn act-review" onclick="adminLoadReport('${r.id}')">${isApp ? 'View' : 'Review'}</button>`;
+    const delBtn = `<button class="act-btn act-delete" onclick="if(confirm('Are you sure you want to delete this report?')) deleteReport('${r.id}')" title="Delete">🗑️</button>`;
+
+    const initials = (r.driverName || '?').split(' ').map(w => w[0]).join('').substring(0,2);
+    return `<div class="report-row ${bgCls}">
+      <div class="rr-info">
+        <div class="rr-avatar">${initials}</div>
+        <span class="rr-name">${r.driverName}</span>
+        <span class="rr-date">${r.date || '—'}</span>
+      </div>
+      <div class="rr-badges">${statusBadge}</div>
+      <div class="rr-actions">${payBtn}${undoBtn}${viewBtn}${delBtn}</div>
+    </div>`;
+  };
+
+  pendingContainer.innerHTML = pending.length === 0
+    ? '<div class="empty-state"><span class="icon">📭</span>No pending submissions</div>'
+    : pending.map(r => renderRow(r, false)).join('');
+  historyContainer.innerHTML = approved.length === 0
+    ? '<div class="empty-state"><span class="icon">📋</span>No approved reports yet</div>'
+    : approved.map(r => renderRow(r, true)).join('');
+}
+
+function markAsPaid(id) {
+  const r = (adminConfig.reports || []).find(x => x.id === id);
+  if (!r) return;
+  r.paid = true;
+  
+  // Commit Escrow Deductions securely exactly once
+  if (r.escrowDeduction > 0 && !r.escrowCommitted) {
+    const dIdx = adminConfig.drivers.findIndex(xd => xd.name.toLowerCase() === (r.driverName || '').toLowerCase());
+    if (dIdx >= 0) {
+      if (!adminConfig.drivers[dIdx].escrow) adminConfig.drivers[dIdx].escrow = { target: 0, perTrip: 0, balance: 0 };
+      adminConfig.drivers[dIdx].escrow.balance += r.escrowDeduction;
+      r.escrowCommitted = true;
+    }
+  }
+
+  saveAdminConfig();
+  renderMasterInbox();
+  renderDriverRoster();
+  showToast('\u2713 Marked as Paid');
+}
+
+function undoPaid(id) {
+  const r = (adminConfig.reports || []).find(x => x.id === id);
+  if (!r) return;
+  const label = `${r.driverName} — ${r.date || 'unknown date'}`;
+  if (!confirm(`Undo payment for:\n\n"${label}"\n\nThis will reverse the Paid status${r.escrowCommitted ? ' and restore the escrow balance' : ''}. Are you sure?`)) return;
+
+  r.paid = false;
+  
+  // Reverse escrow balance if it was committed
+  if (r.escrowDeduction > 0 && r.escrowCommitted) {
+    const dIdx = adminConfig.drivers.findIndex(xd => xd.name.toLowerCase() === (r.driverName || '').toLowerCase());
+    if (dIdx >= 0 && adminConfig.drivers[dIdx].escrow) {
+      adminConfig.drivers[dIdx].escrow.balance = Math.max(0, adminConfig.drivers[dIdx].escrow.balance - r.escrowDeduction);
+    }
+    r.escrowCommitted = false;
+  }
+
+  saveAdminConfig();
+  renderMasterInbox();
+  renderDriverRoster();
+  showToast('Payment undone.');
+}
+
+function deleteReport(id) {
+  adminConfig.reports = (adminConfig.reports || []).filter(r => r.id !== id);
+  saveAdminConfig();
+  renderMasterInbox();
+  renderDriverRoster();
+  showToast('Report deleted.');
+}
+
+function renderDriverRoster() {
+  const container = document.getElementById('adminDriverList');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (!adminConfig.drivers || adminConfig.drivers.length === 0) {
+    container.innerHTML = '<div class="empty-state"><span class="icon">👤</span>No drivers added yet. Use the form above to add your first driver.</div>';
+    return;
+  }
+
+  adminConfig.drivers.forEach((d, i) => {
+    let chargesHtml = '';
+    if (d.customDeductions && d.customDeductions.length > 0) {
+      chargesHtml = d.customDeductions.map((c, cIdx) => `
+        <div class="charge-item">
+          <span>${c.name}</span>
+          <span><strong>$${parseFloat(c.amt).toFixed(2)}</strong>
+            <button class="del-btn" title="Remove" onclick="removeDriverCharge(${i}, ${cIdx})">×</button>
+          </span>
+        </div>
+      `).join('');
+    }
+
+    // Build trip reports section for this driver
+    const allReports = adminConfig.reports || [];
+    const driverReports = allReports
+      .filter(r => (r.driverName || '').toLowerCase().trim() === d.name.toLowerCase().trim())
+      .reverse();
+
+    let reportsHtml = '';
+    if (driverReports.length === 0) {
+      reportsHtml = '<div style="font-size:12px;color:#9ca3af;font-style:italic;padding:6px 0;">No submissions yet</div>';
+    } else {
+      reportsHtml = driverReports.map(r => {
+        const isPaid = !!r.paid;
+        const isApproved = r.status === 'approved';
+
+        // Status badge
+        let statusBadge = '';
+        if (isPaid) {
+          statusBadge = '<span class="rr-badge st-paid">✓ Paid</span>';
+        } else if (isApproved) {
+          statusBadge = '<span class="rr-badge st-approved">Approved</span>';
+        } else {
+          statusBadge = '<span class="rr-badge st-pending">Pending</span>';
+        }
+
+        const bgCls = isPaid ? 'bg-paid' : (isApproved ? 'bg-approved' : 'bg-pending');
+        let payBtn = (isApproved && !isPaid) ? `<button class="act-btn act-pay" onclick="markAsPaid('${r.id}')">$ Paid</button>` : '';
+        const undoBtn = isPaid ? `<button class="act-btn act-undo" onclick="undoPaid('${r.id}')" title="Undo payment">↩ Undo</button>` : '';
+
+        return `<div class="report-row ${bgCls}">
+          <div class="rr-info">
+            <span class="rr-date" style="font-weight:700;color:#1a1a2e;font-size:13px;">${r.date || '—'}</span>
+          </div>
+          <div class="rr-badges">${statusBadge}</div>
+          <div class="rr-actions">${payBtn}${undoBtn}<button class="act-btn act-review" onclick="adminLoadReport('${r.id}')">${isApproved ? 'View' : 'Review'}</button><button class="act-btn act-delete" onclick="if(confirm('Are you sure you want to delete this report?')) deleteReport('${r.id}')" title="Delete">🗑️</button></div>
+        </div>`;
+      }).join('');
+    }
+
+    const esc = d.escrow || { target: 0, perTrip: 0, balance: 0 };
+    const paymentsLeft = (esc.perTrip > 0 && esc.target > esc.balance) ? Math.ceil((esc.target - esc.balance) / esc.perTrip) : 0;
+
+    const card = document.createElement('details');
+    card.className = 'driver-card';
+
+    card.innerHTML = `
+      <summary>
+        <div style="display:flex; align-items:center;">
+          <span style="width: 160px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${d.name}</span>
+          <span style="font-weight: 400; color: #8a8fa3; font-size: 12px;">$${parseFloat(d.cpm).toFixed(2)}/mi</span>
+        </div>
+        <span style="font-size:11px;color:#8a8fa3;font-weight:400;margin-left:auto;margin-right:12px;">${driverReports.length} report${driverReports.length !== 1 ? 's' : ''}</span>
+      </summary>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="field-group">
+            <label>Email</label>
+            <input type="email" value="${d.email || ''}" onchange="updateDriverField(${i}, 'email', this.value)" placeholder="driver@email.com" style="width:180px;">
+          </div>
+          <div class="field-group">
+            <label>CPM</label>
+            <input type="number" value="${parseFloat(d.cpm).toFixed(2)}" class="inline-cpm" step="0.01" min="0" onchange="updateDriverField(${i}, 'cpm', this.value)">
+            <button class="admin-btn danger" style="padding:4px 8px;font-size:11px;" onclick="removeDriver(${i})">Delete</button>
+          </div>
+        </div>
+
+        <div style="border-top:1px solid #eef0f3;padding-top:12px;margin-top:4px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+            <div style="font-size:12px;font-weight:600;color:#5a6070;text-transform:uppercase;letter-spacing:0.3px;">Escrow Deductions</div>
+            ${esc.locked ? `<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#0f766e;background:#ccfbf1;border:1px solid #99f6e4;padding:2px 8px;border-radius:20px;">🔒 Locked</span>` : ''}
+          </div>
+          <div class="card-row" style="background:#f8fafc; padding:12px; border-radius:6px; border:1px solid ${esc.locked ? '#99f6e4' : '#e2e8f0'}; margin-bottom:0px; display:flex; gap:12px; align-items:flex-end;">
+            <div class="field-group" style="flex:1;">
+              <label>Target Amount ($)</label>
+              <input type="number" id="esc_target_${i}" value="${esc.target.toFixed(2)}" step="0.01" min="0" ${esc.locked ? 'readonly style="width:100%;background:#f1fdf9;color:#0f766e;font-weight:700;border-color:#a7f3d0;cursor:default;"' : 'style="width:100%;"'}>
+            </div>
+            <div class="field-group" style="flex:1;">
+              <label>Per Trip ($)</label>
+              <input type="number" id="esc_perTrip_${i}" value="${esc.perTrip.toFixed(2)}" step="0.01" min="0" ${esc.locked ? 'readonly style="width:100%;background:#f1fdf9;color:#0f766e;font-weight:700;border-color:#a7f3d0;cursor:default;"' : 'style="width:100%;"'}>
+            </div>
+            <div class="field-group" style="flex:1;">
+              <label>Collected so far ($)</label>
+              <input type="number" id="esc_balance_${i}" value="${esc.balance.toFixed(2)}" step="0.01" min="0" ${esc.locked ? 'readonly style="width:100%;background:#f1fdf9;color:#0b3d5e;font-weight:700;border-color:#a7f3d0;cursor:default;"' : 'style="width:100%;font-weight:700;color:#0b3d5e;"'}>
+              <div style="font-size:10px;color:#64748b;margin-top:4px;">${paymentsLeft > 0 ? `<strong style="color:#0b3d5e;">${paymentsLeft}</strong> payments left` : (esc.target > 0 ? '<strong style="color:#0f766e;">✓ Complete</strong>' : '—')}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px; padding-bottom:18px;">
+              ${esc.locked
+              ? `<button class="admin-btn sm" style="background:transparent;border:1px solid #d1d5db;color:#6b7280;" onclick="unlockDriverEscrow(${i})">Edit</button>`
+              : `<button class="admin-btn sm" style="background:#0b3d5e;color:#fff;font-weight:700;" onclick="saveDriverEscrow(${i})">🔒 Lock & Save</button>`
+              }
+            </div>
+          </div>
+        </div>
+
+        <div style="border-top:1px solid #eef0f3;padding-top:12px;margin-top:12px;">
+          <div style="font-size:12px;font-weight:600;color:#5a6070;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:8px;">Trip Reports (${driverReports.length})</div>
+          ${reportsHtml}
+        </div>
+
+        <div style="border-top:1px solid #eef0f3;padding-top:12px;margin-top:12px;">
+          <div style="font-size:12px;font-weight:600;color:#5a6070;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:8px;">Charges (${d.customDeductions ? d.customDeductions.length : 0})</div>
+          ${chargesHtml || '<div style="font-size:12px;color:#9ca3af;font-style:italic;">No charges</div>'}
+          <div style="display:flex;gap:6px;margin-top:10px;">
+            <select id="reason_${i}" style="flex:2;padding:6px 8px;font-size:12px;border:1px solid #d1d5db;border-radius:4px;background:#fff;">
+              <option value="" disabled selected>Reason…</option>
+              <option value="Violation">Violation</option>
+              <option value="Trailer Damage">Trailer Damage</option>
+              <option value="Cash Advance">Cash Advance</option>
+              <option value="Other">Other</option>
+            </select>
+            <input type="number" id="amt_${i}" placeholder="$" style="flex:1;padding:6px 8px;font-size:12px;border:1px solid #d1d5db;border-radius:4px;">
+            <button class="admin-btn sm" onclick="addDriverCharge(${i})">+ Add</button>
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+
+function addDriverCharge(dIdx) {
+  const select = document.getElementById('reason_' + dIdx);
+  if (!select.value) return showToast('Error: Select a reason first');
+  
+  const input = document.getElementById('amt_' + dIdx);
+  const name = select.value === 'Other' ? prompt('Enter reason for Other charge:') : select.value;
+  if (!name) return; // cancelled
+  
+  const amt = parseFloat(input.value) || 0;
+  if (amt <= 0) return showToast('Error: Invalid amount');
+  
+  const d = adminConfig.drivers[dIdx];
+  if (!d.customDeductions) d.customDeductions = [];
+  d.customDeductions.push({ name, amt });
+  saveAdminConfig();
+  renderDriverRoster(); // re-render cards
+}
+
+function removeDriverCharge(dIdx, cIdx) {
+  adminConfig.drivers[dIdx].customDeductions.splice(cIdx, 1);
+  saveAdminConfig();
+  renderDriverRoster();
+}
+
+// ═══ INBOX / REPORT SUBMISSIONS ══════════════════════════════════
+async function driverSubmitReport() {
+  doSave();
+  const d = gather();
+  const dName = (d.driver||'').trim();
+  if(!dName) {
+    showToast('Error: Please enter your Driver Name at the top.');
+    window.scrollTo(0, 0);
+    return;
+  }
+
+  const report = {
+    id: 'rep_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
+    driverName: dName,
+    date: d.startDay || new Date().toISOString().split('T')[0],
+    data: d,
+    escrowDeduction: 0,
+    escrowCommitted: false
+  };
+  
+  if (!adminConfig.reports) adminConfig.reports = [];
+  adminConfig.reports.push(report);
+  saveAdminConfig(); // Syncs to server DB
+  
+  showToast('✅ Submitted! Generating trip report image...', 3000);
+  
+  // Generate trip report image and prompt email/share
+  try {
+    const mainPage = document.querySelector('.page');
+    const mainToolbar = document.querySelector('.toolbar');
+    const tableCells = mainPage.querySelectorAll('td');
+    const ogBorder = [];
+    tableCells.forEach((c, i) => { ogBorder[i] = c.style.border; c.style.border = '1px solid #000'; });
+    const iB = [];
+    mainPage.querySelectorAll('input, select').forEach((el, idx) => { iB[idx] = el.style.border; el.style.border = 'none'; });
+    mainToolbar.style.display = 'none';
+
+    const canvas = await html2canvas(mainPage, {
+      scale: 3, useCORS: true, backgroundColor: '#ffffff',
+      windowWidth: 1200, windowHeight: mainPage.scrollHeight,
+      width: mainPage.scrollWidth, height: mainPage.scrollHeight
+    });
+
+    // Restore UI
+    mainToolbar.style.display = '';
+    tableCells.forEach((c, i) => c.style.border = ogBorder[i]);
+    mainPage.querySelectorAll('input, select').forEach((el, idx) => el.style.border = iB[idx]);
+
+    // Upload trip image to server
+    const base64Trip = canvas.toDataURL('image/png');
+    if (window.storage) {
+      const ref = window.storage.ref().child('receipts/rep_' + report.id + '_trip.png');
+      ref.putString(base64Trip, 'data_url').catch(e => console.error(e));
+    } else {
+      fetch('/api/upload', { method: 'POST', body: JSON.stringify({ id: report.id, type: 'trip', image: base64Trip }) }).catch(e => console.error(e));
+    }
+
+    canvas.toBlob(async (blob) => {
+      const slug = dName.replace(/\s+/g, '_').toLowerCase();
+      const dt = d.startDay || new Date().toISOString().slice(0, 10);
+      const file = new File([blob], 'trip_report_' + slug + '_' + dt + '.png', { type: 'image/png' });
+
+      // Collect receipt files for sharing
+      const receiptFiles = await getReceiptFiles(slug, dt);
+      const allFiles = [file, ...receiptFiles];
+
+      if (navigator.canShare && navigator.canShare({ files: allFiles })) {
+        // Mobile: Native share sheet (email, Messages, etc.)
+        await navigator.share({
+          title: 'Trip Report - ' + dName,
+          text: 'Trip report submitted by ' + dName + ' for ' + dt + (receiptFiles.length > 0 ? ' (' + receiptFiles.length + ' receipt(s) attached)' : ''),
+          files: allFiles
+        });
+      } else {
+        // Desktop fallback: download all files + open mailto
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = file.name;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        // Also download receipt images
+        receiptFiles.forEach((rf, i) => {
+          const rUrl = URL.createObjectURL(rf);
+          const rA = document.createElement('a'); rA.href = rUrl; rA.download = rf.name;
+          document.body.appendChild(rA); rA.click(); document.body.removeChild(rA);
+          URL.revokeObjectURL(rUrl);
+        });
+        const rcptNote = receiptFiles.length > 0 ? ' (+ ' + receiptFiles.length + ' receipt images downloaded)' : '';
+        window.location.href = 'mailto:Accounting@mxtrucking.com?subject=Trip Report - ' + dName + ' ' + dt + '&body=Please find the attached trip report image.' + rcptNote;
+      }
+    }, 'image/png');
+  } catch(err) {
+    console.error('Trip image generation error:', err);
+    showToast('Report saved. Email prompt failed — try printing instead.');
+  }
+  
+  setTimeout(() => { window.scrollTo(0, 0); }, 1200);
+}
+
+function adminLoadReport(id) {
+  const r = (adminConfig.reports || []).find(x => x.id === id);
+  if (!r) return showToast('Error: Report not found.');
+  
+  closeAdminDash();
+  populate(r.data);
+  
+  window.currentReviewReportId = id;
+  document.getElementById('btnSubmitReport').style.display = 'none';
+  document.getElementById('btnAdminPaystub').style.display = 'inline-block';
+  document.getElementById('adminLayoutToggleWrap').style.display = 'flex';
+  
+  showToast('Review the trip report, then click "View Paystub" to generate.');
+  window.scrollTo(0,0);
+}
+
+function adminBackToDash() {
+  // Hide the paystub overlay
+  document.getElementById('psOverlay').classList.remove('active');
+  // Clear the admin action buttons
+  const acts = document.getElementById('overlayActions');
+  if (acts) acts.innerHTML = '';
+  // Hide admin-only controls
+  document.getElementById('btnSubmitReport').style.display = 'inline-block';
+  document.getElementById('btnAdminPaystub').style.display = 'none';
+  document.getElementById('adminLayoutToggleWrap').style.display = 'none';
+  // Hide admin-only controls
+  const hideBtn = document.querySelector('.ps-toolbar .btn');
+  if (hideBtn && hideBtn.textContent.includes('Dashboard')) {
+    hideBtn.textContent = 'Hide Paystub \u2191';
+    hideBtn.onclick = function() { closePaystub(); };
+  }
+  // Clear review state
+  window.currentReviewReportId = null;
+  // Re-open dashboard directly (already authenticated)
+  renderAdminDash();
+  document.getElementById('adminDashOverlay').classList.add('active');
+  switchTab('tabApprovals');
+}
+
+function updateAdminToolbar() {
+  const acts = document.getElementById('overlayActions');
+  if (!acts || !window.currentReviewReportId) return;
+  const r = (adminConfig.reports || []).find(x => x.id === window.currentReviewReportId);
+  if (!r) return;
+  const isApproved = r.status === 'approved';
+  const isPaid = !!r.paid;
+
+  // Don't include "Back to Dashboard" here since it already replaces the left "Hide Paystub" button
+  let html = `<button class="btn" id="btnAdminEditPs" style="background:#f59e0b; color:#fff; border-color:#d97706; margin-right:8px;" onclick="adminToggleEditPaystub()">✏️ Edit</button>
+              <button class="btn" style="background:#0ea5e9; color:#fff; border-color:#0284c7; margin-right:8px;" onclick="adminRegeneratePaystub()">🔄 Regenerate</button>
+              <button class="btn" style="background:#3b82f6; color:#fff; border-color:#2563eb; margin-right:8px;" onclick="adminSaveReport()">💾 Save</button>
+              <button class="btn" style="background:#8b5cf6; color:#fff; border-color:#7c3aed; margin-right:16px;" onclick="adminEmailPaystub()">📧 Email Driver</button>`;
+
+  if (isPaid) {
+    html += `<span style="display:inline-flex;align-items:center;padding:6px 14px;background:#d1fae5;color:#065f46;border-radius:6px;font-weight:700;font-size:.85rem;gap:5px;border:1px solid #10b981;">✓ Paid &amp; Emailed</span>`;
+  } else if (isApproved) {
+    html += `<span style="display:inline-flex;align-items:center;padding:6px 14px;background:#d1fae5;color:#065f46;border-radius:6px;font-weight:700;font-size:.85rem;gap:5px;margin-right:8px;border:1px solid #10b981;">✓ Approved</span>
+             <button class="btn btn-primary" style="background:#2ecc71;border-color:#27ae60;color:#fff;font-weight:600;" onclick="adminSendPaystub()">$ Mark Paid</button>`;
+  } else {
+    html += `<button class="btn btn-primary" style="background:#10b981;border-color:#059669;font-weight:600;" onclick="adminApproveReport()">✅ Approve</button>`;
+  }
+  acts.innerHTML = html;
+}
+
+function adminToggleEditPaystub() {
+  const psGrid = document.getElementById('psGrid');
+  const btn = document.getElementById('btnAdminEditPs');
+  const isEditing = psGrid.contentEditable === "true";
+  
+  if (isEditing) {
+    // --- EXIT EDIT MODE ---
+    psGrid.contentEditable = "false";
+    psGrid.style.border = "none";
+    psGrid.style.boxShadow = "none";
+    const psRate = document.getElementById('psRate');
+    if (psRate) psRate.readOnly = true;
+    btn.innerHTML = "✏️ Edit";
+    btn.style.background = "#f59e0b";
+    // Remove add-row buttons
+    document.querySelectorAll('.ps-add-row-btn').forEach(b => b.remove());
+    // Final recalc
+    adminRecalcPaystub();
+    showToast('✅ Edit mode closed. All totals updated.');
+  } else {
+    // --- ENTER EDIT MODE ---
+    psGrid.contentEditable = "true";
+    psGrid.style.border = "3px dashed #f59e0b";
+    psGrid.style.boxShadow = "0 0 15px rgba(245, 158, 11, 0.4)";
+    const psRate = document.getElementById('psRate');
+    if (psRate) psRate.readOnly = false;
+    btn.innerHTML = "✅ Done Editing";
+    btn.style.background = "#2ecc71";
+    
+    // Inject "+ Add Row" buttons after each section
+    injectAddRowButtons();
+    
+    showToast('✏️ Full edit mode — type anywhere, add rows, math updates live.');
+  }
+}
+
+function injectAddRowButtons() {
+  // Remove existing ones first
+  document.querySelectorAll('.ps-add-row-btn').forEach(b => b.remove());
+  
+  const sections = [
+    { tbodyId: 'psCreditTbl', label: '+ Add Credit' },
+    { tbodyId: 'psReimbTbl', label: '+ Add Reimbursement' },
+    { tbodyId: 'psSubTbl',   label: '+ Add Deduction' }
+  ];
+  
+  sections.forEach(sec => {
+    const tbody = document.getElementById(sec.tbodyId);
+    if (!tbody) return;
+    
+    // Create an add-row button as a TR inside the tbody
+    const btnRow = document.createElement('tr');
+    btnRow.className = 'ps-add-row-btn';
+    btnRow.innerHTML = `<td colspan="7" style="padding:4px 8px; text-align:center;">
+      <button onclick="psAddRow('${sec.tbodyId}')" style="
+        background: none; border: 2px dashed #cbd5e1; color: #64748b;
+        padding: 6px 18px; border-radius: 6px; cursor: pointer; font-size: .8rem;
+        font-weight: 600; transition: all .15s; width: 100%;
+      " onmouseover="this.style.borderColor='#f59e0b';this.style.color='#f59e0b';"
+         onmouseout="this.style.borderColor='#cbd5e1';this.style.color='#64748b';">
+        ${sec.label}
+      </button>
+    </td>`;
+    tbody.appendChild(btnRow);
+  });
+}
+
+function psAddRow(tbodyId) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  
+  // Remove the add-row button temporarily
+  const addBtn = tbody.querySelector('.ps-add-row-btn');
+  
+  const newRow = document.createElement('tr');
+  newRow.setAttribute('data-ps-editable', 'true');
+  
+  const isDeduction = (tbodyId === 'psSubTbl');
+  
+  newRow.innerHTML = `
+    <td contenteditable="true" style="padding:4px 8px; color:#0b3d5e; font-style:italic; min-width:100px; outline:none; cursor:text;" 
+        onclick="if(this.textContent==='New charge name') { this.textContent=''; this.style.color='#1e293b'; this.style.fontStyle='normal'; }">New charge name</td>
+    <td contenteditable="true" style="padding:4px 8px; text-align:right; min-width:60px; outline:none; cursor:text;"
+        onclick="if(this.textContent==='$0.00') this.textContent='';">${isDeduction ? '-$0.00' : '$0.00'}</td>
+    <td colspan="4" style="padding:0;"></td>
+    <td style="padding:2px 4px; text-align:center;">
+      <button onclick="this.closest('tr').remove(); adminRecalcPaystub();" style="
+        background:none; border:none; color:#ef4444; cursor:pointer; font-size:1rem; padding:2px 6px;
+        opacity:.6; transition:.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.6'">✕</button>
+    </td>`;
+  
+  // Insert before the add button row
+  if (addBtn) {
+    tbody.insertBefore(newRow, addBtn);
+  } else {
+    tbody.appendChild(newRow);
+  }
+  
+  // Focus on the name cell
+  const nameCell = newRow.querySelector('td');
+  nameCell.focus();
+  
+  // Select the placeholder text
+  const range = document.createRange();
+  range.selectNodeContents(nameCell);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+
+  // Live recalc as admin types in the amount cell
+  const amtCell = newRow.querySelectorAll('td')[1];
+  if (amtCell) {
+    amtCell.addEventListener('input', () => debouncedRecalc());
+    amtCell.addEventListener('blur', () => adminRecalcPaystub(true));
+  }
+  
+  // Recalc immediately to include the new row
+  debouncedRecalc();
+}
+
+function adminRecalcPaystub(silent) {
+  const parseAmt = str => {
+    const cleaned = (str || '').replace(/[^0-9.\-]/g, '');
+    return parseFloat(cleaned) || 0;
+  };
+  
+  const el = id => document.getElementById(id);
+  
+  // --- MILES: sum every trip row's last td ---
+  let totalMiles = 0;
+  document.querySelectorAll('#psTripBody tr').forEach(tr => {
+    const tds = tr.querySelectorAll('td');
+    if (tds.length === 0) return;
+    const lastTd = tds[tds.length - 1];
+    const val = parseAmt(lastTd.textContent);
+    if (val > 0) totalMiles += val;
+  });
+
+  el('psTotalMilesTop').textContent = totalMiles > 0 ? totalMiles.toLocaleString() : '0';
+  el('psTotalMiles').textContent = totalMiles > 0 ? totalMiles.toFixed(1) : '0.0';
+  
+  // --- RATE (always read from the input) ---
+  const psRateEl = el('psRate');
+  const rate = parseAmt(psRateEl ? psRateEl.value : '0');
+  
+  // --- GROSS = Miles × Rate ---
+  const gross = totalMiles * rate;
+  el('psGross').textContent = fmt$(gross);
+  el('psMilesXRate').textContent = fmt$(gross);
+
+  // --- CREDIT: sum 2nd td of each credit row ---
+  let creditTotal = 0;
+  document.querySelectorAll('#psCreditTbl tr:not(.ps-add-row-btn)').forEach(tr => {
+    const tds = tr.querySelectorAll('td');
+    if (tds.length >= 2) creditTotal += Math.abs(parseAmt(tds[1].textContent));
+  });
+  el('psTotalCredit').textContent = fmt$(creditTotal);
+
+  // --- REIMBURSEMENT: sum 2nd td of each reimb row ---
+  let reimbTotal = 0;
+  document.querySelectorAll('#psReimbTbl tr:not(.ps-add-row-btn)').forEach(tr => {
+    const tds = tr.querySelectorAll('td');
+    if (tds.length >= 2) reimbTotal += Math.abs(parseAmt(tds[1].textContent));
+  });
+  el('psTotalReimb').textContent = fmt$(reimbTotal);
+
+  // --- SUBTRACT: sum 2nd td of each sub row ---
+  let subTotal = 0;
+  document.querySelectorAll('#psSubTbl tr:not(.ps-add-row-btn)').forEach(tr => {
+    const tds = tr.querySelectorAll('td');
+    if (tds.length >= 2) subTotal += Math.abs(parseAmt(tds[1].textContent));
+  });
+  el('psTotalSub').textContent = fmt$(-subTotal);
+
+  // --- NET FORMULA: (Miles×Rate) + Credit + Reimbursement - Subtract = Net ---
+  const add = creditTotal + reimbTotal;
+  const net = gross + add - subTotal;
+  
+  el('psAdd').textContent = fmt$(add);
+  el('psSubVal').textContent = fmt$(-subTotal);
+  el('psNetVal').textContent = fmt$(net);
+  el('psNet').textContent = fmt$(net);
+  el('psTotalPaid').textContent = fmt$(net);
+  el('psTotalEarned').textContent = fmt$(net - reimbTotal);
+  
+  if (!silent) showToast('🧮 Paystub recalculated!', 1200);
+  _recalcRunning = false;
+}
+
+// --- Debounced recalc with guard to prevent infinite loop ---
+let _recalcTimer = null;
+let _recalcRunning = false;
+function debouncedRecalc() {
+  if (_recalcRunning) return; // prevent re-entry from MutationObserver
+  clearTimeout(_recalcTimer);
+  _recalcTimer = setTimeout(() => { _recalcRunning = true; adminRecalcPaystub(true); }, 80);
+}
+
+// Live recalc on ANY input inside psGrid (contenteditable cells, added rows, etc.)
+document.getElementById('psGrid').addEventListener('input', debouncedRecalc);
+
+// Live recalc when CPM rate input changes (this is a regular <input>, fires separately)
+document.getElementById('psRate').addEventListener('input', debouncedRecalc);
+
+// Watch for DOM changes (add/remove rows) inside psGrid
+const _psGridObserver = new MutationObserver(debouncedRecalc);
+_psGridObserver.observe(document.getElementById('psGrid'), { childList: true, subtree: true });
+
+// Block Enter from inserting line breaks in contenteditable
+document.getElementById('psGrid').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+  }
+});
+
+async function adminEmailPaystub() {
+  const dName = document.getElementById('driverName').value.trim().toLowerCase();
+  let driverEmail = 'Accounting@mxtrucking.com';
+  
+  if (dName && adminConfig.drivers.length > 0) {
+    const match = adminConfig.drivers.find(x => x.name.toLowerCase() === dName);
+    if (match && match.email) driverEmail = match.email;
+  }
+  
+  showToast('📧 Generating paystub for email...', 3000);
+  generatePaystubBlobAndEmail(driverEmail, 'Moon Express Paystub', window.currentReviewReportId, false);
+}
+
+function adminSaveReport() {
+  const id = window.currentReviewReportId;
+  if (!id) return;
+  const r = (adminConfig.reports || []).find(x => x.id === id);
+  if (r) {
+    r.paystubHTML = document.getElementById('psGrid').innerHTML;
+    try { r.data = gather(); } catch (e) { console.error('Save failed to gather form data:', e); }
+    saveAdminConfig();
+    showToast('💾 Report Saved Successfully!');
+  }
+}
+
+function adminViewPaystub() {
+  if (!window.currentReviewReportId) return;
+  
+  const r = (adminConfig.reports || []).find(x => x.id === window.currentReviewReportId);
+  
+  // Always generate fresh from the current trip data + admin config
+  // This ensures any edits the admin made to the trip report are reflected
+  if (r) r.paystubHTML = null; // Clear old saved paystub
+  generatePaystub();
+  
+  updateAdminToolbar();
+
+  // Override "Hide Paystub" to go back to dashboard in admin review mode
+  const hideBtn = document.querySelector('.ps-toolbar .btn');
+  if (hideBtn && hideBtn.textContent.includes('Hide Paystub')) {
+    hideBtn.textContent = '\u2190 Back to Dashboard';
+    hideBtn.onclick = function() { adminBackToDash(); };
+  }
+}
+
+function adminRegeneratePaystub() {
+  if (!window.currentReviewReportId) return;
+  const r = (adminConfig.reports || []).find(x => x.id === window.currentReviewReportId);
+  if (r) {
+    r.paystubHTML = null; // Wipe old saved paystub
+    // Save the current trip form data first
+    try { r.data = gather(); } catch(e) {}
+    saveAdminConfig();
+  }
+  // Generate fresh paystub from current form data
+  generatePaystub();
+  updateAdminToolbar();
+  showToast('🔄 Paystub regenerated from updated trip data!', 2500);
+}
+
+function toggleLayoutView() {
+  const isSide = adminConfig.layoutPref !== 'side-by-side';
+  adminConfig.layoutPref = isSide ? 'side-by-side' : 'stacked';
+  saveAdminConfig();
+  applyLayoutPref();
+}
+
+function applyLayoutPref() {
+  const isSide = adminConfig.layoutPref === 'side-by-side';
+  const btn = document.getElementById('adminLayoutToggleWrap');
+  if (btn) {
+    if (isSide) btn.classList.add('active-side');
+    else btn.classList.remove('active-side');
+  }
+  const wrap = document.getElementById('splitViewWrap');
+  if (wrap) {
+    if (isSide) wrap.classList.add('side-by-side');
+    else wrap.classList.remove('side-by-side');
+  }
+}
+
+// ═══ PAYSTUB GENERATION ═════════════════════════════════════════
+const fmt$ = (n) => {
+  const neg = n < 0;
+  const abs = Math.abs(n).toFixed(2);
+  return (neg ? '-$' : '$') + Number(abs).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+};
+
+const EXPENSE_CATEGORIES = {
+  credit: ['accessorial'],
+  reimburse: ['lumper','scale_tickets','tolls','parking','truck_wash','trailer_wash','oil_change','other'],
+  substract: ['cash_advance','cash_expense']
+};
+
+function generatePaystub() {
+  doSave();
+  loadAdminConfig(); // ensure we have latest
+  const d = gather();
+  
+  // Admin Driver Lookup
+  const dName = (d.driver || '').trim().toLowerCase();
+  let driverCpm = 0.70; // fallback if admin config is empty
+  let driverFound = false;
+  
+  if (dName && adminConfig.drivers.length > 0) {
+    const match = adminConfig.drivers.find(x => x.name.toLowerCase() === dName);
+    if (match) {
+      driverCpm = match.cpm;
+      driverConfig = match;
+    } else {
+      showToast('Warning: Driver not found in Admin database. Rate defaulted to 0.');
+      driverCpm = 0.00;
+    }
+  }
+  
+  document.getElementById('psRate').value = driverCpm.toFixed(2);
+  document.getElementById('psRate').readOnly = true; // Handled by admin now
+  const rate = driverCpm;
+
+  document.getElementById('psPayTo').textContent = d.driver || '';
+  document.getElementById('psDate').textContent = d.startDay || '';
+
+  // Build trip rows (7-col grid: num | empty | from(2) | to(2) | miles)
+  const psTripBody = document.getElementById('psTripBody');
+  psTripBody.innerHTML = '';
+  let totalMiles = 0;
+  let tripNum = 0;
+
+  d.trips.forEach(t => {
+    const mi = parseFloat(t.mi) || 0;
+    if (mi <= 0) return;
+    tripNum++;
+    totalMiles += mi;
+    const from = t.pc ? (t.pc + (t.pz ? ' ' + t.pz : '')) : '';
+    const to = t.dc ? (t.dc + (t.dz ? ' ' + t.dz : '')) : '';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="padding:5px 8px;text-align:center;">${tripNum}</td>
+      <td></td>
+      <td colspan="2" style="padding:5px 8px;">${from}</td>
+      <td colspan="2" style="padding:5px 8px;">${to}</td>
+      <td style="padding:5px 8px;text-align:right;">${mi.toFixed(1)}</td>`;
+    psTripBody.appendChild(tr);
+  });
+
+  // Pad with 2 empty rows
+  for (let i = 0; i < 2; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="7" style="height:8px;"></td>`;
+    psTripBody.appendChild(tr);
+  }
+
+  document.getElementById('psTotalMilesTop').textContent = totalMiles > 0 ? totalMiles.toLocaleString() : '0';
+  document.getElementById('psTotalMiles').textContent = totalMiles > 0 ? totalMiles.toFixed(1) : '0.0';
+
+  const gross = totalMiles * rate;
+  document.getElementById('psGross').textContent = fmt$(gross);
+
+  // Expenses
+  let creditTotal = 0, reimbTotal = 0, subTotal = 0;
+  const workersComp = parseFloat(adminConfig.workersComp) || 0;
+  const safetyService = parseFloat(adminConfig.safetyService) || 0;
+
+  // Credit (7-col: label | amount | empty x5)
+  const creditTbl = document.getElementById('psCreditTbl');
+  creditTbl.innerHTML = '';
+  
+  // Extra Stops Pay calculation
+  const extraStops = parseInt(d.extraStops) || 0;
+  const globalExtraStopRate = parseFloat(adminConfig.extraStopPay) || 0;
+  if (extraStops > 0 && globalExtraStopRate > 0) {
+    const extraStopsPay = extraStops * globalExtraStopRate;
+    creditTotal += extraStopsPay;
+    creditTbl.innerHTML += `<tr><td style="padding:4px 8px;">Extra Stops (${extraStops} @ $${globalExtraStopRate.toFixed(2)})</td><td style="padding:4px 8px;text-align:right;">${fmt$(extraStopsPay)}</td><td colspan="5"></td></tr>`;
+  }
+
+  EXPENSE_CATEGORIES.credit.forEach(key => {
+    const exp = d.expenses[key];
+    if (exp && exp.a && parseFloat(exp.a) > 0) {
+      const amt = parseFloat(exp.a);
+      creditTotal += amt;
+      const name = document.querySelector(`[data-exp="${key}"] .exp-name`)?.textContent || key;
+      creditTbl.innerHTML += `<tr><td style="padding:4px 8px;">${name}</td><td style="padding:4px 8px;text-align:right;">${fmt$(amt)}</td><td colspan="5"></td></tr>`;
+    }
+  });
+
+  // Reimbursement (driver-paid)
+  const reimbTbl = document.getElementById('psReimbTbl');
+  reimbTbl.innerHTML = '';
+  EXPENSE_CATEGORIES.reimburse.forEach(key => {
+    const exp = d.expenses[key];
+    if (exp && exp.a && parseFloat(exp.a) > 0 && exp.dr) {
+      const amt = parseFloat(exp.a);
+      reimbTotal += amt;
+      const name = document.querySelector(`[data-exp="${key}"] .exp-name`)?.textContent || key;
+      reimbTbl.innerHTML += `<tr><td style="padding:4px 8px;">${name}</td><td style="padding:4px 8px;text-align:right;">${fmt$(amt)}</td><td colspan="5"></td></tr>`;
+    }
+  });
+
+  // Substract
+  const subTbl = document.getElementById('psSubTbl');
+  subTbl.innerHTML = '';
+
+  window.tempEscrowDeduction = 0;
+  if (driverConfig && driverConfig.escrow && driverConfig.escrow.target > driverConfig.escrow.balance && driverConfig.escrow.perTrip > 0) {
+    const escAmt = Math.min(driverConfig.escrow.perTrip, driverConfig.escrow.target - driverConfig.escrow.balance);
+    if (escAmt > 0) {
+      subTotal += escAmt;
+      window.tempEscrowDeduction = escAmt;
+      const paysLeft = Math.ceil((driverConfig.escrow.target - (driverConfig.escrow.balance + escAmt)) / driverConfig.escrow.perTrip);
+      subTbl.innerHTML += `<tr><td style="padding:4px 8px; font-weight:600; color:#be123c;">Escrow Deduction (Target: $${driverConfig.escrow.target.toFixed(2)} - ${paysLeft} left)</td><td style="padding:4px 8px;text-align:right;color:#be123c;">${fmt$(escAmt)}</td><td colspan="5"></td></tr>`;
+    }
+  }
+
+  EXPENSE_CATEGORIES.substract.forEach(key => {
+    const exp = d.expenses[key];
+    if (exp && exp.a && parseFloat(exp.a) > 0) {
+      const amt = parseFloat(exp.a);
+      subTotal += amt;
+      const name = document.querySelector(`[data-exp="${key}"] .exp-name`)?.textContent || key;
+      subTbl.innerHTML += `<tr><td style="padding:4px 8px;">${name}</td><td style="padding:4px 8px;text-align:right;">${fmt$(-amt)}</td><td colspan="5"></td></tr>`;
+    }
+  });
+  
+  // Universal standard deductions
+  if (workersComp > 0) {
+    subTbl.innerHTML += `<tr><td style="padding:4px 8px;">Workers comp ins</td><td style="padding:4px 8px;text-align:right;">${fmt$(-workersComp)}</td><td colspan="5"></td></tr>`;
+    subTotal += workersComp;
+  }
+  if (safetyService > 0) {
+    subTbl.innerHTML += `<tr><td style="padding:4px 8px;">Safety service</td><td style="padding:4px 8px;text-align:right;">${fmt$(-safetyService)}</td><td colspan="5"></td></tr>`;
+    subTotal += safetyService;
+  }
+
+  // Custom Driver Deductions
+  if (dName && adminConfig.drivers.length > 0) {
+    const match = adminConfig.drivers.find(x => x.name.toLowerCase() === dName);
+    if (match && match.customDeductions && match.customDeductions.length > 0) {
+      match.customDeductions.forEach(c => {
+        if (c.amt > 0) {
+          subTbl.innerHTML += `<tr><td style="padding:4px 8px;">${c.name}</td><td style="padding:4px 8px;text-align:right;">${fmt$(-c.amt)}</td><td colspan="5"></td></tr>`;
+          subTotal += c.amt;
+        }
+      });
+    }
+  }
+
+  document.getElementById('psTotalCredit').textContent = fmt$(creditTotal);
+  document.getElementById('psTotalReimb').textContent = fmt$(reimbTotal);
+  document.getElementById('psTotalSub').textContent = fmt$(-subTotal);
+
+  // Formula
+  const milesXrate = totalMiles * rate;
+  const add = creditTotal + reimbTotal;
+  const net = milesXrate + add - subTotal;
+  document.getElementById('psMilesXRate').textContent = fmt$(milesXrate);
+  document.getElementById('psAdd').textContent = fmt$(add);
+  document.getElementById('psSubVal').textContent = fmt$(-subTotal);
+  document.getElementById('psNetVal').textContent = fmt$(net);
+  document.getElementById('psNet').textContent = fmt$(net);
+  document.getElementById('psTotalPaid').textContent = fmt$(net);
+  document.getElementById('psTotalEarned').textContent = fmt$(net - reimbTotal);
+
+  // Make all paystub text manually editable for final overrides
+  document.querySelectorAll('.ps-table td, #psPayTo, #psDate, #psRate').forEach(el => {
+    el.setAttribute('contenteditable', 'true');
+    el.style.outline = 'none'; // prevent ugly focus rings in print/screenshot
+  });
+
+  // Show securely at the bottom
+  document.getElementById('psOverlay').classList.add('active');
+  setTimeout(() => {
+    document.getElementById('psOverlay').scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+  
+  // Conditionally render action buttons (admin review mode only)
+  const acts = document.getElementById('overlayActions');
+  if (acts && window.currentReviewReportId) {
+    updateAdminToolbar();
+    // Auto-inject add-row buttons so admin can add reimbursements/deductions immediately
+    injectAddRowButtons();
+    // Make rate editable right away for admin
+    document.getElementById('psRate').readOnly = false;
+  }
+}
+
+
+function closePaystub() {
+  document.getElementById('psOverlay').classList.remove('active');
+}
+
+function printPaystub() {
+  const overlay = document.getElementById('psOverlay');
+  const mainPage = document.querySelector('.page');
+  mainPage.style.display = 'none';
+  overlay.style.position = 'static';
+  overlay.style.padding = '0';
+  window.print();
+  mainPage.style.display = '';
+  overlay.style.position = '';
+  overlay.style.padding = '';
+}
+
+function adminApproveReport() {
+  const id = window.currentReviewReportId;
+  if (!id) return;
+  const r = (adminConfig.reports || []).find(x => x.id === id);
+  if (r) r.status = 'approved';
+  saveAdminConfig();
+  renderMasterInbox();
+  renderDriverRoster();
+  renderDriverRoster();
+  updateAdminToolbar();
+  showToast('Report approved!');
+}
+
+async function adminSendPaystub() {
+  const dName = document.getElementById('driverName').value.trim().toLowerCase();
+  let driverEmail = 'Accounting@mxtrucking.com';
+  const repIdRef = window.currentReviewReportId; // capture BEFORE nulling
+  
+  if (dName && adminConfig.drivers.length > 0) {
+    const matchIdx = adminConfig.drivers.findIndex(x => x.name.toLowerCase() === dName);
+    window.lastFoundDriverIdx = matchIdx; // export cleanly for escrow checks below
+    if (matchIdx >= 0) {
+      if (adminConfig.drivers[matchIdx].email) driverEmail = adminConfig.drivers[matchIdx].email;
+      // Clear specific deductions after paying
+      if (adminConfig.drivers[matchIdx].customDeductions && adminConfig.drivers[matchIdx].customDeductions.length > 0) {
+        adminConfig.drivers[matchIdx].customDeductions = [];
+      }
+    }
+  }
+  
+  if (repIdRef) {
+    const r = adminConfig.reports.find(x => x.id === repIdRef);
+    if (r) { 
+      r.status = 'approved'; 
+      r.paid = true; 
+      
+      // Commit Escrow Deductions securely exactly once
+      if (r.escrowDeduction > 0 && !r.escrowCommitted && window.lastFoundDriverIdx >= 0) {
+        adminConfig.drivers[window.lastFoundDriverIdx].escrow.balance += r.escrowDeduction;
+        r.escrowCommitted = true;
+      }
+    }
+    window.currentReviewReportId = null;
+    document.getElementById('btnSubmitReport').style.display = 'inline-block';
+    document.getElementById('btnAdminPaystub').style.display = 'none';
+    document.getElementById('adminLayoutToggleWrap').style.display = 'none';
+  }
+  saveAdminConfig();
+  renderMasterInbox();
+  renderDriverRoster();
+
+  showToast('Verified! Dispatching autonomous final paystub...', 3000);
+  generatePaystubBlobAndEmail(driverEmail, 'Moon Express Final Paystub', repIdRef, true);
+  
+  updateAdminToolbar();
+}
+
+async function generatePaystubBlobAndEmail(targetEmail, subjectTitle, reportIdToUpload = null, useBackendDirectSend = false) {
+  if (document.activeElement) document.activeElement.blur(); // Remove text cursor before snapshot
+  
+  // Setup HTML2Canvas targets
+  const psPage = document.getElementById('psPage');
+  const psToolbar = document.querySelector('.ps-toolbar');
+  
+  const mainPage = document.querySelector('.page');
+  const mainToolbar = document.querySelector('.toolbar');
+  const tableCells = mainPage.querySelectorAll('td');
+  const ogBorder = [];
+  tableCells.forEach((c, i) => { ogBorder[i] = c.style.border; c.style.border = '1px solid #000'; });
+  const iB = [];
+  mainPage.querySelectorAll('input, select').forEach((i, idx) => { iB[idx] = i.style.border; i.style.border = 'none'; });
+
+  // Hide toolbars
+  psToolbar.style.display = 'none';
+  mainToolbar.style.display = 'none';
+
+  try {
+    const canvasTrip = await html2canvas(mainPage, {
+      scale: 3, useCORS: true, backgroundColor: '#ffffff',
+      windowWidth: 1200, windowHeight: mainPage.scrollHeight,
+      width: mainPage.scrollWidth, height: mainPage.scrollHeight
+    });
+
+    const canvasPs = await html2canvas(psPage, {
+      scale: 3, useCORS: true, backgroundColor: '#ffffff',
+      windowWidth: 820, windowHeight: psPage.scrollHeight,
+      width: psPage.scrollWidth, height: psPage.scrollHeight
+    });
+
+    // Restore UI
+    psToolbar.style.display = '';
+    mainToolbar.style.display = '';
+    tableCells.forEach((c, i) => c.style.border = ogBorder[i]);
+    mainPage.querySelectorAll('input, select').forEach((i, idx) => i.style.border = iB[idx]);
+
+    // Upload to server/Firebase if needed
+    if (reportIdToUpload) {
+      const base64Trip = canvasTrip.toDataURL('image/png');
+      const base64Ps = canvasPs.toDataURL('image/png');
+      
+      if (window.storage) {
+        // Firebase Mode
+        const uploadFile = (b64, type) => {
+          const ref = window.storage.ref().child(`receipts/rep_${reportIdToUpload}_${type}.png`);
+          ref.putString(b64, 'data_url').catch(e => console.error(e));
+        };
+        uploadFile(base64Trip, 'trip');
+        uploadFile(base64Ps, 'paystub');
+      } else {
+        // Local Server Mode
+        fetch('/api/upload', { method: 'POST', body: JSON.stringify({ id: reportIdToUpload, type: 'trip', image: base64Trip }) }).catch(e=>console.error(e));
+        fetch('/api/upload', { method: 'POST', body: JSON.stringify({ id: reportIdToUpload, type: 'paystub', image: base64Ps }) }).catch(e=>console.error(e));
+      }
+    }
+
+    canvasTrip.toBlob(async (blobTrip) => {
+      canvasPs.toBlob(async (blobPs) => {
+        const d = gather();
+        const slug = (d.driver||'driver').replace(/\s+/g,'_').toLowerCase();
+        const dt = d.startDay || new Date().toISOString().slice(0,10);
+        
+        const file1 = new File([blobTrip], `trip_report_${slug}_${dt}.png`, { type: 'image/png' });
+        const file2 = new File([blobPs], `paystub_${slug}_${dt}.png`, { type: 'image/png' });
+        
+        if (useBackendDirectSend) {
+          // Autonomous Server-Side Send (Admin Mode)
+          const base64Trip = canvasTrip.toDataURL('image/png');
+          const base64Ps = canvasPs.toDataURL('image/png');
+          fetch('/api/send', {
+            method: 'POST',
+            body: JSON.stringify({
+              to: targetEmail,
+              subject: subjectTitle,
+              tripImage: base64Trip,
+              paystubImage: base64Ps
+            })
+          }).then(() => showToast('✅ Email sent securely to driver!', 4000))
+            .catch(e => console.error(e));
+
+        } else if (navigator.canShare && navigator.canShare({ files: [file1, file2] })) {
+          // Native Client-Side Share Sheet (Driver Mode)
+          await navigator.share({ title: subjectTitle + ' - ' + (d.driver||'Driver'), files: [file1, file2] });
+        } else {
+          // Fallback manual downloads
+          const url1 = URL.createObjectURL(blobTrip);
+          const a1 = document.createElement('a'); a1.href = url1; a1.download = file1.name;
+          document.body.appendChild(a1); a1.click(); document.body.removeChild(a1);
+          URL.revokeObjectURL(url1);
+
+          const url2 = URL.createObjectURL(blobPs);
+          const a2 = document.createElement('a'); a2.href = url2; a2.download = file2.name;
+          document.body.appendChild(a2); a2.click(); document.body.removeChild(a2);
+          URL.revokeObjectURL(url2);
+          
+          const mailtoUrl = `mailto:${targetEmail}?subject=${subjectTitle} - ${d.driver||'Driver'}&body=Please find the attached Trip Report and Paystub documents.`;
+          window.location.href = mailtoUrl;
+        }
+      }, 'image/png');
+    }, 'image/png');
+
+  } catch(err) {
+    console.error(err);
+    psToolbar.style.display = '';
+    mainToolbar.style.display = '';
+    tableCells.forEach((c, i) => c.style.border = ogBorder[i]);
+    mainPage.querySelectorAll('input, select').forEach((i, idx) => i.style.border = iB[idx]);
+    showToast('Error generating images.');
+  }
+}
+
+function switchTab(tabId) {
+  // Hide all contents
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  // Remove active state from all tabs
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  
+  // Show target content
+  document.getElementById(tabId).classList.add('active');
+  
+  // Enforce button active state
+  if (tabId === 'tabApprovals') document.getElementById('btnTabApprovals').classList.add('active');
+  if (tabId === 'tabDrivers') document.getElementById('btnTabDrivers').classList.add('active');
+  if (tabId === 'tabSettings') document.getElementById('btnTabSettings').classList.add('active');
+}
+
+
 </script>
 </body>
 </html>

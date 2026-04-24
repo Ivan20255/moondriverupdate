@@ -1,0 +1,14 @@
+{
+  "name": "moon2026",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Moon Express trip report, settlement, and admin dashboard app.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
@@ -9,6 +10,7 @@ const outboxDir = path.join(dataDir, 'outbox');
 const dbFile = path.join(dataDir, 'admin-config.json');
 const port = process.env.PORT || 3000;
 const adminPassword = process.env.ADMIN_PASSWORD || 'moonadmin';
+const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY || '';
 
 for (const dir of [dataDir, uploadsDir, outboxDir]) {
   fs.mkdirSync(dir, { recursive: true });
@@ -19,6 +21,7 @@ const mimeTypes = {
   '.js': 'application/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
+  '.pdf': 'application/pdf',
   '.jpeg': 'image/jpeg',
   '.jpg': 'image/jpeg',
   '.png': 'image/png',
@@ -57,6 +60,30 @@ function safeName(value) {
   return String(value || 'file').replace(/[^a-z0-9_.-]/gi, '_').slice(0, 120);
 }
 
+function extForMime(mime) {
+  if (mime === 'application/pdf') return '.pdf';
+  if (mime === 'image/jpeg') return '.jpg';
+  if (mime === 'image/png') return '.png';
+  return '.bin';
+}
+
+function fetchJson(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, response => {
+      const chunks = [];
+      response.on('data', chunk => chunks.push(chunk));
+      response.on('end', () => {
+        const body = Buffer.concat(chunks).toString('utf8');
+        try {
+          resolve({ status: response.statusCode || 0, data: JSON.parse(body), body });
+        } catch (err) {
+          reject(new Error(`Invalid JSON response: ${body.slice(0, 160)}`));
+        }
+      });
+    }).on('error', reject);
+  });
+}
+
 async function handleApi(req, res) {
   if (req.url === '/api/auth' && req.method === 'POST') {
     const raw = await readBody(req, 1024 * 1024);
@@ -78,20 +105,66 @@ async function handleApi(req, res) {
   }
 
   if (req.url === '/api/upload' && req.method === 'POST') {
-    const raw = await readBody(req, 45 * 1024 * 1024);
+    const raw = await readBody(req, 60 * 1024 * 1024);
     const parsed = JSON.parse(raw || '{}');
     const id = safeName(parsed.id || Date.now());
     const type = safeName(parsed.type || 'upload');
-    const image = String(parsed.image || '');
-    const base64 = image.includes(',') ? image.split(',').pop() : image;
-    if (!base64) return send(res, 400, { ok: false, error: 'Missing image' });
-    const file = path.join(uploadsDir, `${id}_${type}.png`);
+    const payload = String(parsed.image || parsed.dataUrl || parsed.file || '');
+    const match = payload.match(/^data:([^;]+);base64,(.+)$/);
+    const mime = parsed.mime || (match ? match[1] : 'image/png');
+    const base64 = match ? match[2] : (payload.includes(',') ? payload.split(',').pop() : payload);
+    if (!base64) return send(res, 400, { ok: false, error: 'Missing file data' });
+    const filename = parsed.filename
+      ? `${id}_${type}_${safeName(parsed.filename)}`
+      : `${id}_${type}${extForMime(mime)}`;
+    const file = path.join(uploadsDir, filename);
     fs.writeFileSync(file, Buffer.from(base64, 'base64'));
     return send(res, 200, { ok: true, file: path.relative(root, file) });
   }
 
+  if (req.url === '/api/google-routes' && req.method === 'POST') {
+    const raw = await readBody(req, 1024 * 1024);
+    const parsed = JSON.parse(raw || '{}');
+    const originZip = String(parsed.originZip || '').replace(/\D/g, '').slice(0, 5);
+    const destinationZip = String(parsed.destinationZip || '').replace(/\D/g, '').slice(0, 5);
+    const key = String(parsed.apiKey || googleMapsApiKey || '').trim();
+    if (!/^\d{5}$/.test(originZip) || !/^\d{5}$/.test(destinationZip)) {
+      return send(res, 400, { ok: false, error: 'Enter valid 5-digit ZIP codes' });
+    }
+    if (!key) return send(res, 400, { ok: false, error: 'Missing Google Maps API key' });
+
+    const params = new URLSearchParams({
+      origin: originZip,
+      destination: destinationZip,
+      alternatives: 'true',
+      mode: 'driving',
+      units: 'imperial',
+      key
+    });
+    const response = await fetchJson(`https://maps.googleapis.com/maps/api/directions/json?${params}`);
+    if (response.status < 200 || response.status >= 300) {
+      return send(res, 502, { ok: false, error: `Google Maps HTTP ${response.status}` });
+    }
+    const data = response.data;
+    if (data.status !== 'OK') {
+      return send(res, 400, { ok: false, error: data.error_message || data.status || 'Google Maps route failed' });
+    }
+    const routes = (data.routes || []).map(route => {
+      const leg = route.legs && route.legs[0] ? route.legs[0] : {};
+      const meters = Number(leg.distance?.value || 0);
+      return {
+        summary: route.summary || 'Route',
+        distanceText: leg.distance?.text || '',
+        duration: leg.duration?.text || '',
+        miles: meters ? meters / 1609.344 : 0,
+        encodedPolyline: route.overview_polyline?.points || ''
+      };
+    }).filter(route => route.miles > 0);
+    return send(res, 200, { ok: true, routes });
+  }
+
   if (req.url === '/api/send' && req.method === 'POST') {
-    const raw = await readBody(req, 45 * 1024 * 1024);
+    const raw = await readBody(req, 60 * 1024 * 1024);
     const file = path.join(outboxDir, `message_${Date.now()}.json`);
     fs.writeFileSync(file, raw || '{}');
     return send(res, 200, {

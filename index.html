@@ -147,6 +147,54 @@
             text-transform: uppercase;
         }
 
+        .driver-bar .trailer-field {
+            min-width: 132px;
+        }
+
+        #trailerInputs {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            order: -1;
+            width: 100%;
+        }
+
+        .trailer-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .trailer-row input.trailer-val {
+            flex: 1;
+            min-width: 0;
+            width: 92px;
+        }
+
+        .trailer-add-btn,
+        .trailer-remove-btn {
+            border: 1px solid rgba(11, 61, 94, .25);
+            background: #f8fafc;
+            color: #0b3d5e;
+            border-radius: 5px;
+            width: 22px;
+            height: 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: .85rem;
+            font-weight: 900;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .trailer-remove-btn {
+            border-color: rgba(220, 38, 38, .22);
+            color: #b91c1c;
+        }
+
         .driver-bar .df .ce-input {
             border: none;
             border-bottom: 1.5px solid #000;
@@ -252,7 +300,7 @@
         }
 
         .trip-table col.col-miles {
-            width: 55px;
+            width: 92px;
         }
 
         .trip-table col.col-loc {
@@ -327,6 +375,31 @@
         .trip-table tbody td .miles-cell {
             display: flex;
             align-items: center;
+            gap: 2px;
+        }
+
+        .route-picker-btn {
+            border: 1px solid rgba(11, 61, 94, .18);
+            background: #f8fafc;
+            color: #0b3d5e;
+            border-radius: 4px;
+            width: 21px;
+            height: 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: .78rem;
+            font-weight: 900;
+            line-height: 1;
+            padding: 0;
+            flex: 0 0 auto;
+        }
+
+        .route-picker-btn:hover,
+        .route-picker-btn.active {
+            background: #0b3d5e;
+            color: #fff;
         }
 
         .trip-table tbody td select.miles-type {
@@ -556,6 +629,144 @@
 
         .cal-grid .cal-day.other-month {
             color: #ccc;
+        }
+
+        /* ── ZIP Route Picker ─────────────────────────────── */
+        .route-popup {
+            position: absolute;
+            z-index: 220;
+            width: 260px;
+            max-width: calc(100vw - 20px);
+            background: #fff;
+            border: 1.5px solid #263642;
+            border-radius: 6px;
+            box-shadow: 0 8px 28px rgba(15, 23, 42, .22);
+            padding: 9px;
+            display: none;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .route-popup.visible {
+            display: block;
+        }
+
+        .route-popup.expanded {
+            width: min(520px, calc(100vw - 20px));
+        }
+
+        .route-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 7px;
+        }
+
+        .route-title {
+            font-size: .78rem;
+            font-weight: 900;
+            color: #0b3d5e;
+            line-height: 1.15;
+        }
+
+        .route-meta {
+            color: #64748b;
+            font-size: .66rem;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .route-actions {
+            display: flex;
+            gap: 4px;
+            flex: 0 0 auto;
+        }
+
+        .route-actions button {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            background: #fff;
+            color: #334155;
+            cursor: pointer;
+            font-size: .72rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .route-actions button:hover {
+            background: #e8f0f8;
+        }
+
+        .route-status {
+            font-size: .72rem;
+            color: #64748b;
+            padding: 8px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 5px;
+            background: #f8fafc;
+            line-height: 1.35;
+        }
+
+        .route-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 168px;
+            overflow: auto;
+        }
+
+        .route-option {
+            border: 1px solid #dbe4ee;
+            background: #fff;
+            border-radius: 6px;
+            padding: 7px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .route-option:hover {
+            border-color: #0b3d5e;
+            background: #f0f7fb;
+        }
+
+        .route-option strong {
+            display: block;
+            color: #0b3d5e;
+            font-size: .84rem;
+            line-height: 1.15;
+        }
+
+        .route-option span {
+            display: block;
+            color: #475569;
+            font-size: .68rem;
+            line-height: 1.25;
+            margin-top: 2px;
+        }
+
+        .route-map-wrap {
+            display: none;
+            margin-top: 8px;
+            border: 1px solid #dbe4ee;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #f8fafc;
+            height: 220px;
+        }
+
+        .route-popup.expanded .route-map-wrap {
+            display: block;
+        }
+
+        .route-map-wrap iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
         }
 
         /* ── Add Row Box (Attached to table bottom-left) ── */
@@ -4941,8 +5152,8 @@
                     <input type="text" id="tractorNum" class="w-num" name="tractorNum" autocomplete="on">
                     <label>Tractor#</label>
                 </div>
-                <div class="df" id="trailerWrap">
-                    <div id="trailerInputs" style="display:flex; flex-direction:column; gap:4px; order:-1;"></div>
+                <div class="df trailer-field" id="trailerWrap">
+                    <div id="trailerInputs"></div>
                     <label>Trailer#</label>
                 </div>
                 <div class="df-shared">
@@ -4967,12 +5178,12 @@
                     <label>Total Miles</label>
                 </div>
                 <div class="df" style="align-items:center; gap:6px; margin-left:6px;">
-                    <label class="pcm-toggle" title="Auto-calculate miles with PC*Miler">
+                    <label class="pcm-toggle" title="Auto-calculate miles from saved route services">
                         <input type="checkbox" id="pcMilerToggle" onchange="togglePcMiler()">
                         <span class="pcm-slider"></span>
                     </label>
                     <span style="font-size:10px; color:#6b7280; white-space:nowrap;"
-                        id="pcMilerToggleLabel">PC*Miler</span>
+                        id="pcMilerToggleLabel">Auto miles</span>
                 </div>
             </div>
 
@@ -5184,6 +5395,25 @@
                 <button id="calNext">▶</button>
             </div>
             <div class="cal-grid" id="calGrid"></div>
+        </div>
+
+        <!-- ZIP route picker (single shared instance) -->
+        <div class="route-popup" id="routePopup" aria-hidden="true">
+            <div class="route-header">
+                <div>
+                    <div class="route-title" id="routeTitle">Route miles</div>
+                    <div class="route-meta" id="routeMeta"></div>
+                </div>
+                <div class="route-actions">
+                    <button type="button" id="routeExpandBtn" title="Expand route view">+</button>
+                    <button type="button" id="routeCloseBtn" title="Close route view">×</button>
+                </div>
+            </div>
+            <div class="route-status" id="routeStatus">Enter pickup and delivery ZIP codes.</div>
+            <div class="route-list" id="routeList"></div>
+            <div class="route-map-wrap" id="routeMapWrap">
+                <iframe id="routeMapFrame" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
         </div>
 
         <div class="toast" id="toast"></div>
@@ -5818,20 +6048,31 @@
                             <div class="dash-card">
                                 <div class="dash-card-header">
                                     <div>
-                                        <h3>PC*Miler Integration</h3>
-                                        <div class="subtitle">Connect your Trimble Maps API key for accurate
-                                            truck-specific mileage
-                                            calculations</div>
+                                        <h3>Mileage Integrations</h3>
+                                        <div class="subtitle">Connect Google Maps for ZIP-to-ZIP routes and keep
+                                            PC*Miler available for truck-specific mileage</div>
                                     </div>
                                 </div>
                                 <div class="dash-card-body">
                                     <div class="form-group"
                                         style="display:flex; gap:16px; max-width:640px; align-items:flex-end;">
                                         <div style="flex:1">
-                                            <label>API Key</label>
+                                            <label>Google Maps API Key</label>
+                                            <input type="text" id="adminGoogleMapsKey"
+                                                placeholder="Enter your Google Maps API key"
+                                                style="font-family:monospace; letter-spacing:0.5px;">
+                                        </div>
+                                        <div style="flex:1">
+                                            <label>PC*Miler API Key</label>
                                             <input type="text" id="adminPcMilerKey"
                                                 placeholder="Enter your PC*Miler API key"
                                                 style="font-family:monospace; letter-spacing:0.5px;">
+                                        </div>
+                                    </div>
+                                    <div class="form-group"
+                                        style="display:flex; gap:12px; max-width:640px; align-items:center; margin-top:10px;">
+                                        <div>
+                                            <button class="admin-btn" onclick="testGoogleMapsKey()">Test Google</button>
                                         </div>
                                         <div>
                                             <button class="admin-btn" onclick="testPcMilerKey()">Test</button>
@@ -5839,6 +6080,8 @@
                                         <div>
                                             <button class="admin-btn" onclick="saveGlobalSettings()">Save</button>
                                         </div>
+                                    </div>
+                                    <div id="googleMapsStatus" style="font-size:12px; color:#64748b; margin-top:8px;">
                                     </div>
                                     <div id="pcMilerStatus" style="font-size:12px; color:#64748b; margin-top:8px;">
                                     </div>
@@ -6008,6 +6251,7 @@
     <td>
       <div class="miles-cell">
         <input type="number" class="miles-input" min="0" max="99999" step="1" maxlength="5" oninput="if(this.value.length>5) this.value=this.value.slice(0,5)">
+        <button type="button" class="route-picker-btn" title="View ZIP route miles" aria-label="View ZIP route miles">⌁</button>
         <select class="miles-type">
           <option value=""></option>
           <option value="L">L</option>
@@ -6263,21 +6507,122 @@
                 throw new Error('Could not parse PC*Miler mileage response');
             }
 
+            async function googleMapsRoutes(pickupZip, deliveryZip) {
+                const apiKey = (adminConfig?.googleMapsApiKey || '').trim();
+                if (!apiKey) throw new Error('No Google Maps API key configured');
+                if (window.location.protocol === 'file:') {
+                    throw new Error('Google Maps routing needs the hosted server preview');
+                }
+
+                const res = await fetchWithTimeout('/api/google-routes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ originZip: pickupZip, destinationZip: deliveryZip, apiKey })
+                }, 14000);
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || !data.ok) {
+                    throw new Error(data.error || `Google Maps HTTP ${res.status}`);
+                }
+                return (data.routes || []).map((route, idx) => ({
+                    id: 'google-' + idx,
+                    source: 'google',
+                    label: route.summary || (idx === 0 ? 'Recommended route' : `Route ${idx + 1}`),
+                    miles: Math.round(Number(route.miles) || 0),
+                    duration: route.duration || '',
+                    distanceText: route.distanceText || '',
+                    encodedPolyline: route.encodedPolyline || ''
+                })).filter(route => route.miles > 0);
+            }
+
+            function haversineMiles(a, b) {
+                if (!a || !b || a.lat == null || a.lon == null || b.lat == null || b.lon == null) return 0;
+                const toRad = deg => deg * Math.PI / 180;
+                const r = 3958.8;
+                const dLat = toRad(b.lat - a.lat);
+                const dLon = toRad(b.lon - a.lon);
+                const lat1 = toRad(a.lat);
+                const lat2 = toRad(b.lat);
+                const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+                return 2 * r * Math.asin(Math.sqrt(h));
+            }
+
+            async function estimatedZipRoute(pickupZip, deliveryZip) {
+                const origin = await lookupZip(pickupZip);
+                const destination = await lookupZip(deliveryZip);
+                const straight = haversineMiles(origin, destination);
+                if (!straight) return null;
+                return {
+                    id: 'estimate-0',
+                    source: 'estimate',
+                    label: 'Estimated driving miles',
+                    miles: Math.round(straight * 1.28),
+                    duration: '',
+                    distanceText: 'ZIP coordinate estimate',
+                    encodedPolyline: ''
+                };
+            }
+
+            async function routeOptionsForZips(pickupZip, deliveryZip) {
+                if (!pickupZip || !deliveryZip || pickupZip.length !== 5 || deliveryZip.length !== 5) return [];
+                if (pickupZip === deliveryZip) {
+                    return [{ id: 'same-zip', source: 'exact', label: 'Same ZIP code', miles: 0, duration: '', distanceText: '0 mi' }];
+                }
+
+                try {
+                    const googleRoutes = await googleMapsRoutes(pickupZip, deliveryZip);
+                    if (googleRoutes.length) return googleRoutes;
+                } catch (e) {
+                    console.warn('Google Maps route unavailable:', e.message);
+                }
+
+                try {
+                    const miles = await pcMilerRoute(pickupZip, deliveryZip);
+                    if (miles > 0) {
+                        return [{ id: 'pcmiler-0', source: 'pcmiler', label: 'PC*Miler truck miles', miles, duration: '', distanceText: `${miles} mi` }];
+                    }
+                } catch (e) {
+                    console.warn('PC*Miler unavailable:', e.message);
+                }
+
+                const estimate = await estimatedZipRoute(pickupZip, deliveryZip);
+                return estimate ? [estimate] : [];
+            }
+
+            async function testGoogleMapsKey() {
+                const statusEl = document.getElementById('googleMapsStatus');
+                const key = document.getElementById('adminGoogleMapsKey').value.trim();
+                if (!key) {
+                    statusEl.innerHTML = '<span style="color:#dc2626;">Please enter a Google Maps API key first</span>';
+                    return;
+                }
+                statusEl.innerHTML = '<span style="color:#6366f1;">Testing ZIP route...</span>';
+                const origKey = adminConfig.googleMapsApiKey;
+                adminConfig.googleMapsApiKey = key;
+                try {
+                    const routes = await googleMapsRoutes('10001', '90001');
+                    const best = routes[0];
+                    statusEl.innerHTML = `<span style="color:#16a34a;">Connected. Test route NY to LA = ${best.miles.toLocaleString()} mi</span>`;
+                } catch (e) {
+                    statusEl.innerHTML = `<span style="color:#dc2626;">Failed: ${escapeHTML(e.message)}</span>`;
+                }
+                adminConfig.googleMapsApiKey = origKey;
+            }
+
             async function testPcMilerKey() {
                 const statusEl = document.getElementById('pcMilerStatus');
                 const key = document.getElementById('adminPcMilerKey').value.trim();
                 if (!key) {
-                    statusEl.innerHTML = '<span style="color:#dc2626;">⚠ Please enter an API key first</span>';
+                    statusEl.innerHTML = '<span style="color:#dc2626;">Please enter a PC*Miler API key first</span>';
                     return;
                 }
-                statusEl.innerHTML = '<span style="color:#6366f1;">⏳ Testing connection...</span>';
+                statusEl.innerHTML = '<span style="color:#6366f1;">Testing connection...</span>';
                 const origKey = adminConfig.pcMilerApiKey;
                 adminConfig.pcMilerApiKey = key;
                 try {
                     const miles = await pcMilerRoute('10001', '90001');
-                    statusEl.innerHTML = `<span style="color:#16a34a;">✓ Connected! Test route NY→LA = ${miles} mi (Practical Truck)</span>`;
+                    statusEl.innerHTML = `<span style="color:#16a34a;">Connected. Test route NY to LA = ${miles} mi (Practical Truck)</span>`;
                 } catch (e) {
-                    statusEl.innerHTML = `<span style="color:#dc2626;">✗ Failed: ${escapeHTML(e.message)}</span>`;
+                    statusEl.innerHTML = `<span style="color:#dc2626;">Failed: ${escapeHTML(e.message)}</span>`;
                 }
                 adminConfig.pcMilerApiKey = origKey;
             }
@@ -6289,18 +6634,12 @@
                 return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timeoutId));
             }
 
-            // ── Mileage Calculator: PC*Miler Only ───────────────────────────
+            // ── Mileage Calculator: Google Maps, PC*Miler, then estimate ────
             async function calcDrivingMiles(pickupZip, deliveryZip) {
                 if (!pickupZip || !deliveryZip || pickupZip.length !== 5 || deliveryZip.length !== 5) return null;
                 if (pickupZip === deliveryZip) return { miles: 0, source: 'exact' };
-                if (!adminConfig?.pcMilerApiKey) return null;
-
-                try {
-                    const miles = await pcMilerRoute(pickupZip, deliveryZip);
-                    if (miles > 0) return { miles, source: 'pcmiler' };
-                } catch (e) {
-                    console.warn('PC*Miler unavailable:', e.message);
-                }
+                const routes = await routeOptionsForZips(pickupZip, deliveryZip);
+                if (routes.length) return routes[0];
                 return null;
             }
 
@@ -6310,7 +6649,7 @@
                 localStorage.setItem('moonexpress_pcmiler_auto', on ? 'on' : 'off');
                 const label = document.getElementById('pcMilerToggleLabel');
                 if (label) label.style.color = on ? '#0b3d5e' : '#6b7280';
-                showToast(on ? '🚛 PC*Miler auto-calc ON' : 'PC*Miler auto-calc OFF');
+                showToast(on ? 'Auto mileage is on' : 'Auto mileage is off');
 
                 if (on) {
                     // Recalculate all existing trip rows
@@ -6361,9 +6700,10 @@
                     if (!hasExistingMiles) {
                         // No existing miles — auto-fill directly
                         milesInput.value = result.miles;
+                        milesInput.dataset.routeSource = result.source || '';
                         recalcMiles();
                         markDirty();
-                        showToast(`🚛 ${result.miles} mi (PC*Miler truck route)`);
+                        showToast(`${result.miles} mi route loaded`);
                     } else {
                         const current = parseFloat(milesInput.value);
                         if (Math.abs(current - result.miles) < 1) return; // Already matches, skip
@@ -6372,14 +6712,15 @@
                         // Has existing miles — show clickable comparison badge
                         const badge = document.createElement('span');
                         badge.className = 'pcm-suggest';
-                        badge.title = 'Click to replace with PC*Miler miles';
+                        badge.title = 'Click to replace with route miles';
                         badge.innerHTML = `<span style="text-decoration:line-through;opacity:0.6;">${current}</span> → <strong>${result.miles}</strong> mi <span style="font-size:9px;opacity:0.7;">(${diffLabel})</span>`;
                         badge.onclick = function () {
                             milesInput.value = result.miles;
+                            milesInput.dataset.routeSource = result.source || '';
                             recalcMiles();
                             markDirty();
                             badge.remove();
-                            showToast(`✅ Replaced ${current} → ${result.miles} mi (PC*Miler)`);
+                            showToast(`Replaced ${current} with ${result.miles} route miles`);
                         };
                         // Place badge after the miles input
                         milesInput.parentElement.style.position = 'relative';
@@ -6583,11 +6924,180 @@
                 }
             });
 
+            // ═══ ZIP ROUTE PICKER ════════════════════════════════════════════
+            const routePopup = document.getElementById('routePopup');
+            const routeTitle = document.getElementById('routeTitle');
+            const routeMeta = document.getElementById('routeMeta');
+            const routeStatus = document.getElementById('routeStatus');
+            const routeList = document.getElementById('routeList');
+            const routeMapFrame = document.getElementById('routeMapFrame');
+            const routeExpandBtn = document.getElementById('routeExpandBtn');
+            const routeCloseBtn = document.getElementById('routeCloseBtn');
+            let routeTargetRow = null;
+            let currentRouteOptions = [];
+            const routeCache = {};
+
+            function routeZipPair(row) {
+                return {
+                    pickupZip: row?.querySelector('.p-zip')?.value?.trim() || '',
+                    deliveryZip: row?.querySelector('.d-zip')?.value?.trim() || ''
+                };
+            }
+
+            function positionRoutePopup(anchor) {
+                const rect = anchor.getBoundingClientRect();
+                const scrollX = window.scrollX;
+                const scrollY = window.scrollY;
+                const popW = routePopup.classList.contains('expanded') ? Math.min(520, window.innerWidth - 20) : 260;
+                const popH = routePopup.classList.contains('expanded') ? 430 : 260;
+                let left = rect.right + scrollX + 4;
+                let top = rect.top + scrollY;
+                if (left + popW > scrollX + window.innerWidth) left = rect.left + scrollX - popW - 4;
+                if (left < scrollX + 6) left = scrollX + 6;
+                if (top + popH > scrollY + window.innerHeight) top = scrollY + window.innerHeight - popH - 6;
+                top = Math.max(scrollY + 6, top);
+                routePopup.style.left = left + 'px';
+                routePopup.style.top = top + 'px';
+            }
+
+            function closeRoutePicker() {
+                routePopup.classList.remove('visible', 'expanded');
+                routePopup.setAttribute('aria-hidden', 'true');
+                routeExpandBtn.textContent = '+';
+                routeExpandBtn.title = 'Expand route view';
+                routeTargetRow = null;
+                currentRouteOptions = [];
+                document.querySelectorAll('.route-picker-btn.active').forEach(btn => btn.classList.remove('active'));
+            }
+
+            function setRouteMap(pickupZip, deliveryZip) {
+                const key = (adminConfig?.googleMapsApiKey || '').trim();
+                if (!key || !pickupZip || !deliveryZip) {
+                    routeMapFrame.removeAttribute('src');
+                    return;
+                }
+                routeMapFrame.src = `https://www.google.com/maps/embed/v1/directions?key=${encodeURIComponent(key)}&origin=${encodeURIComponent(pickupZip)}&destination=${encodeURIComponent(deliveryZip)}&mode=driving`;
+            }
+
+            function renderRouteOptions(routes) {
+                routeList.innerHTML = '';
+                currentRouteOptions = routes;
+                if (!routes.length) {
+                    routeStatus.style.display = '';
+                    routeStatus.textContent = 'No route found. Check both ZIP codes or add a Google Maps API key in Settings.';
+                    return;
+                }
+                routeStatus.style.display = 'none';
+                routes.forEach((route, idx) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'route-option';
+                    const source = route.source === 'google' ? 'Google Maps' : (route.source === 'pcmiler' ? 'PC*Miler' : 'Estimate');
+                    const duration = route.duration ? ` · ${escapeHTML(route.duration)}` : '';
+                    btn.innerHTML = `<strong>${route.miles.toLocaleString()} miles</strong><span>${escapeHTML(route.label || `Route ${idx + 1}`)} · ${source}${duration}</span>`;
+                    btn.addEventListener('click', () => applyRouteMiles(idx));
+                    routeList.appendChild(btn);
+                });
+            }
+
+            async function loadRoutePickerOptions(row) {
+                const { pickupZip, deliveryZip } = routeZipPair(row);
+                routeTitle.textContent = 'Route miles';
+                routeMeta.textContent = pickupZip && deliveryZip ? `${pickupZip} to ${deliveryZip}` : '';
+                routeList.innerHTML = '';
+                routeStatus.style.display = '';
+                if (!/^\d{5}$/.test(pickupZip) || !/^\d{5}$/.test(deliveryZip)) {
+                    routeStatus.textContent = 'Enter pickup and delivery ZIP codes first.';
+                    setRouteMap('', '');
+                    return;
+                }
+                setRouteMap(pickupZip, deliveryZip);
+                const googleKeyHint = (adminConfig?.googleMapsApiKey || '').slice(-6);
+                const pcKeyHint = (adminConfig?.pcMilerApiKey || '').slice(-6);
+                const cacheKey = `${pickupZip}-${deliveryZip}-${googleKeyHint}-${pcKeyHint}`;
+                if (routeCache[cacheKey]) {
+                    renderRouteOptions(routeCache[cacheKey]);
+                    return;
+                }
+                routeStatus.textContent = 'Finding route options...';
+                const routes = await routeOptionsForZips(pickupZip, deliveryZip);
+                routeCache[cacheKey] = routes;
+                renderRouteOptions(routes);
+            }
+
+            function openRoutePicker(row, anchor) {
+                if (!row || !routePopup) return;
+                routeTargetRow = row;
+                document.querySelectorAll('.route-picker-btn.active').forEach(btn => btn.classList.remove('active'));
+                row.querySelector('.route-picker-btn')?.classList.add('active');
+                routePopup.classList.remove('expanded');
+                routeExpandBtn.textContent = '+';
+                routeExpandBtn.title = 'Expand route view';
+                routePopup.classList.add('visible');
+                routePopup.setAttribute('aria-hidden', 'false');
+                positionRoutePopup(anchor || row.querySelector('.miles-input') || row);
+                loadRoutePickerOptions(row);
+            }
+
+            function applyRouteMiles(idx) {
+                const route = currentRouteOptions[idx];
+                if (!route || !routeTargetRow) return;
+                const milesInput = routeTargetRow.querySelector('.miles-input');
+                if (milesInput) {
+                    milesInput.value = route.miles;
+                    milesInput.dataset.routeSource = route.source || '';
+                    recalcMiles();
+                    markDirty();
+                    showToast(`Route miles set to ${route.miles.toLocaleString()}`);
+                }
+                closeRoutePicker();
+            }
+
+            tripBody.addEventListener('mousedown', e => {
+                const btn = e.target.closest('.route-picker-btn');
+                if (!btn) return;
+                e.preventDefault();
+                openRoutePicker(btn.closest('tr'), btn);
+            });
+
+            tripBody.addEventListener('focusin', e => {
+                if (!e.target.classList.contains('miles-input')) return;
+                const row = e.target.closest('tr');
+                const { pickupZip, deliveryZip } = routeZipPair(row);
+                if (!e.target.value && /^\d{5}$/.test(pickupZip) && /^\d{5}$/.test(deliveryZip)) {
+                    openRoutePicker(row, e.target);
+                }
+            });
+
+            routeExpandBtn.addEventListener('click', e => {
+                e.preventDefault();
+                routePopup.classList.toggle('expanded');
+                const expanded = routePopup.classList.contains('expanded');
+                routeExpandBtn.textContent = expanded ? '-' : '+';
+                routeExpandBtn.title = expanded ? 'Shrink route view' : 'Expand route view';
+                const anchor = routeTargetRow?.querySelector('.miles-input') || routeTargetRow;
+                if (anchor) positionRoutePopup(anchor);
+            });
+
+            routeCloseBtn.addEventListener('click', e => {
+                e.preventDefault();
+                closeRoutePicker();
+            });
+
+            document.addEventListener('mousedown', e => {
+                if (!routePopup.contains(e.target) && !e.target.closest('.route-picker-btn') && !e.target.classList.contains('miles-input')) {
+                    closeRoutePicker();
+                }
+            });
+
             // ═══ MILES TOTAL ═════════════════════════════════════════════════
             function recalcMiles() {
                 let t = 0;
                 document.querySelectorAll('.miles-input').forEach(i => { const v = parseFloat(i.value); if (!isNaN(v)) t += v; });
-                document.getElementById('totalMiles').value = t > 0 ? t.toLocaleString() : '';
+                const total = document.getElementById('totalMiles');
+                total.value = t > 0 ? t.toLocaleString() : '';
+                total.dataset.rawMiles = String(t);
+                total.title = t > 0 ? `${t.toLocaleString()} total miles from all trip rows` : 'Total miles from all trip rows';
             }
             tripBody.addEventListener('input', e => { if (e.target.classList.contains('miles-input')) recalcMiles(); markDirty(); });
             tripBody.addEventListener('change', e => {
@@ -6777,6 +7287,7 @@
                         if (r.querySelector('.cb-dr')) r.querySelector('.cb-dr').checked = exp.dr || false;
                     });
                 }
+                recalcMiles();
                 recalcExp();
             }
 
@@ -7183,6 +7694,7 @@
 
             function captureSettlementAmounts(report) {
                 if (!report) return report;
+                try { report.data = gather(); } catch (e) { }
                 report.paystubHTML = document.getElementById('psGrid')?.innerHTML || report.paystubHTML || '';
                 report.statementDate = document.getElementById('psDate')?.textContent || statementDateToday();
                 report.savedAt = new Date().toISOString();
@@ -7190,6 +7702,7 @@
                 report.driverNetPaid = currentPaystubPaid();
                 report.escrowDeduction = moneyNumber(window.tempEscrowDeduction);
                 report.workersCompDeduction = moneyNumber(window.tempWorkersCompDeduction);
+                report.receipts = getReceiptData();
                 return report;
             }
 
@@ -7319,36 +7832,31 @@
             function addTrailerRow(val = '', isFirst = false) {
                 const container = document.getElementById('trailerInputs');
                 const div = document.createElement('div');
-                div.style.display = 'flex';
-                div.style.alignItems = 'center';
+                div.className = 'trailer-row';
 
                 const inp = document.createElement('input');
                 inp.type = 'text';
                 inp.className = 'w-num trailer-val';
                 inp.value = val;
                 inp.autocomplete = 'off';
+                inp.placeholder = isFirst ? 'Trailer' : 'Trailer';
                 inp.addEventListener('input', markDirty);
                 inp.addEventListener('change', markDirty);
-                inp.style.width = '70px';
 
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.style.background = 'none';
-                btn.style.border = 'none';
-                btn.style.cursor = 'pointer';
-                btn.style.fontWeight = 'bold';
-                btn.style.marginLeft = '4px';
-                btn.style.padding = '0';
 
                 if (isFirst) {
+                    btn.className = 'trailer-add-btn';
                     btn.innerText = '+';
-                    btn.style.color = '#10b981';
-                    btn.style.fontSize = '16px';
+                    btn.title = 'Add another trailer';
+                    btn.setAttribute('aria-label', 'Add another trailer');
                     btn.onclick = () => addTrailerRow('', false);
                 } else {
+                    btn.className = 'trailer-remove-btn';
                     btn.innerText = '×';
-                    btn.style.color = '#ef4444';
-                    btn.style.fontSize = '16px';
+                    btn.title = 'Remove trailer';
+                    btn.setAttribute('aria-label', 'Remove trailer');
                     btn.onclick = () => { div.remove(); markDirty(); };
                 }
 
@@ -7362,7 +7870,7 @@
 
             // ═══ ADMIN CONFIG & AUTH ═════════════════════════════════════════
 
-            let adminConfig = { drivers: [], workersComp: 50.00, safetyService: 0.00, extraStopPay: 50.00, globalDeductions: [], reports: [], layoutPref: 'stacked' };
+            let adminConfig = { drivers: [], workersComp: 50.00, safetyService: 0.00, extraStopPay: 50.00, googleMapsApiKey: '', pcMilerApiKey: '', globalDeductions: [], reports: [], layoutPref: 'stacked' };
             let currentDriverIdx = -1;
 
             async function loadAdminConfig() {
@@ -7481,6 +7989,7 @@
                 document.getElementById('adminWc').value = adminConfig.workersComp || 0;
                 document.getElementById('adminSafety').value = adminConfig.safetyService || 0;
                 document.getElementById('adminExtraStopPay').value = adminConfig.extraStopPay || 0;
+                document.getElementById('adminGoogleMapsKey').value = adminConfig.googleMapsApiKey || '';
                 document.getElementById('adminPcMilerKey').value = adminConfig.pcMilerApiKey || '';
                 renderDriverRoster();
                 renderMasterInbox();
@@ -7611,6 +8120,7 @@
                 adminConfig.workersComp = parseFloat(document.getElementById('adminWc').value) || 0;
                 adminConfig.safetyService = parseFloat(document.getElementById('adminSafety').value) || 0;
                 adminConfig.extraStopPay = parseFloat(document.getElementById('adminExtraStopPay').value) || 0;
+                adminConfig.googleMapsApiKey = document.getElementById('adminGoogleMapsKey').value.trim();
                 adminConfig.pcMilerApiKey = document.getElementById('adminPcMilerKey').value.trim();
                 saveAdminConfig();
                 showToast('Global settings saved');
@@ -8492,6 +9002,105 @@
                 downloadBlob(canvasToPdfBlob(canvas), filename);
             }
 
+            function blobToDataUrl(blob) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            }
+
+            async function uploadSettlementArtifact(reportId, type, dataUrl, filename) {
+                if (!dataUrl) return null;
+                if (window.storage) {
+                    const storagePath = `settlements/${reportId}/${filename}`;
+                    await window.storage.ref().child(storagePath).putString(dataUrl, 'data_url');
+                    return { name: filename, type, storagePath };
+                }
+                if (window.location.protocol === 'file:') {
+                    return { name: filename, type, localOnly: true };
+                }
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: reportId, type, dataUrl, filename })
+                });
+                const payload = await res.json().catch(() => ({}));
+                if (!res.ok || !payload.ok) throw new Error(payload.error || `Upload failed for ${filename}`);
+                return { name: filename, type, path: payload.file };
+            }
+
+            async function captureSettlementPackage(report) {
+                if (!report) return null;
+                const d = gather();
+                const slug = (d.driver || report.driverName || 'driver').replace(/\s+/g, '_').toLowerCase();
+                const dt = todayISO();
+                const mainPage = document.querySelector('.page');
+                const psPage = document.getElementById('psPage');
+                const mainToolbar = document.querySelector('.toolbar');
+                const psToolbar = document.querySelector('.ps-toolbar');
+                const reviewBar = document.getElementById('adminReviewBar');
+                const tableCells = mainPage.querySelectorAll('td');
+                const oldBorders = [];
+                const inputBorders = [];
+                const oldMainDisplay = mainToolbar.style.display;
+                const oldPsDisplay = psToolbar.style.display;
+                const oldReviewDisplay = reviewBar.style.display;
+
+                tableCells.forEach((c, i) => { oldBorders[i] = c.style.border; c.style.border = '1px solid #000'; });
+                mainPage.querySelectorAll('input, select').forEach((el, idx) => { inputBorders[idx] = el.style.border; el.style.border = 'none'; });
+                mainToolbar.style.display = 'none';
+                psToolbar.style.display = 'none';
+                reviewBar.style.display = 'none';
+
+                try {
+                    const canvasTrip = await html2canvas(mainPage, {
+                        scale: 2, useCORS: true, backgroundColor: '#ffffff',
+                        windowWidth: 1200, windowHeight: mainPage.scrollHeight,
+                        width: mainPage.scrollWidth, height: mainPage.scrollHeight
+                    });
+                    const canvasPs = await html2canvas(psPage, {
+                        scale: 2, useCORS: true, backgroundColor: '#ffffff',
+                        windowWidth: 900, windowHeight: psPage.scrollHeight,
+                        width: psPage.scrollWidth, height: psPage.scrollHeight
+                    });
+
+                    const tripPdfName = `trip_report_${slug}_${dt}.pdf`;
+                    const paystubPdfName = `settlement_paystub_${slug}_${dt}.pdf`;
+                    const tripPdfUrl = await blobToDataUrl(canvasToPdfBlob(canvasTrip));
+                    const paystubPdfUrl = await blobToDataUrl(canvasToPdfBlob(canvasPs));
+                    const receipts = getReceiptData();
+                    const uploadedReceipts = [];
+
+                    const tripPdf = await uploadSettlementArtifact(report.id, 'trip_pdf', tripPdfUrl, tripPdfName);
+                    const paystubPdf = await uploadSettlementArtifact(report.id, 'paystub_pdf', paystubPdfUrl, paystubPdfName);
+                    for (let i = 0; i < receipts.length; i++) {
+                        const receipt = receipts[i];
+                        const ext = (receipt.name || '').split('.').pop() || 'jpg';
+                        const receiptName = `receipt_${slug}_${dt}_${i + 1}.${ext}`;
+                        uploadedReceipts.push(await uploadSettlementArtifact(report.id, `receipt_${i + 1}`, receipt.dataUrl, receiptName));
+                    }
+
+                    report.settlementPackage = {
+                        generatedAt: new Date().toISOString(),
+                        statementDate: document.getElementById('psDate')?.textContent || statementDateToday(),
+                        totalMiles: moneyNumber(document.getElementById('totalMiles')?.dataset.rawMiles),
+                        tripPdf,
+                        paystubPdf,
+                        receipts,
+                        receiptFiles: uploadedReceipts
+                    };
+                    return report.settlementPackage;
+                } finally {
+                    mainToolbar.style.display = oldMainDisplay;
+                    psToolbar.style.display = oldPsDisplay;
+                    reviewBar.style.display = oldReviewDisplay;
+                    tableCells.forEach((c, i) => c.style.border = oldBorders[i]);
+                    mainPage.querySelectorAll('input, select').forEach((el, idx) => el.style.border = inputBorders[idx]);
+                }
+            }
+
             async function adminSaveSettlementToComputer() {
                 if (!window.currentReviewReportId) return showToast('Open a report first.');
                 if (!document.getElementById('psOverlay').classList.contains('active')) {
@@ -8859,14 +9468,27 @@
                 overlay.style.padding = '';
             }
 
-            function adminApproveReport() {
+            async function adminApproveReport() {
                 const id = window.currentReviewReportId;
                 if (!id) return;
                 const r = (adminConfig.reports || []).find(x => x.id === id);
+                if (!r) return;
+                showToast('Approving and saving settlement package...', 3000);
+                adminSaveTripEdits(true);
+                if (!document.getElementById('psOverlay').classList.contains('active')) {
+                    await generatePaystub();
+                }
                 if (r) {
                     try { r.data = gather(); } catch (e) { }
-                    if (document.getElementById('psOverlay').classList.contains('active')) captureSettlementAmounts(r);
+                    captureSettlementAmounts(r);
+                    try {
+                        await captureSettlementPackage(r);
+                    } catch (e) {
+                        console.error('Settlement package capture failed:', e);
+                        r.settlementPackageError = e.message || 'Package save failed';
+                    }
                     r.status = 'approved';
+                    r.approvedAt = new Date().toISOString();
                 }
                 saveAdminConfig();
                 if (r) setAdminReviewMode(true, r);
@@ -8874,7 +9496,7 @@
                 renderDriverRoster();
                 renderDriverRoster();
                 updateAdminToolbar();
-                showToast('Report approved.');
+                showToast(r.settlementPackage ? 'Approved and saved with trip form, paystub, and receipts.' : 'Approved. PDF package could not be saved automatically.');
             }
 
             async function adminSendPaystub() {
@@ -8898,6 +9520,9 @@
                     const r = adminConfig.reports.find(x => x.id === repIdRef);
                     if (r) {
                         captureSettlementAmounts(r);
+                        if (!r.settlementPackage) {
+                            try { await captureSettlementPackage(r); } catch (e) { console.error('Settlement package capture failed:', e); }
+                        }
                         r.status = 'approved';
                         r.paid = true;
                         commitReportAccounting(r);
@@ -8983,6 +9608,7 @@
                     const dt = d.startDay || new Date().toISOString().slice(0, 10);
                     const file1 = canvasToPdfFile(canvasTrip, `trip_report_${slug}_${dt}.pdf`);
                     const file2 = canvasToPdfFile(canvasPs, `paystub_${slug}_${dt}.pdf`);
+                    const receiptFiles = await getReceiptFiles(slug, dt);
 
                     if (useBackendDirectSend) {
                         // Autonomous Server-Side Send (Admin Mode)
@@ -8998,21 +9624,23 @@
                                 to: targetEmail,
                                 subject: subjectTitle,
                                 tripImage: base64Trip,
-                                paystubImage: base64Ps
+                                paystubImage: base64Ps,
+                                receipts: getReceiptData()
                             })
                         }).then(() => showToast('Email sent securely to driver.', 4000))
                             .catch(e => console.error(e));
 
-                    } else if (navigator.canShare && navigator.canShare({ files: [file1, file2] })) {
+                    } else if (navigator.canShare && navigator.canShare({ files: [file1, file2, ...receiptFiles] })) {
                         // Native Client-Side Share Sheet (Driver Mode)
-                        await navigator.share({ title: subjectTitle + ' - ' + (d.driver || 'Driver'), files: [file1, file2] });
+                        await navigator.share({ title: subjectTitle + ' - ' + (d.driver || 'Driver'), files: [file1, file2, ...receiptFiles] });
                     } else {
                         // Fallback manual downloads
                         downloadBlob(file1, file1.name);
                         downloadBlob(file2, file2.name);
+                        receiptFiles.forEach(rf => downloadBlob(rf, rf.name));
 
                         const subject = encodeURIComponent(`${subjectTitle} - ${d.driver || 'Driver'}`);
-                        const body = encodeURIComponent('Trip Report and Paystub PDFs downloaded. Please attach them to this email.');
+                        const body = encodeURIComponent('Trip Report, Paystub, and receipt files downloaded. Please attach them to this email.');
                         const mailtoUrl = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
                         window.location.href = mailtoUrl;
                     }

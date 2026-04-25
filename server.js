@@ -102,6 +102,31 @@ function requestJson(url, options = {}) {
   });
 }
 
+function requestBuffer(url) {
+  return new Promise((resolve, reject) => {
+    const target = new URL(url);
+    const request = https.request({
+      hostname: target.hostname,
+      path: `${target.pathname}${target.search}`,
+      method: 'GET'
+    }, response => {
+      const chunks = [];
+      response.on('data', chunk => chunks.push(chunk));
+      response.on('end', () => {
+        resolve({
+          status: response.statusCode || 0,
+          headers: response.headers,
+          buffer: Buffer.concat(chunks)
+        });
+      });
+    });
+
+    request.on('error', reject);
+    request.setTimeout(15000, () => request.destroy(new Error('Google map preview request timed out')));
+    request.end();
+  });
+}
+
 function formatMiles(meters) {
   const miles = Number(meters || 0) / 1609.344;
   if (!miles) return '';
@@ -122,7 +147,7 @@ function normalizeRoutesApiRoutes(routes) {
   return (routes || []).map((route, index) => {
     const meters = Number(route.distanceMeters || 0);
     return {
-      summary: route.description || `Route ${index + 1}`,
+      summary: route.description || (index === 0 ? 'Google recommended route' : `Google alternate route ${index + 1}`),
       distanceText: route.localizedValues?.distance?.text || formatMiles(meters),
       duration: route.localizedValues?.duration?.text || formatDuration(route.duration),
       miles: meters ? meters / 1609.344 : 0,
@@ -196,26 +221,29 @@ async function fetchLegacyDirections(originZip, destinationZip, key) {
 }
 
 async function handleApi(req, res) {
-  if (req.url === '/api/auth' && req.method === 'POST') {
+  const requestUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+  const reqPath = requestUrl.pathname;
+
+  if (reqPath === '/api/auth' && req.method === 'POST') {
     const raw = await readBody(req, 1024 * 1024);
     const parsed = JSON.parse(raw || '{}');
     return send(res, 200, { ok: String(parsed.password || '') === adminPassword });
   }
 
-  if (req.url === '/api/db' && req.method === 'GET') {
+  if (reqPath === '/api/db' && req.method === 'GET') {
     if (!fs.existsSync(dbFile)) return send(res, 200, {});
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     return fs.createReadStream(dbFile).pipe(res);
   }
 
-  if (req.url === '/api/db' && req.method === 'POST') {
+  if (reqPath === '/api/db' && req.method === 'POST') {
     const raw = await readBody(req);
     const parsed = JSON.parse(raw || '{}');
     fs.writeFileSync(dbFile, JSON.stringify(parsed, null, 2));
     return send(res, 200, { ok: true });
   }
 
-  if (req.url === '/api/upload' && req.method === 'POST') {
+  if (reqPath === '/api/upload' && req.method === 'POST') {
     const raw = await readBody(req, 60 * 1024 * 1024);
     const parsed = JSON.parse(raw || '{}');
     const id = safeName(parsed.id || Date.now());
@@ -233,7 +261,7 @@ async function handleApi(req, res) {
     return send(res, 200, { ok: true, file: path.relative(root, file) });
   }
 
-  if (req.url === '/api/google-routes' && req.method === 'POST') {
+  if (reqPath === '/api/google-routes' && req.method === 'POST') {
     const raw = await readBody(req, 1024 * 1024);
     const parsed = JSON.parse(raw || '{}');
     const originZip = String(parsed.originZip || '').replace(/\D/g, '').slice(0, 5);
@@ -260,7 +288,39 @@ async function handleApi(req, res) {
     }
   }
 
-  if (req.url === '/api/send' && req.method === 'POST') {
+  if (reqPath === '/api/google-route-map' && (req.method === 'GET' || req.method === 'POST')) {
+    const parsed = req.method === 'POST' ? JSON.parse(await readBody(req, 1024 * 1024) || '{}') : {};
+    const originZip = String(parsed.originZip || requestUrl.searchParams.get('originZip') || '').replace(/\D/g, '').slice(0, 5);
+    const destinationZip = String(parsed.destinationZip || requestUrl.searchParams.get('destinationZip') || '').replace(/\D/g, '').slice(0, 5);
+    const encodedPolyline = String(parsed.polyline || requestUrl.searchParams.get('polyline') || '').slice(0, 12000);
+    const mapType = (parsed.mapType || requestUrl.searchParams.get('mapType')) === 'roadmap' ? 'roadmap' : 'satellite';
+    const key = String(parsed.apiKey || googleMapsApiKey || '').trim();
+    if (!/^\d{5}$/.test(originZip) || !/^\d{5}$/.test(destinationZip)) {
+      return send(res, 400, { ok: false, error: 'Enter valid 5-digit ZIP codes' });
+    }
+    if (!key || !encodedPolyline) {
+      return send(res, 404, { ok: false, error: 'Route map preview unavailable' });
+    }
+    const params = new URLSearchParams({
+      size: '640x320',
+      scale: '2',
+      maptype: mapType,
+      markers: `color:green|label:A|${originZip}`,
+      key
+    });
+    params.append('markers', `color:red|label:B|${destinationZip}`);
+    params.append('path', `color:0x0b77d5ff|weight:5|enc:${encodedPolyline}`);
+    const response = await requestBuffer(`https://maps.googleapis.com/maps/api/staticmap?${params}`);
+    if (response.status < 200 || response.status >= 300) {
+      return send(res, 502, { ok: false, error: `Google map preview HTTP ${response.status}` });
+    }
+    return send(res, 200, response.buffer, {
+      'Content-Type': response.headers['content-type'] || 'image/png',
+      'Cache-Control': 'private, max-age=3600'
+    });
+  }
+
+  if (reqPath === '/api/send' && req.method === 'POST') {
     const raw = await readBody(req, 60 * 1024 * 1024);
     const file = path.join(outboxDir, `message_${Date.now()}.json`);
     fs.writeFileSync(file, raw || '{}');

@@ -635,7 +635,7 @@
         .route-popup {
             position: absolute;
             z-index: 220;
-            width: 260px;
+            width: 340px;
             max-width: calc(100vw - 20px);
             background: #fff;
             border: 1.5px solid #263642;
@@ -651,7 +651,7 @@
         }
 
         .route-popup.expanded {
-            width: min(520px, calc(100vw - 20px));
+            width: min(640px, calc(100vw - 20px));
         }
 
         .route-header {
@@ -721,33 +721,72 @@
         .route-list {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            max-height: 96px;
+            gap: 8px;
+            max-height: 188px;
             overflow: auto;
         }
 
         .route-popup.expanded .route-list {
-            max-height: 168px;
+            max-height: 232px;
         }
 
         .route-option {
             border: 1px solid #dbe4ee;
             background: #fff;
             border-radius: 6px;
-            padding: 7px;
+            padding: 9px;
             cursor: pointer;
             text-align: left;
+            transition: border-color .15s, background .15s, box-shadow .15s;
         }
 
-        .route-option:hover {
+        .route-option:hover,
+        .route-option:focus-visible {
             border-color: #0b3d5e;
             background: #f0f7fb;
+            outline: none;
+        }
+
+        .route-option.selected {
+            border-color: #0b3d5e;
+            background: #f0f7fb;
+            box-shadow: inset 4px 0 0 #0b3d5e;
+        }
+
+        .route-option-head,
+        .route-option-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .route-badge {
+            flex: 0 0 auto;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: #e0f2fe;
+            color: #075985;
+            font-size: .58rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+
+        .route-apply {
+            border: 1px solid #0b3d5e;
+            background: #0b3d5e;
+            color: #fff;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: .62rem;
+            font-weight: 900;
+            cursor: pointer;
         }
 
         .route-option strong {
-            display: block;
             color: #0b3d5e;
-            font-size: .84rem;
+            font-size: .9rem;
             line-height: 1.15;
         }
 
@@ -777,6 +816,13 @@
             width: 100%;
             height: 100%;
             border: 0;
+        }
+
+        .route-map-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
         }
 
         /* ── Handwritten Trip Import ───────────────────────── */
@@ -2038,7 +2084,103 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
+            margin-top: 16px;
+        }
+
+        .processing-focus-card {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 18px;
+            align-items: center;
+            background: #fff;
+            border: 1px solid #dbe4ee;
+            border-left: 5px solid #0b3d5e;
+            border-radius: 10px;
+            padding: 18px 20px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, .08);
+            margin-bottom: 16px;
+        }
+
+        .processing-kicker {
+            font-size: 11px;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .processing-title {
+            margin-top: 4px;
+            color: #0f172a;
+            font-size: 20px;
+            font-weight: 750;
+            line-height: 1.2;
+        }
+
+        .processing-sub {
+            margin-top: 4px;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .processing-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .dash-collapsible {
             margin-bottom: 24px;
+        }
+
+        .dash-collapsible summary {
+            list-style: none;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 14px;
+            background: #fff;
+            color: #0f172a;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dash-collapsible summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .dash-collapsible summary span {
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .dash-collapsible[open] summary span::after {
+            content: "Hide";
+        }
+
+        .dash-collapsible:not([open]) summary span::after {
+            content: "Show";
+        }
+
+        @media (max-width: 760px) {
+            .processing-focus-card {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
+
+            .processing-actions {
+                justify-content: stretch;
+            }
+
+            .processing-actions .admin-btn {
+                flex: 1 1 140px;
+            }
         }
 
         .metric-card {
@@ -5559,6 +5701,7 @@
             <div class="route-status" id="routeStatus">Enter pickup and delivery ZIP codes.</div>
             <div class="route-list" id="routeList"></div>
             <div class="route-map-wrap" id="routeMapWrap">
+                <img id="routeMapImage" alt="Selected route map preview">
                 <iframe id="routeMapFrame" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
@@ -5882,8 +6025,8 @@
                         <div id="tabDashboard" class="tab-content active">
                             <div class="dash-page-header">
                                 <div class="dph-left">
-                                    <h2>Dashboard</h2>
-                                    <p>Overview of your trucking operations</p>
+                                    <h2>Trip Report Processing</h2>
+                                    <p>Review driver submissions, correct miles, approve settlements, and send paystubs</p>
                                 </div>
                                 <div class="dph-right">
                                     <button class="date-picker-btn">Current Week ⌄</button>
@@ -5892,7 +6035,22 @@
                                 </div>
                             </div>
 
-                            <div class="dash-metrics-grid">
+                            <div class="processing-focus-card">
+                                <div>
+                                    <div class="processing-kicker">Needs attention</div>
+                                    <div class="processing-title"><span id="dashPendingCount">0</span> trip reports waiting</div>
+                                    <div class="processing-sub" id="dashNextReport">No pending driver submissions right now.</div>
+                                </div>
+                                <div class="processing-actions">
+                                    <button class="admin-btn" onclick="switchTab('tabApprovals')">Review Queue</button>
+                                    <button class="admin-btn secondary" onclick="closeAdminDash()">New Trip</button>
+                                    <button class="admin-btn secondary" onclick="switchTab('tabDrivers')">Drivers</button>
+                                </div>
+                            </div>
+
+                            <details class="dash-collapsible" id="dashMetricsPanel">
+                                <summary>Operations metrics <span></span></summary>
+                                <div class="dash-metrics-grid">
                                 <div class="metric-card interactive" role="button" tabindex="0"
                                     onclick="openDashboardSection('reports')"
                                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDashboardSection('reports');}">
@@ -5953,7 +6111,8 @@
                                         <div class="mc-trend positive">Tracked from paid settlements</div>
                                     </div>
                                 </div>
-                            </div>
+                                </div>
+                            </details>
 
                             <div class="dash-main-grid">
                                 <!-- Left Column -->
@@ -6699,10 +6858,10 @@
                 if (!res.ok || !data.ok) {
                     throw new Error(data.error || `Google Maps HTTP ${res.status}`);
                 }
-                return (data.routes || []).map((route, idx) => ({
+                return (data.routes || []).slice(0, 3).map((route, idx) => ({
                     id: 'google-' + idx,
                     source: 'google',
-                    label: route.summary || (idx === 0 ? 'Recommended route' : `Route ${idx + 1}`),
+                    label: idx === 0 ? 'Google recommended route' : (route.summary || `Google alternate route ${idx + 1}`),
                     miles: Math.round(Number(route.miles) || 0),
                     duration: route.duration || '',
                     distanceText: route.distanceText || '',
@@ -7103,12 +7262,16 @@
             const routeStatus = document.getElementById('routeStatus');
             const routeList = document.getElementById('routeList');
             const routeMapFrame = document.getElementById('routeMapFrame');
+            const routeMapImage = document.getElementById('routeMapImage');
             const routeSatelliteBtn = document.getElementById('routeSatelliteBtn');
             const routeExpandBtn = document.getElementById('routeExpandBtn');
             const routeCloseBtn = document.getElementById('routeCloseBtn');
             let routeTargetRow = null;
             let currentRouteOptions = [];
+            let selectedRouteIndex = 0;
             let routeMapSatellite = true;
+            let routeMapObjectUrl = '';
+            let routeMapRequestId = 0;
             const routeCache = {};
 
             function routeZipPair(row) {
@@ -7122,8 +7285,8 @@
                 const rect = anchor.getBoundingClientRect();
                 const scrollX = window.scrollX;
                 const scrollY = window.scrollY;
-                const popW = routePopup.classList.contains('expanded') ? Math.min(520, window.innerWidth - 20) : 260;
-                const popH = routePopup.classList.contains('expanded') ? 480 : 330;
+                const popW = routePopup.classList.contains('expanded') ? Math.min(640, window.innerWidth - 20) : 340;
+                const popH = routePopup.classList.contains('expanded') ? 560 : 420;
                 let left = rect.right + scrollX + 4;
                 let top = rect.top + scrollY;
                 if (left + popW > scrollX + window.innerWidth) left = rect.left + scrollX - popW - 4;
@@ -7143,16 +7306,80 @@
                 routeSatelliteBtn.classList.add('active');
                 routeTargetRow = null;
                 currentRouteOptions = [];
+                selectedRouteIndex = 0;
+                if (routeMapObjectUrl) {
+                    URL.revokeObjectURL(routeMapObjectUrl);
+                    routeMapObjectUrl = '';
+                }
                 document.querySelectorAll('.route-picker-btn.active').forEach(btn => btn.classList.remove('active'));
             }
 
-            function setRouteMap(pickupZip, deliveryZip) {
+            function routeApiPath(path) {
+                return window.location.protocol === 'file:' ? `http://localhost:3000${path}` : path;
+            }
+
+            async function loadRouteMapImage(pickupZip, deliveryZip, route, requestId) {
+                const payload = {
+                    originZip: pickupZip,
+                    destinationZip: deliveryZip,
+                    polyline: route.encodedPolyline,
+                    mapType: routeMapSatellite ? 'satellite' : 'roadmap'
+                };
+                const apiKey = (adminConfig?.googleMapsApiKey || '').trim();
+                if (apiKey) payload.apiKey = apiKey;
+                const res = await fetchWithTimeout(routeApiPath('/api/google-route-map'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }, 12000);
+                if (!res.ok) throw new Error('Route map preview unavailable');
+                const blob = await res.blob();
+                if (requestId !== routeMapRequestId) return;
+                if (routeMapObjectUrl) URL.revokeObjectURL(routeMapObjectUrl);
+                routeMapObjectUrl = URL.createObjectURL(blob);
+                routeMapImage.onload = () => {
+                    routeMapImage.style.display = 'block';
+                    routeMapFrame.style.display = 'none';
+                };
+                routeMapImage.src = routeMapObjectUrl;
+            }
+
+            function setRouteMap(pickupZip, deliveryZip, route = null) {
                 if (!pickupZip || !deliveryZip) {
+                    routeMapRequestId++;
+                    routeMapImage.removeAttribute('src');
+                    routeMapImage.style.display = 'none';
                     routeMapFrame.removeAttribute('src');
+                    routeMapFrame.style.display = '';
                     return;
                 }
+                const useStaticRoute = route?.source === 'google' && route.encodedPolyline;
+                const requestId = ++routeMapRequestId;
                 const mapType = routeMapSatellite ? 'k' : 'm';
                 routeMapFrame.src = `https://www.google.com/maps?saddr=${encodeURIComponent(pickupZip)}&daddr=${encodeURIComponent(deliveryZip)}&t=${mapType}&output=embed`;
+                if (useStaticRoute) {
+                    routeMapImage.style.display = 'none';
+                    routeMapFrame.style.display = '';
+                    loadRouteMapImage(pickupZip, deliveryZip, route, requestId).catch(() => {
+                        routeMapImage.style.display = 'none';
+                        routeMapFrame.style.display = '';
+                    });
+                } else {
+                    routeMapImage.removeAttribute('src');
+                    routeMapImage.style.display = 'none';
+                    routeMapFrame.style.display = '';
+                }
+            }
+
+            function previewRouteOption(idx) {
+                if (!currentRouteOptions[idx] || !routeTargetRow) return;
+                selectedRouteIndex = idx;
+                routeList.querySelectorAll('.route-option').forEach((btn, i) => {
+                    btn.classList.toggle('selected', i === idx);
+                    btn.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+                });
+                const { pickupZip, deliveryZip } = routeZipPair(routeTargetRow);
+                setRouteMap(pickupZip, deliveryZip, currentRouteOptions[idx]);
             }
 
             function renderRouteOptions(routes) {
@@ -7167,13 +7394,27 @@
                 routes.forEach((route, idx) => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
-                    btn.className = 'route-option';
+                    btn.className = `route-option${idx === selectedRouteIndex ? ' selected' : ''}`;
+                    btn.setAttribute('aria-selected', idx === selectedRouteIndex ? 'true' : 'false');
                     const source = route.source === 'google' ? 'Google Maps' : (route.source === 'pcmiler' ? 'PC*Miler' : 'Estimate');
                     const duration = route.duration ? ` · ${escapeHTML(route.duration)}` : '';
-                    btn.innerHTML = `<strong>${route.miles.toLocaleString()} miles</strong><span>${escapeHTML(route.label || `Route ${idx + 1}`)} · ${source}${duration}</span>`;
+                    const badge = route.source === 'google' && idx === 0 ? 'Recommended' : `Option ${idx + 1}`;
+                    btn.innerHTML = `
+                        <div class="route-option-head">
+                            <strong>${route.miles.toLocaleString()} miles</strong>
+                            <span class="route-badge">${badge}</span>
+                        </div>
+                        <span>${escapeHTML(route.label || `Route ${idx + 1}`)} · ${source}${duration}</span>
+                        <div class="route-option-foot">
+                            <span>${escapeHTML(route.distanceText || 'Preview route')}</span>
+                            <span class="route-apply">Apply</span>
+                        </div>`;
+                    btn.addEventListener('mouseenter', () => previewRouteOption(idx));
+                    btn.addEventListener('focus', () => previewRouteOption(idx));
                     btn.addEventListener('click', () => applyRouteMiles(idx));
                     routeList.appendChild(btn);
                 });
+                previewRouteOption(Math.min(selectedRouteIndex, routes.length - 1));
             }
 
             async function loadRoutePickerOptions(row) {
@@ -7187,6 +7428,7 @@
                     setRouteMap('', '');
                     return;
                 }
+                selectedRouteIndex = 0;
                 setRouteMap(pickupZip, deliveryZip);
                 const googleKeyHint = (adminConfig?.googleMapsApiKey || '').slice(-6);
                 const pcKeyHint = (adminConfig?.pcMilerApiKey || '').slice(-6);
@@ -7265,7 +7507,7 @@
                 routeSatelliteBtn.title = routeMapSatellite ? 'Switch to standard map' : 'Switch to satellite map';
                 if (routeTargetRow) {
                     const { pickupZip, deliveryZip } = routeZipPair(routeTargetRow);
-                    setRouteMap(pickupZip, deliveryZip);
+                    setRouteMap(pickupZip, deliveryZip, currentRouteOptions[selectedRouteIndex]);
                 }
             });
 
@@ -7722,7 +7964,7 @@
                     const slug = (d.driver || 'driver').replace(/\s+/g, '_').toLowerCase();
                     const dt = d.startDay || new Date().toISOString().slice(0, 10);
                     const filename = `trip_sheet_${slug}_${dt}.pdf`;
-                    const file = canvasToPdfFile(canvas, filename);
+                    const file = createTripReportPdfFile(filename);
 
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         await navigator.share({ title: 'Trip Sheet', files: [file] });
@@ -8196,6 +8438,22 @@
                 let totalTrips = reps.length;
                 let completedTrips = reps.filter(r => r.status === 'approved' || r.paid).length;
                 let inProgress = reps.filter(r => r.status !== 'approved' && !r.paid).length;
+                const pendingReports = reps
+                    .filter(r => r.status !== 'approved' && !r.paid)
+                    .sort((a, b) => new Date(b.date || b.submittedAt || 0) - new Date(a.date || a.submittedAt || 0));
+
+                const pendingCountEl = document.getElementById('dashPendingCount');
+                const nextReportEl = document.getElementById('dashNextReport');
+                if (pendingCountEl) pendingCountEl.textContent = pendingReports.length;
+                if (nextReportEl) {
+                    if (pendingReports.length) {
+                        const next = pendingReports[0];
+                        const tripCount = next.data?.trips?.filter(t => t.pc || t.dc || t.mi).length || 0;
+                        nextReportEl.textContent = `Next up: ${next.driverName || 'Unknown driver'} · ${tripCount} trip row${tripCount === 1 ? '' : 's'} · ${next.date || 'no date'}`;
+                    } else {
+                        nextReportEl.textContent = 'No pending driver submissions right now.';
+                    }
+                }
 
                 let totalMiles = 0;
                 reps.forEach(r => {
@@ -9010,7 +9268,7 @@
 
                     const slug = dName.replace(/\s+/g, '_').toLowerCase();
                     const dt = d.startDay || new Date().toISOString().slice(0, 10);
-                    const file = canvasToPdfFile(canvas, 'trip_report_' + slug + '_' + dt + '.pdf');
+                    const file = createTripReportPdfFile('trip_report_' + slug + '_' + dt + '.pdf');
 
                     // Collect receipt files for sharing
                     const receiptFiles = await getReceiptFiles(slug, dt);
@@ -9364,6 +9622,259 @@
                 return window.jspdf?.jsPDF || window.jsPDF || null;
             }
 
+            function pdfDoc() {
+                const jsPDF = getPdfCtor();
+                if (!jsPDF) throw new Error('PDF library unavailable');
+                return new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter', compress: true });
+            }
+
+            function pdfSafe(value) {
+                return String(value ?? '').replace(/\s+/g, ' ').trim();
+            }
+
+            function pdfMoneyText(value) {
+                return value || '$0.00';
+            }
+
+            function pdfCell(pdf, text, x, y, w, h, opts = {}) {
+                pdf.setDrawColor(opts.border || 0);
+                pdf.setLineWidth(opts.lineWidth || 0.45);
+                if (opts.fill) {
+                    pdf.setFillColor(opts.fill[0], opts.fill[1], opts.fill[2]);
+                    pdf.rect(x, y, w, h, 'FD');
+                } else {
+                    pdf.rect(x, y, w, h, 'S');
+                }
+                pdf.setFont('helvetica', opts.bold ? 'bold' : 'normal');
+                pdf.setFontSize(opts.fontSize || 8);
+                pdf.setTextColor(opts.color || 20);
+                const lines = pdf.splitTextToSize(pdfSafe(text), Math.max(8, w - 8)).slice(0, opts.maxLines || 2);
+                const textY = y + (opts.valign === 'middle' ? Math.max(10, (h - (lines.length - 1) * 9) / 2 + 3) : 11);
+                lines.forEach((line, i) => {
+                    const tx = opts.align === 'right' ? x + w - 4 : (opts.align === 'center' ? x + w / 2 : x + 4);
+                    pdf.text(line, tx, textY + i * 9, { align: opts.align || 'left' });
+                });
+            }
+
+            function pdfSectionTitle(pdf, title, y) {
+                pdf.setFont('helvetica', 'bold');
+                pdf.setFontSize(9);
+                pdf.setTextColor(11, 61, 94);
+                pdf.text(title, 36, y);
+                pdf.setDrawColor(11, 61, 94);
+                pdf.line(36, y + 4, 576, y + 4);
+                return y + 12;
+            }
+
+            function pdfNeedPage(pdf, y, needed = 44) {
+                if (y + needed <= 756) return y;
+                pdf.addPage();
+                return 36;
+            }
+
+            function createTripReportPdfBlob() {
+                const d = gather();
+                const pdf = pdfDoc();
+                let y = 36;
+                const totalMiles = (d.trips || []).reduce((sum, t) => sum + (parseFloat(t.mi) || 0), 0);
+
+                pdf.setFont('helvetica', 'bold');
+                pdf.setFontSize(18);
+                pdf.setTextColor(11, 61, 94);
+                pdf.text('MOON EXPRESS INC', 36, y);
+                pdf.setFontSize(13);
+                pdf.text('TRIP REPORT', 576, y, { align: 'right' });
+                y += 18;
+                pdf.setFont('helvetica', 'normal');
+                pdf.setFontSize(8);
+                pdf.setTextColor(60);
+                pdf.text('Generated ' + new Date().toLocaleDateString(), 576, y, { align: 'right' });
+                y += 16;
+
+                const info = [
+                    ['Driver', d.driver],
+                    ['Tractor', d.tractor],
+                    ['Trailer', d.trailer],
+                    ['Start Date', d.startDay],
+                    ['End Date', d.endDay],
+                    ['Total Miles', totalMiles ? totalMiles.toLocaleString() : '']
+                ];
+                info.forEach((item, idx) => {
+                    const col = idx % 3;
+                    const row = Math.floor(idx / 3);
+                    const x = 36 + col * 180;
+                    const yy = y + row * 30;
+                    pdfCell(pdf, item[0], x, yy, 62, 24, { fill: [245, 248, 251], bold: true, fontSize: 7, maxLines: 1 });
+                    pdfCell(pdf, item[1], x + 62, yy, 112, 24, { fontSize: 8, maxLines: 2 });
+                });
+                y += 70;
+
+                y = pdfSectionTitle(pdf, 'TRIP DETAILS', y);
+                const tripCols = [
+                    ['#', 22], ['Pickup', 118], ['P ZIP', 44], ['Delivery', 118],
+                    ['D ZIP', 44], ['Miles', 48], ['Type', 46], ['Location', 60]
+                ];
+                let x = 36;
+                tripCols.forEach(([label, w]) => { pdfCell(pdf, label, x, y, w, 18, { fill: [11, 61, 94], color: 255, bold: true, fontSize: 7, align: label === '#' ? 'center' : 'left', maxLines: 1 }); x += w; });
+                y += 18;
+                (d.trips || []).filter(t => t.pc || t.dc || t.mi).forEach((t, idx) => {
+                    y = pdfNeedPage(pdf, y, 30);
+                    const row = [
+                        String(idx + 1),
+                        `${t.pd ? t.pd + '  ' : ''}${t.pc || ''}`,
+                        t.pz || '',
+                        `${t.dd ? t.dd + '  ' : ''}${t.dc || ''}`,
+                        t.dz || '',
+                        t.mi || '',
+                        t.mt || '',
+                        t.lt || ''
+                    ];
+                    x = 36;
+                    tripCols.forEach(([label, w], colIdx) => {
+                        pdfCell(pdf, row[colIdx], x, y, w, 28, { fontSize: 7.3, align: colIdx === 0 || colIdx === 5 ? 'center' : 'left', maxLines: 2 });
+                        x += w;
+                    });
+                    y += 28;
+                });
+
+                y = pdfNeedPage(pdf, y + 14, 90);
+                y = pdfSectionTitle(pdf, 'LAYOVER / DETENTION', y + 10);
+                const layCols = [['Date', 70], ['City', 180], ['Notes', 290]];
+                x = 36;
+                layCols.forEach(([label, w]) => { pdfCell(pdf, label, x, y, w, 18, { fill: [245, 248, 251], bold: true, fontSize: 7 }); x += w; });
+                y += 18;
+                const layovers = (d.layovers || []).filter(l => l.ld || l.lc || l.ln);
+                (layovers.length ? layovers : [{ ld: '', lc: '', ln: '' }]).forEach(l => {
+                    y = pdfNeedPage(pdf, y, 26);
+                    x = 36;
+                    [l.ld, l.lc, l.ln].forEach((text, i) => { pdfCell(pdf, text, x, y, layCols[i][1], 24, { fontSize: 7.5, maxLines: 2 }); x += layCols[i][1]; });
+                    y += 24;
+                });
+
+                y = pdfNeedPage(pdf, y + 14, 118);
+                y = pdfSectionTitle(pdf, 'EXPENSES', y + 10);
+                const expenseLabels = {
+                    lumper: 'Lumper', scale_tickets: 'Scale Tickets', tolls: 'Tolls', parking: 'Parking',
+                    cash_advance: 'Cash Advance', cash_expense: 'Cash Expense', truck_wash: 'Truck Wash',
+                    trailer_wash: 'Trailer Wash', oil_change: 'Oil Change', accessorial: 'Accessorial', other: 'Other'
+                };
+                const expenses = Object.entries(d.expenses || {}).filter(([, v]) => v && (parseFloat(v.a) || v.co || v.dr));
+                const expCols = [['Expense', 180], ['Amount', 80], ['Paid By', 100]];
+                x = 36;
+                expCols.forEach(([label, w]) => { pdfCell(pdf, label, x, y, w, 18, { fill: [245, 248, 251], bold: true, fontSize: 7 }); x += w; });
+                y += 18;
+                (expenses.length ? expenses : [['', { a: '', co: false, dr: false }]]).forEach(([key, v]) => {
+                    y = pdfNeedPage(pdf, y, 24);
+                    const paidBy = v.co ? 'Company' : (v.dr ? 'Driver' : '');
+                    x = 36;
+                    [expenseLabels[key] || key, v.a ? '$' + parseFloat(v.a).toFixed(2) : '', paidBy].forEach((text, i) => { pdfCell(pdf, text, x, y, expCols[i][1], 22, { fontSize: 7.5, maxLines: 1 }); x += expCols[i][1]; });
+                    y += 22;
+                });
+
+                const receiptCount = (d.receipts || []).length;
+                y = pdfNeedPage(pdf, y + 16, 34);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setFontSize(8);
+                pdf.setTextColor(30);
+                pdf.text(`Receipts attached: ${receiptCount}`, 36, y + 12);
+                pdf.text('Driver Signature: ________________________________', 318, y + 12);
+                return pdf.output('blob');
+            }
+
+            function tableRowsText(selector) {
+                return Array.from(document.querySelectorAll(selector)).map(tr =>
+                    Array.from(tr.children).map(td => pdfSafe(td.innerText || td.textContent)).filter(Boolean)
+                ).filter(row => row.length);
+            }
+
+            function createPaystubPdfBlob() {
+                const pdf = pdfDoc();
+                const d = gather();
+                let y = 36;
+                pdf.setFont('helvetica', 'bold');
+                pdf.setFontSize(18);
+                pdf.setTextColor(11, 61, 94);
+                pdf.text('MOON EXPRESS INC', 36, y);
+                pdf.setFontSize(13);
+                pdf.text('SETTLEMENT PAYSTUB', 576, y, { align: 'right' });
+                y += 24;
+
+                const summary = [
+                    ['Pay To', document.getElementById('psPayTo')?.textContent || d.driver],
+                    ['Statement Date', document.getElementById('psDate')?.textContent || statementDateToday()],
+                    ['Rate', '$' + (document.getElementById('psRate')?.value || '0.00')],
+                    ['Total Miles', document.getElementById('psTotalMilesTop')?.textContent || '0'],
+                    ['Gross', pdfMoneyText(document.getElementById('psGross')?.textContent)],
+                    ['Net Paid', pdfMoneyText(document.getElementById('psNet')?.textContent)]
+                ];
+                summary.forEach((item, idx) => {
+                    const col = idx % 3;
+                    const row = Math.floor(idx / 3);
+                    const x = 36 + col * 180;
+                    const yy = y + row * 30;
+                    pdfCell(pdf, item[0], x, yy, 70, 24, { fill: [245, 248, 251], bold: true, fontSize: 7, maxLines: 1 });
+                    pdfCell(pdf, item[1], x + 70, yy, 104, 24, { fontSize: 8, maxLines: 2, align: idx >= 2 ? 'right' : 'left' });
+                });
+                y += 72;
+
+                y = pdfSectionTitle(pdf, 'TRIPS', y);
+                const tripCols = [['#', 26], ['From', 194], ['To', 194], ['Miles', 80]];
+                let x = 36;
+                tripCols.forEach(([label, w]) => { pdfCell(pdf, label, x, y, w, 18, { fill: [11, 61, 94], color: 255, bold: true, fontSize: 7, align: label === 'Miles' ? 'right' : 'left' }); x += w; });
+                y += 18;
+                const tripRows = tableRowsText('#psTripBody tr').filter(row => row.length >= 3);
+                (tripRows.length ? tripRows : [['', '', '', '']]).forEach(row => {
+                    y = pdfNeedPage(pdf, y, 28);
+                    const cleaned = row.length >= 4 ? [row[0], row[1] || row[2], row[2] || row[3], row[row.length - 1]] : row;
+                    x = 36;
+                    tripCols.forEach(([, w], i) => { pdfCell(pdf, cleaned[i] || '', x, y, w, 26, { fontSize: 7.5, align: i === 3 ? 'right' : (i === 0 ? 'center' : 'left'), maxLines: 2 }); x += w; });
+                    y += 26;
+                });
+
+                const sections = [
+                    ['CREDITS', '#psCreditTbl tr:not(.ps-add-row-btn)', document.getElementById('psTotalCredit')?.textContent || '$0.00'],
+                    ['REIMBURSEMENTS', '#psReimbTbl tr:not(.ps-add-row-btn)', document.getElementById('psTotalReimb')?.textContent || '$0.00'],
+                    ['DEDUCTIONS', '#psSubTbl tr:not(.ps-add-row-btn)', document.getElementById('psTotalSub')?.textContent || '$0.00']
+                ];
+                sections.forEach(([title, selector, total]) => {
+                    y = pdfNeedPage(pdf, y + 14, 78);
+                    y = pdfSectionTitle(pdf, title, y + 8);
+                    const rows = tableRowsText(selector);
+                    (rows.length ? rows : [['No items', '$0.00']]).forEach(row => {
+                        y = pdfNeedPage(pdf, y, 24);
+                        pdfCell(pdf, row[0] || '', 36, y, 340, 22, { fontSize: 7.5, maxLines: 1 });
+                        pdfCell(pdf, row[1] || '', 376, y, 100, 22, { fontSize: 7.5, align: 'right', maxLines: 1 });
+                        y += 22;
+                    });
+                    pdfCell(pdf, 'Total', 36, y, 340, 22, { fill: [245, 248, 251], bold: true, fontSize: 7.5, maxLines: 1 });
+                    pdfCell(pdf, total, 376, y, 100, 22, { fill: [245, 248, 251], bold: true, fontSize: 7.5, align: 'right', maxLines: 1 });
+                    y += 28;
+                });
+
+                y = pdfNeedPage(pdf, y + 6, 52);
+                const formula = [
+                    ['Miles x Rate', document.getElementById('psMilesXRate')?.textContent || '$0.00'],
+                    ['Additions', document.getElementById('psAdd')?.textContent || '$0.00'],
+                    ['Subtractions', document.getElementById('psSubVal')?.textContent || '$0.00'],
+                    ['Net Paid', document.getElementById('psNetVal')?.textContent || '$0.00']
+                ];
+                x = 36;
+                formula.forEach(([label, value]) => {
+                    pdfCell(pdf, label, x, y, 118, 18, { fill: [11, 61, 94], color: 255, bold: true, fontSize: 7, align: 'center', maxLines: 1 });
+                    pdfCell(pdf, value, x, y + 18, 118, 24, { fontSize: 8, bold: label === 'Net Paid', align: 'center', maxLines: 1 });
+                    x += 118;
+                });
+                return pdf.output('blob');
+            }
+
+            function createTripReportPdfFile(filename) {
+                return new File([createTripReportPdfBlob()], filename, { type: 'application/pdf' });
+            }
+
+            function createPaystubPdfFile(filename) {
+                return new File([createPaystubPdfBlob()], filename, { type: 'application/pdf' });
+            }
+
             function canvasToPdfBlob(canvas) {
                 const jsPDF = getPdfCtor();
                 if (!jsPDF) throw new Error('PDF library unavailable');
@@ -9442,21 +9953,10 @@
                 reviewBar.style.display = 'none';
 
                 try {
-                    const canvasTrip = await html2canvas(mainPage, {
-                        scale: 2, useCORS: true, backgroundColor: '#ffffff',
-                        windowWidth: 1200, windowHeight: mainPage.scrollHeight,
-                        width: mainPage.scrollWidth, height: mainPage.scrollHeight
-                    });
-                    const canvasPs = await html2canvas(psPage, {
-                        scale: 2, useCORS: true, backgroundColor: '#ffffff',
-                        windowWidth: 900, windowHeight: psPage.scrollHeight,
-                        width: psPage.scrollWidth, height: psPage.scrollHeight
-                    });
-
                     const tripPdfName = `trip_report_${slug}_${dt}.pdf`;
                     const paystubPdfName = `settlement_paystub_${slug}_${dt}.pdf`;
-                    const tripPdfUrl = await blobToDataUrl(canvasToPdfBlob(canvasTrip));
-                    const paystubPdfUrl = await blobToDataUrl(canvasToPdfBlob(canvasPs));
+                    const tripPdfUrl = await blobToDataUrl(createTripReportPdfBlob());
+                    const paystubPdfUrl = await blobToDataUrl(createPaystubPdfBlob());
                     const receipts = getReceiptData();
                     const uploadedReceipts = [];
 
@@ -9512,19 +10012,8 @@
                 reviewBar.style.display = 'none';
                 try {
                     showToast('Preparing files...', 1800);
-                    const canvasTrip = await html2canvas(mainPage, {
-                        scale: 3, useCORS: true, backgroundColor: '#ffffff',
-                        windowWidth: 1200, windowHeight: mainPage.scrollHeight,
-                        width: mainPage.scrollWidth, height: mainPage.scrollHeight
-                    });
-                    const canvasPs = await html2canvas(psPage, {
-                        scale: 3, useCORS: true, backgroundColor: '#ffffff',
-                        windowWidth: 900, windowHeight: psPage.scrollHeight,
-                        width: psPage.scrollWidth, height: psPage.scrollHeight
-                    });
-
-                    downloadCanvasPdf(canvasTrip, `trip_report_${slug}_${dt}.pdf`);
-                    downloadCanvasPdf(canvasPs, `settlement_paystub_${slug}_${dt}.pdf`);
+                    downloadBlob(createTripReportPdfBlob(), `trip_report_${slug}_${dt}.pdf`);
+                    downloadBlob(createPaystubPdfBlob(), `settlement_paystub_${slug}_${dt}.pdf`);
                     showToast('Settlement PDFs saved to your computer.', 3000);
                 } catch (err) {
                     console.error(err);
@@ -9993,8 +10482,8 @@
                     const d = gather();
                     const slug = (d.driver || 'driver').replace(/\s+/g, '_').toLowerCase();
                     const dt = d.startDay || new Date().toISOString().slice(0, 10);
-                    const file1 = canvasToPdfFile(canvasTrip, `trip_report_${slug}_${dt}.pdf`);
-                    const file2 = canvasToPdfFile(canvasPs, `paystub_${slug}_${dt}.pdf`);
+                    const file1 = createTripReportPdfFile(`trip_report_${slug}_${dt}.pdf`);
+                    const file2 = createPaystubPdfFile(`paystub_${slug}_${dt}.pdf`);
                     const receiptFiles = await getReceiptFiles(slug, dt);
 
                     if (useBackendDirectSend) {

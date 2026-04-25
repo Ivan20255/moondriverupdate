@@ -33,6 +33,9 @@ function send(res, status, body, headers = {}) {
   const payload = typeof body === 'string' || Buffer.isBuffer(body) ? body : JSON.stringify(body);
   res.writeHead(status, {
     'Content-Type': typeof body === 'object' && !Buffer.isBuffer(body) ? 'application/json; charset=utf-8' : 'text/plain; charset=utf-8',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
     ...headers
   });
   res.end(payload);
@@ -67,21 +70,129 @@ function extForMime(mime) {
   return '.bin';
 }
 
-function fetchJson(url) {
+function requestJson(url, options = {}) {
   return new Promise((resolve, reject) => {
-    https.get(url, response => {
+    const target = new URL(url);
+    const body = options.body || '';
+    const request = https.request({
+      hostname: target.hostname,
+      path: `${target.pathname}${target.search}`,
+      method: options.method || 'GET',
+      headers: {
+        ...(body ? { 'Content-Length': Buffer.byteLength(body) } : {}),
+        ...(options.headers || {})
+      }
+    }, response => {
       const chunks = [];
       response.on('data', chunk => chunks.push(chunk));
       response.on('end', () => {
-        const body = Buffer.concat(chunks).toString('utf8');
+        const responseBody = Buffer.concat(chunks).toString('utf8');
         try {
-          resolve({ status: response.statusCode || 0, data: JSON.parse(body), body });
+          resolve({ status: response.statusCode || 0, data: responseBody ? JSON.parse(responseBody) : {}, body: responseBody });
         } catch (err) {
-          reject(new Error(`Invalid JSON response: ${body.slice(0, 160)}`));
+          reject(new Error(`Invalid JSON response: ${responseBody.slice(0, 160)}`));
         }
       });
-    }).on('error', reject);
+    });
+
+    request.on('error', reject);
+    request.setTimeout(15000, () => request.destroy(new Error('Google Maps request timed out')));
+    if (body) request.write(body);
+    request.end();
   });
+}
+
+function formatMiles(meters) {
+  const miles = Number(meters || 0) / 1609.344;
+  if (!miles) return '';
+  return `${miles >= 100 ? Math.round(miles) : miles.toFixed(1)} mi`;
+}
+
+function formatDuration(duration) {
+  const seconds = Number(String(duration || '').replace(/s$/, ''));
+  if (!Number.isFinite(seconds) || seconds <= 0) return '';
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.round((seconds % 3600) / 60);
+  if (!hours) return `${minutes || 1} min`;
+  if (!minutes) return `${hours} hr`;
+  return `${hours} hr ${minutes} min`;
+}
+
+function normalizeRoutesApiRoutes(routes) {
+  return (routes || []).map((route, index) => {
+    const meters = Number(route.distanceMeters || 0);
+    return {
+      summary: route.description || `Route ${index + 1}`,
+      distanceText: route.localizedValues?.distance?.text || formatMiles(meters),
+      duration: route.localizedValues?.duration?.text || formatDuration(route.duration),
+      miles: meters ? meters / 1609.344 : 0,
+      encodedPolyline: route.polyline?.encodedPolyline || ''
+    };
+  }).filter(route => route.miles > 0);
+}
+
+async function fetchRoutesApi(originZip, destinationZip, key) {
+  const body = JSON.stringify({
+    origin: { address: `${originZip}, USA` },
+    destination: { address: `${destinationZip}, USA` },
+    travelMode: 'DRIVE',
+    routingPreference: 'TRAFFIC_UNAWARE',
+    computeAlternativeRoutes: true,
+    polylineQuality: 'OVERVIEW',
+    polylineEncoding: 'ENCODED_POLYLINE',
+    units: 'IMPERIAL',
+    languageCode: 'en-US',
+    regionCode: 'US'
+  });
+
+  const response = await requestJson('https://routes.googleapis.com/directions/v2:computeRoutes', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': key,
+      'X-Goog-FieldMask': 'routes.distanceMeters,routes.duration,routes.description,routes.polyline.encodedPolyline,routes.localizedValues'
+    },
+    body
+  });
+  if (response.status < 200 || response.status >= 300 || response.data.error) {
+    throw new Error(response.data.error?.message || `Google Routes HTTP ${response.status}`);
+  }
+
+  const routes = normalizeRoutesApiRoutes(response.data.routes);
+  if (!routes.length) throw new Error('Google Routes returned no drivable routes');
+  return routes;
+}
+
+async function fetchLegacyDirections(originZip, destinationZip, key) {
+  const params = new URLSearchParams({
+    origin: originZip,
+    destination: destinationZip,
+    alternatives: 'true',
+    mode: 'driving',
+    units: 'imperial',
+    key
+  });
+  const response = await requestJson(`https://maps.googleapis.com/maps/api/directions/json?${params}`);
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(`Google Maps HTTP ${response.status}`);
+  }
+  const data = response.data;
+  if (data.status !== 'OK') {
+    throw new Error(data.error_message || data.status || 'Google Maps route failed');
+  }
+  const routes = (data.routes || []).map(route => {
+    const leg = route.legs && route.legs[0] ? route.legs[0] : {};
+    const meters = Number(leg.distance?.value || 0);
+    return {
+      summary: route.summary || 'Route',
+      distanceText: leg.distance?.text || '',
+      duration: leg.duration?.text || '',
+      miles: meters ? meters / 1609.344 : 0,
+      encodedPolyline: route.overview_polyline?.points || ''
+    };
+  }).filter(route => route.miles > 0);
+  if (!routes.length) throw new Error('Google Maps returned no drivable routes');
+  return routes;
 }
 
 async function handleApi(req, res) {
@@ -133,34 +244,20 @@ async function handleApi(req, res) {
     }
     if (!key) return send(res, 400, { ok: false, error: 'Missing Google Maps API key' });
 
-    const params = new URLSearchParams({
-      origin: originZip,
-      destination: destinationZip,
-      alternatives: 'true',
-      mode: 'driving',
-      units: 'imperial',
-      key
-    });
-    const response = await fetchJson(`https://maps.googleapis.com/maps/api/directions/json?${params}`);
-    if (response.status < 200 || response.status >= 300) {
-      return send(res, 502, { ok: false, error: `Google Maps HTTP ${response.status}` });
+    try {
+      const routes = await fetchRoutesApi(originZip, destinationZip, key);
+      return send(res, 200, { ok: true, source: 'routes', routes });
+    } catch (routesErr) {
+      try {
+        const routes = await fetchLegacyDirections(originZip, destinationZip, key);
+        return send(res, 200, { ok: true, source: 'directions', routes });
+      } catch (directionsErr) {
+        return send(res, 400, {
+          ok: false,
+          error: routesErr.message || directionsErr.message || 'Google Maps route failed'
+        });
+      }
     }
-    const data = response.data;
-    if (data.status !== 'OK') {
-      return send(res, 400, { ok: false, error: data.error_message || data.status || 'Google Maps route failed' });
-    }
-    const routes = (data.routes || []).map(route => {
-      const leg = route.legs && route.legs[0] ? route.legs[0] : {};
-      const meters = Number(leg.distance?.value || 0);
-      return {
-        summary: route.summary || 'Route',
-        distanceText: leg.distance?.text || '',
-        duration: leg.duration?.text || '',
-        miles: meters ? meters / 1609.344 : 0,
-        encodedPolyline: route.overview_polyline?.points || ''
-      };
-    }).filter(route => route.miles > 0);
-    return send(res, 200, { ok: true, routes });
   }
 
   if (req.url === '/api/send' && req.method === 'POST') {
@@ -195,6 +292,7 @@ function serveStatic(req, res) {
 
 const server = http.createServer(async (req, res) => {
   try {
+    if (req.method === 'OPTIONS') return send(res, 204, '');
     if (req.url.startsWith('/api/')) return await handleApi(req, res);
     serveStatic(req, res);
   } catch (err) {

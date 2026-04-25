@@ -6226,17 +6226,17 @@
                                 <div class="dash-card-header">
                                     <div>
                                         <h3>Mileage Integrations</h3>
-                                        <div class="subtitle">Connect Google Maps for ZIP-to-ZIP routes and keep
-                                            PC*Miler available for truck-specific mileage</div>
+                                        <div class="subtitle">Use Google Routes for ZIP-to-ZIP miles and keep PC*Miler
+                                            available for truck-specific mileage</div>
                                     </div>
                                 </div>
                                 <div class="dash-card-body">
                                     <div class="form-group"
                                         style="display:flex; gap:16px; max-width:640px; align-items:flex-end;">
                                         <div style="flex:1">
-                                            <label>Google Maps API Key</label>
+                                            <label>Google Maps Routes API Key</label>
                                             <input type="text" id="adminGoogleMapsKey"
-                                                placeholder="Enter your Google Maps API key"
+                                                placeholder="Optional if GOOGLE_MAPS_API_KEY is set on the server"
                                                 style="font-family:monospace; letter-spacing:0.5px;">
                                         </div>
                                         <div style="flex:1">
@@ -6249,7 +6249,7 @@
                                     <div class="form-group"
                                         style="display:flex; gap:12px; max-width:640px; align-items:center; margin-top:10px;">
                                         <div>
-                                            <button class="admin-btn" onclick="testGoogleMapsKey()">Test Google</button>
+                                            <button class="admin-btn" onclick="testGoogleMapsKey()">Test Google Routes</button>
                                         </div>
                                         <div>
                                             <button class="admin-btn" onclick="testPcMilerKey()">Test</button>
@@ -6686,15 +6686,14 @@
 
             async function googleMapsRoutes(pickupZip, deliveryZip) {
                 const apiKey = (adminConfig?.googleMapsApiKey || '').trim();
-                if (!apiKey) throw new Error('No Google Maps API key configured');
-                if (window.location.protocol === 'file:') {
-                    throw new Error('Google Maps routing needs the hosted server preview');
-                }
+                const apiPath = window.location.protocol === 'file:' ? 'http://localhost:3000/api/google-routes' : '/api/google-routes';
+                const payload = { originZip: pickupZip, destinationZip: deliveryZip };
+                if (apiKey) payload.apiKey = apiKey;
 
-                const res = await fetchWithTimeout('/api/google-routes', {
+                const res = await fetchWithTimeout(apiPath, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ originZip: pickupZip, destinationZip: deliveryZip, apiKey })
+                    body: JSON.stringify(payload)
                 }, 14000);
                 const data = await res.json().catch(() => ({}));
                 if (!res.ok || !data.ok) {
@@ -6768,11 +6767,7 @@
             async function testGoogleMapsKey() {
                 const statusEl = document.getElementById('googleMapsStatus');
                 const key = document.getElementById('adminGoogleMapsKey').value.trim();
-                if (!key) {
-                    statusEl.innerHTML = '<span style="color:#dc2626;">Please enter a Google Maps API key first</span>';
-                    return;
-                }
-                statusEl.innerHTML = '<span style="color:#6366f1;">Testing ZIP route...</span>';
+                statusEl.innerHTML = `<span style="color:#6366f1;">Testing ${key ? 'Google Maps key' : 'server Google Maps key'}...</span>`;
                 const origKey = adminConfig.googleMapsApiKey;
                 adminConfig.googleMapsApiKey = key;
                 try {
@@ -7152,13 +7147,12 @@
             }
 
             function setRouteMap(pickupZip, deliveryZip) {
-                const key = (adminConfig?.googleMapsApiKey || '').trim();
-                if (!key || !pickupZip || !deliveryZip) {
+                if (!pickupZip || !deliveryZip) {
                     routeMapFrame.removeAttribute('src');
                     return;
                 }
-                const maptype = routeMapSatellite ? '&maptype=satellite' : '';
-                routeMapFrame.src = `https://www.google.com/maps/embed/v1/directions?key=${encodeURIComponent(key)}&origin=${encodeURIComponent(pickupZip)}&destination=${encodeURIComponent(deliveryZip)}&mode=driving${maptype}`;
+                const mapType = routeMapSatellite ? 'k' : 'm';
+                routeMapFrame.src = `https://www.google.com/maps?saddr=${encodeURIComponent(pickupZip)}&daddr=${encodeURIComponent(deliveryZip)}&t=${mapType}&output=embed`;
             }
 
             function renderRouteOptions(routes) {
@@ -7166,7 +7160,7 @@
                 currentRouteOptions = routes;
                 if (!routes.length) {
                     routeStatus.style.display = '';
-                    routeStatus.textContent = 'No route found. Check both ZIP codes or add a Google Maps API key in Settings.';
+                    routeStatus.textContent = 'No route found. Check both ZIP codes or add a Google Routes API key in Settings/server secrets.';
                     return;
                 }
                 routeStatus.style.display = 'none';

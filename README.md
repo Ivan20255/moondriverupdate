@@ -18,4 +18,4 @@ The app includes local JSON storage for admin settings and reports through `/api
 
 For hosted use, set a Replit Secret named `ADMIN_PASSWORD`. If it is not set, the server falls back to the local development password.
 
-Google Maps mileage can be configured inside Admin Settings. You can also set a Replit Secret named `GOOGLE_MAPS_API_KEY` as a server-side fallback for ZIP-to-ZIP route lookup.
+Google Maps mileage uses the current Google Routes API. For hosted use, set a Replit Secret named `GOOGLE_MAPS_API_KEY`; ZIP-to-ZIP route lookup will use that server-side key even if the Admin Settings key field is blank. In Google Cloud, enable **Routes API** for the key's project and keep billing active.

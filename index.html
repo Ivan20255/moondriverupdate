@@ -683,7 +683,7 @@
         }
 
         .route-actions button {
-            width: 24px;
+            min-width: 24px;
             height: 24px;
             border: 1px solid #cbd5e1;
             border-radius: 4px;
@@ -702,6 +702,12 @@
             background: #e8f0f8;
         }
 
+        .route-actions button.active {
+            background: #0b3d5e;
+            border-color: #0b3d5e;
+            color: #fff;
+        }
+
         .route-status {
             font-size: .72rem;
             color: #64748b;
@@ -716,8 +722,12 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            max-height: 168px;
+            max-height: 96px;
             overflow: auto;
+        }
+
+        .route-popup.expanded .route-list {
+            max-height: 168px;
         }
 
         .route-option {
@@ -750,23 +760,135 @@
         }
 
         .route-map-wrap {
-            display: none;
+            display: block;
             margin-top: 8px;
             border: 1px solid #dbe4ee;
             border-radius: 6px;
             overflow: hidden;
             background: #f8fafc;
-            height: 220px;
+            height: 118px;
         }
 
         .route-popup.expanded .route-map-wrap {
-            display: block;
+            height: 260px;
         }
 
         .route-map-wrap iframe {
             width: 100%;
             height: 100%;
             border: 0;
+        }
+
+        /* ── Handwritten Trip Import ───────────────────────── */
+        .handwrite-import {
+            display: grid;
+            grid-template-columns: minmax(220px, .8fr) minmax(260px, 1.2fr);
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        .handwrite-drop {
+            border: 1.5px dashed #cbd5e1;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .handwrite-drop strong {
+            color: #0f172a;
+            font-size: .95rem;
+        }
+
+        .handwrite-drop span,
+        .handwrite-status {
+            color: #64748b;
+            font-size: .78rem;
+            line-height: 1.45;
+        }
+
+        .handwrite-preview {
+            min-height: 180px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #fff;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .handwrite-preview img,
+        .handwrite-preview iframe {
+            width: 100%;
+            height: 240px;
+            object-fit: contain;
+            border: 0;
+            background: #fff;
+        }
+
+        .handwriting-compare-pane {
+            display: none;
+            width: 360px;
+            flex: 0 0 360px;
+            position: sticky;
+            top: 58px;
+            max-height: calc(100vh - 72px);
+            overflow: auto;
+            background: #fff;
+            border: 1px solid #dbe4ee;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, .18);
+            padding: 10px;
+            z-index: 15;
+        }
+
+        .split-wrap.handwriting-compare {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        .split-wrap.handwriting-compare .handwriting-compare-pane {
+            display: block;
+        }
+
+        .handwriting-compare-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .handwriting-compare-head strong {
+            color: #0b3d5e;
+            font-size: .86rem;
+        }
+
+        .handwriting-compare-head button {
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: #334155;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-weight: 800;
+        }
+
+        .handwriting-compare-pane img,
+        .handwriting-compare-pane iframe {
+            width: 100%;
+            height: 520px;
+            object-fit: contain;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #fff;
         }
 
         /* ── Add Row Box (Attached to table bottom-left) ── */
@@ -1618,10 +1740,17 @@
             background: #09090b;
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #f4f4f5;
+            -webkit-text-fill-color: #000;
             text-align: center;
             font-size: 15px;
             padding: 12px 16px;
             border-radius: 10px;
+        }
+
+        #adminPwd {
+            color: #000 !important;
+            -webkit-text-fill-color: #000 !important;
+            caret-color: #000;
         }
 
         .admin-card.small input[type="password"]:focus {
@@ -4933,6 +5062,22 @@
                 background: #fff;
             }
 
+            .handwrite-import {
+                grid-template-columns: 1fr;
+            }
+
+            .split-wrap.handwriting-compare {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .handwriting-compare-pane {
+                width: 960px;
+                flex-basis: auto;
+                position: static;
+                max-height: none;
+            }
+
             .trip-table thead,
             .layover-table thead {
                 display: table-header-group;
@@ -5105,6 +5250,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 
 <body>
@@ -5125,6 +5271,13 @@
     </div>
 
     <div id="splitViewWrap" class="split-wrap">
+        <aside class="handwriting-compare-pane" id="handwritingComparePane" aria-hidden="true">
+            <div class="handwriting-compare-head">
+                <strong>Original Trip Report</strong>
+                <button type="button" onclick="hideHandwritingCompare()">Hide</button>
+            </div>
+            <div id="handwritingCompareBody"></div>
+        </aside>
         <div class="page">
 
             <!-- ═══ HEADER ═══ -->
@@ -5176,14 +5329,6 @@
                     <input type="text" id="totalMiles" class="w-miles" readonly tabindex="-1"
                         style="font-weight:900; cursor:default;">
                     <label>Total Miles</label>
-                </div>
-                <div class="df" style="align-items:center; gap:6px; margin-left:6px;">
-                    <label class="pcm-toggle" title="Auto-calculate miles from saved route services">
-                        <input type="checkbox" id="pcMilerToggle" onchange="togglePcMiler()">
-                        <span class="pcm-slider"></span>
-                    </label>
-                    <span style="font-size:10px; color:#6b7280; white-space:nowrap;"
-                        id="pcMilerToggleLabel">Auto miles</span>
                 </div>
             </div>
 
@@ -5405,6 +5550,8 @@
                     <div class="route-meta" id="routeMeta"></div>
                 </div>
                 <div class="route-actions">
+                    <button type="button" id="routeSatelliteBtn" class="active"
+                        title="Toggle satellite map">SAT</button>
                     <button type="button" id="routeExpandBtn" title="Expand route view">+</button>
                     <button type="button" id="routeCloseBtn" title="Close route view">×</button>
                 </div>
@@ -5921,6 +6068,36 @@
 
                         <!-- TAB 1: INBOX -->
                         <div id="tabApprovals" class="tab-content">
+                            <div class="dash-card">
+                                <div class="dash-card-header">
+                                    <div>
+                                        <h3>Import Handwritten Trip Report</h3>
+                                        <div class="subtitle">Upload a photo or PDF, convert it into the standard form,
+                                            then compare side by side before approval</div>
+                                    </div>
+                                </div>
+                                <div class="dash-card-body">
+                                    <div class="handwrite-import">
+                                        <div class="handwrite-drop">
+                                            <strong>Upload handwritten report</strong>
+                                            <span>Photos work best for automatic reading. PDF uploads can still be
+                                                previewed and corrected manually.</span>
+                                            <input type="file" id="handwriteFileInput" accept="image/*,.pdf"
+                                                style="display:none;"
+                                                onchange="handleHandwrittenUpload(this)">
+                                            <button type="button" class="admin-btn secondary"
+                                                onclick="document.getElementById('handwriteFileInput').click()">Choose
+                                                File</button>
+                                            <div class="handwrite-status" id="handwriteStatus">No file selected</div>
+                                            <button type="button" class="admin-btn" onclick="convertHandwrittenTrip()">
+                                                Convert to Trip Report</button>
+                                        </div>
+                                        <div class="handwrite-preview" id="handwritePreview">
+                                            <div class="handwrite-status">Original preview will appear here</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="dash-card">
                                 <div class="dash-card-header">
                                     <div>
@@ -6931,10 +7108,12 @@
             const routeStatus = document.getElementById('routeStatus');
             const routeList = document.getElementById('routeList');
             const routeMapFrame = document.getElementById('routeMapFrame');
+            const routeSatelliteBtn = document.getElementById('routeSatelliteBtn');
             const routeExpandBtn = document.getElementById('routeExpandBtn');
             const routeCloseBtn = document.getElementById('routeCloseBtn');
             let routeTargetRow = null;
             let currentRouteOptions = [];
+            let routeMapSatellite = true;
             const routeCache = {};
 
             function routeZipPair(row) {
@@ -6949,7 +7128,7 @@
                 const scrollX = window.scrollX;
                 const scrollY = window.scrollY;
                 const popW = routePopup.classList.contains('expanded') ? Math.min(520, window.innerWidth - 20) : 260;
-                const popH = routePopup.classList.contains('expanded') ? 430 : 260;
+                const popH = routePopup.classList.contains('expanded') ? 480 : 330;
                 let left = rect.right + scrollX + 4;
                 let top = rect.top + scrollY;
                 if (left + popW > scrollX + window.innerWidth) left = rect.left + scrollX - popW - 4;
@@ -6965,6 +7144,8 @@
                 routePopup.setAttribute('aria-hidden', 'true');
                 routeExpandBtn.textContent = '+';
                 routeExpandBtn.title = 'Expand route view';
+                routeMapSatellite = true;
+                routeSatelliteBtn.classList.add('active');
                 routeTargetRow = null;
                 currentRouteOptions = [];
                 document.querySelectorAll('.route-picker-btn.active').forEach(btn => btn.classList.remove('active'));
@@ -6976,7 +7157,8 @@
                     routeMapFrame.removeAttribute('src');
                     return;
                 }
-                routeMapFrame.src = `https://www.google.com/maps/embed/v1/directions?key=${encodeURIComponent(key)}&origin=${encodeURIComponent(pickupZip)}&destination=${encodeURIComponent(deliveryZip)}&mode=driving`;
+                const maptype = routeMapSatellite ? '&maptype=satellite' : '';
+                routeMapFrame.src = `https://www.google.com/maps/embed/v1/directions?key=${encodeURIComponent(key)}&origin=${encodeURIComponent(pickupZip)}&destination=${encodeURIComponent(deliveryZip)}&mode=driving${maptype}`;
             }
 
             function renderRouteOptions(routes) {
@@ -7033,6 +7215,8 @@
                 routePopup.classList.remove('expanded');
                 routeExpandBtn.textContent = '+';
                 routeExpandBtn.title = 'Expand route view';
+                routeMapSatellite = true;
+                routeSatelliteBtn.classList.add('active');
                 routePopup.classList.add('visible');
                 routePopup.setAttribute('aria-hidden', 'false');
                 positionRoutePopup(anchor || row.querySelector('.miles-input') || row);
@@ -7064,7 +7248,8 @@
                 if (!e.target.classList.contains('miles-input')) return;
                 const row = e.target.closest('tr');
                 const { pickupZip, deliveryZip } = routeZipPair(row);
-                if (!e.target.value && /^\d{5}$/.test(pickupZip) && /^\d{5}$/.test(deliveryZip)) {
+                const reviewing = document.body.classList.contains('admin-reviewing');
+                if ((reviewing || !e.target.value) && /^\d{5}$/.test(pickupZip) && /^\d{5}$/.test(deliveryZip)) {
                     openRoutePicker(row, e.target);
                 }
             });
@@ -7077,6 +7262,17 @@
                 routeExpandBtn.title = expanded ? 'Shrink route view' : 'Expand route view';
                 const anchor = routeTargetRow?.querySelector('.miles-input') || routeTargetRow;
                 if (anchor) positionRoutePopup(anchor);
+            });
+
+            routeSatelliteBtn.addEventListener('click', e => {
+                e.preventDefault();
+                routeMapSatellite = !routeMapSatellite;
+                routeSatelliteBtn.classList.toggle('active', routeMapSatellite);
+                routeSatelliteBtn.title = routeMapSatellite ? 'Switch to standard map' : 'Switch to satellite map';
+                if (routeTargetRow) {
+                    const { pickupZip, deliveryZip } = routeZipPair(routeTargetRow);
+                    setRouteMap(pickupZip, deliveryZip);
+                }
             });
 
             routeCloseBtn.addEventListener('click', e => {
@@ -7940,6 +8136,7 @@
             function closeAdminDash() {
                 document.getElementById('adminDashOverlay').classList.remove('active');
                 setAdminReviewMode(false);
+                hideHandwritingCompare();
                 // Always clear review state so the driver form is blank on exit
                 window.currentReviewReportId = null;
                 document.getElementById('psOverlay').classList.remove('active');
@@ -8573,6 +8770,188 @@
                 renderDriverRoster();
             }
 
+            let handwrittenImport = null;
+
+            function handleHandwrittenUpload(input) {
+                const file = input.files && input.files[0];
+                const status = document.getElementById('handwriteStatus');
+                const preview = document.getElementById('handwritePreview');
+                if (!file) return;
+                if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+                    status.textContent = 'Use an image or PDF file.';
+                    return;
+                }
+                if (file.size > 15 * 1024 * 1024) {
+                    status.textContent = 'File is too large. Use a file under 15 MB.';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = e => {
+                    handwrittenImport = {
+                        name: file.name,
+                        type: file.type,
+                        dataUrl: e.target.result,
+                        text: ''
+                    };
+                    renderHandwrittenPreview(preview, handwrittenImport);
+                    status.textContent = `${file.name} ready to convert`;
+                };
+                reader.readAsDataURL(file);
+                input.value = '';
+            }
+
+            function renderHandwrittenPreview(container, source) {
+                if (!container || !source) return;
+                if (source.type === 'application/pdf') {
+                    container.innerHTML = `<iframe src="${escapeAttr(source.dataUrl)}" title="Handwritten trip report preview"></iframe>`;
+                } else {
+                    container.innerHTML = `<img src="${escapeAttr(source.dataUrl)}" alt="Handwritten trip report preview">`;
+                }
+            }
+
+            function blankTripData() {
+                const expenses = {};
+                ['lumper', 'scale_tickets', 'tolls', 'parking', 'cash_advance', 'cash_expense', 'truck_wash', 'trailer_wash', 'oil_change', 'accessorial', 'other']
+                    .forEach(key => { expenses[key] = { a: '', co: false, dr: false }; });
+                return {
+                    driver: '',
+                    tractor: '',
+                    trailer: '',
+                    startDay: '',
+                    endDay: '',
+                    extraStops: 0,
+                    trips: [],
+                    layovers: [],
+                    expenses,
+                    receipts: []
+                };
+            }
+
+            function readFieldFromOcr(text, labels) {
+                for (const label of labels) {
+                    const re = new RegExp(`${label}\\s*[:#-]?\\s*([^\\n\\r]+)`, 'i');
+                    const match = text.match(re);
+                    if (match && match[1]) return match[1].replace(/\s{2,}.*/, '').trim();
+                }
+                return '';
+            }
+
+            function normalizeTripDate(value) {
+                const match = String(value || '').match(/\b(\d{1,2})[\/\-.](\d{1,2})(?:[\/\-.](\d{2,4}))?\b/);
+                if (!match) return '';
+                const y = match[3] ? String(match[3]).slice(-2) : String(new Date().getFullYear()).slice(-2);
+                return `${parseInt(match[1], 10)}/${parseInt(match[2], 10)}/${y}`;
+            }
+
+            function milesFromLine(line, secondZipIndex) {
+                const after = line.slice(secondZipIndex + 5);
+                const labeled = after.match(/\b(\d{1,5})(?:\.\d+)?\s*(?:mi|mile|miles)\b/i);
+                if (labeled) return labeled[1];
+                const nums = after.match(/\b\d{2,5}\b/g) || [];
+                return nums[0] || '';
+            }
+
+            async function buildConvertedTripData(text) {
+                const data = blankTripData();
+                const cleanText = String(text || '').replace(/\t/g, ' ');
+                data.driver = readFieldFromOcr(cleanText, ['driver name', 'driver']);
+                data.tractor = readFieldFromOcr(cleanText, ['tractor', 'truck', 'unit']);
+                data.trailer = readFieldFromOcr(cleanText, ['trailer']);
+                data.startDay = normalizeTripDate(readFieldFromOcr(cleanText, ['start day', 'start date', 'date'])) || normalizeTripDate(cleanText);
+                data.endDay = normalizeTripDate(readFieldFromOcr(cleanText, ['end day', 'end date']));
+
+                const lines = cleanText.split(/\n+/).map(line => line.replace(/\s+/g, ' ').trim()).filter(Boolean);
+                for (const line of lines) {
+                    const zips = [...line.matchAll(/\b\d{5}\b/g)];
+                    if (zips.length < 2) continue;
+                    const pickupZip = zips[0][0];
+                    const deliveryZip = zips[1][0];
+                    const pickup = await lookupZip(pickupZip);
+                    const delivery = await lookupZip(deliveryZip);
+                    data.trips.push({
+                        pd: normalizeTripDate(line) || data.startDay,
+                        pc: pickup ? `${pickup.city}, ${pickup.state}` : '',
+                        pz: pickupZip,
+                        dd: normalizeTripDate(line) || data.endDay || data.startDay,
+                        dc: delivery ? `${delivery.city}, ${delivery.state}` : '',
+                        dz: deliveryZip,
+                        mi: milesFromLine(line, zips[1].index),
+                        mt: '',
+                        lt: ''
+                    });
+                }
+                if (!data.trips.length) data.trips.push({ pd: data.startDay, pc: '', pz: '', dd: data.endDay, dc: '', dz: '', mi: '', mt: '', lt: '' });
+                return data;
+            }
+
+            async function convertHandwrittenTrip() {
+                const status = document.getElementById('handwriteStatus');
+                if (!handwrittenImport) return showToast('Choose a handwritten report first.');
+                status.textContent = 'Reading report...';
+                let text = '';
+                if (handwrittenImport.type.startsWith('image/') && window.Tesseract) {
+                    try {
+                        const result = await Tesseract.recognize(handwrittenImport.dataUrl, 'eng', {
+                            logger: m => {
+                                if (m.status) status.textContent = `${m.status}${m.progress ? ` ${Math.round(m.progress * 100)}%` : ''}`;
+                            }
+                        });
+                        text = result?.data?.text || '';
+                    } catch (e) {
+                        console.warn('OCR failed:', e);
+                    }
+                }
+                handwrittenImport.text = text;
+                const data = await buildConvertedTripData(text);
+                window.handwrittenSources = window.handwrittenSources || {};
+                const report = {
+                    id: 'rep_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
+                    driverName: data.driver || 'Imported handwritten report',
+                    date: data.startDay || new Date().toISOString().split('T')[0],
+                    data,
+                    status: 'pending',
+                    source: 'handwritten',
+                    sourceHandwritten: {
+                        name: handwrittenImport.name,
+                        type: handwrittenImport.type,
+                        text: handwrittenImport.text
+                    },
+                    escrowDeduction: 0,
+                    escrowCommitted: false,
+                    workersCompDeduction: 0,
+                    workersCompCommitted: false,
+                    driverNetEarned: 0,
+                    incomeCommitted: false,
+                    statementDate: ''
+                };
+                window.handwrittenSources[report.id] = handwrittenImport;
+                if (!adminConfig.reports) adminConfig.reports = [];
+                adminConfig.reports.push(report);
+                saveAdminConfig();
+                status.textContent = text ? 'Converted. Review and correct the form.' : 'Preview imported. Review and type corrections into the form.';
+                adminLoadReport(report.id);
+                showHandwritingCompare(handwrittenImport);
+            }
+
+            function showHandwritingCompare(source) {
+                const pane = document.getElementById('handwritingComparePane');
+                const body = document.getElementById('handwritingCompareBody');
+                const wrap = document.getElementById('splitViewWrap');
+                if (!pane || !body || !wrap || !source) return;
+                renderHandwrittenPreview(body, source);
+                pane.setAttribute('aria-hidden', 'false');
+                wrap.classList.add('handwriting-compare');
+            }
+
+            function hideHandwritingCompare() {
+                const pane = document.getElementById('handwritingComparePane');
+                const body = document.getElementById('handwritingCompareBody');
+                const wrap = document.getElementById('splitViewWrap');
+                if (body) body.innerHTML = '';
+                if (pane) pane.setAttribute('aria-hidden', 'true');
+                if (wrap) wrap.classList.remove('handwriting-compare');
+            }
+
             // ═══ INBOX / REPORT SUBMISSIONS ══════════════════════════════════
             async function driverSubmitReport() {
                 doSave();
@@ -8642,23 +9021,33 @@
                     // Collect receipt files for sharing
                     const receiptFiles = await getReceiptFiles(slug, dt);
                     const allFiles = [file, ...receiptFiles];
+                    const companyEmail = 'Accounting@mxtrucking.com';
+                    const subject = encodeURIComponent('Trip Report - ' + dName + ' - ' + dt);
+                    const rcptNote = receiptFiles.length > 0 ? ' plus ' + receiptFiles.length + ' receipt image(s)' : '';
+                    const body = encodeURIComponent('Trip report PDF downloaded' + rcptNote + '. Please attach the downloaded file(s) to this email.');
+                    const openEmailPrompt = () => { window.location.href = `mailto:${companyEmail}?subject=${subject}&body=${body}`; };
 
                     if (navigator.canShare && navigator.canShare({ files: allFiles })) {
                         // Mobile: Native share sheet (email, Messages, etc.)
-                        await navigator.share({
-                            title: 'Trip Report - ' + dName,
-                            text: 'Trip report submitted by ' + dName + ' for ' + dt + (receiptFiles.length > 0 ? ' (' + receiptFiles.length + ' receipt(s) attached)' : ''),
-                            files: allFiles
-                        });
+                        try {
+                            await navigator.share({
+                                title: 'Trip Report - ' + dName,
+                                text: 'Send to ' + companyEmail + ' for ' + dName + ' on ' + dt,
+                                files: allFiles
+                            });
+                        } catch (shareErr) {
+                            if (shareErr.name !== 'AbortError') {
+                                downloadBlob(file, file.name);
+                                receiptFiles.forEach((rf) => downloadBlob(rf, rf.name));
+                                openEmailPrompt();
+                            }
+                        }
                     } else {
                         // Desktop fallback: download all files + open mailto
                         downloadBlob(file, file.name);
                         // Also download receipt images
                         receiptFiles.forEach((rf) => downloadBlob(rf, rf.name));
-                        const rcptNote = receiptFiles.length > 0 ? ' plus ' + receiptFiles.length + ' receipt image(s)' : '';
-                        const subject = encodeURIComponent('Trip Report - ' + dName + ' ' + dt);
-                        const body = encodeURIComponent('Trip report PDF downloaded' + rcptNote + '. Please attach the downloaded file(s) to this email.');
-                        window.location.href = `mailto:Accounting@mxtrucking.com?subject=${subject}&body=${body}`;
+                        openEmailPrompt();
                     }
                 } catch (err) {
                     console.error('Trip PDF generation error:', err);
@@ -8680,6 +9069,9 @@
                 document.getElementById('btnSubmitReport').style.display = 'none';
                 document.getElementById('btnAdminPaystub').style.display = 'inline-block';
                 document.getElementById('adminLayoutToggleWrap').style.display = 'flex';
+                const handwrittenSource = window.handwrittenSources?.[id] || r.sourceHandwritten;
+                if (handwrittenSource?.dataUrl) showHandwritingCompare(handwrittenSource);
+                else hideHandwritingCompare();
 
                 showToast('Admin review opened.');
                 window.scrollTo(0, 0);
@@ -8704,6 +9096,7 @@
                 // Clear review state
                 window.currentReviewReportId = null;
                 setAdminReviewMode(false);
+                hideHandwritingCompare();
                 // Re-open dashboard directly (already authenticated)
                 renderAdminDash();
                 document.getElementById('adminDashOverlay').classList.add('active');
